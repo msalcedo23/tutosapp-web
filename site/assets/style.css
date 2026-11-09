@@ -1,0 +1,404 @@
+:root {
+  --bg: #fbfaf8;
+  --surface: #ffffff;
+  --text: #17151f;
+  --muted: #5d5a68;
+  --line: #e6e3ec;
+  --brand: #5b3df5;
+  --accent: #5b3df5;
+  --radius: 18px;
+  color-scheme: light dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #111017;
+    --surface: #1b1a23;
+    --text: #f3f1f8;
+    --muted: #aaa6b8;
+    --line: #2d2b38;
+    --brand: #9d8cff;
+  }
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: 17px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+a {
+  color: inherit;
+}
+
+a:focus-visible,
+.btn:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 3px;
+}
+
+h1,
+h2,
+h3 {
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+}
+
+h1 {
+  font-size: clamp(2rem, 7vw, 3.4rem);
+  margin: 0.2em 0 0.3em;
+}
+
+h2 {
+  font-size: clamp(1.4rem, 4vw, 1.9rem);
+  margin: 0 0 0.8em;
+}
+
+h3 {
+  font-size: 1.1rem;
+  margin: 0 0 0.3em;
+}
+
+.wrap {
+  width: min(1080px, 100%);
+  margin: 0 auto;
+  padding: 0 16px;
+}
+
+.skip {
+  position: absolute;
+  left: -9999px;
+}
+
+.skip:focus {
+  left: 16px;
+  top: 8px;
+  background: var(--surface);
+  padding: 8px 12px;
+  border-radius: 8px;
+  z-index: 10;
+}
+
+.top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: min(1080px, 100%);
+  margin: 0 auto;
+  padding: 14px 16px;
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.lang {
+  font-size: 0.95rem;
+  padding: 6px 12px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  text-decoration: none;
+}
+
+.hero {
+  display: grid;
+  gap: 32px;
+  padding-top: 24px;
+  padding-bottom: 48px;
+  align-items: center;
+}
+
+.hero.home {
+  padding-bottom: 24px;
+}
+
+.kicker {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 0;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.app-icon {
+  border-radius: 22%;
+  flex: none;
+}
+
+.lead {
+  font-size: 1.15rem;
+  color: var(--muted);
+  max-width: 38em;
+}
+
+.status {
+  display: inline-block;
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 2px 10px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
+  color: var(--text);
+  margin: 0;
+}
+
+.status.live {
+  background: color-mix(in srgb, #1a9a55 22%, transparent);
+}
+
+.stores,
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 20px 0 0;
+}
+
+.store {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 52px;
+  padding: 8px 16px;
+  border-radius: 12px;
+  background: #000;
+  color: #fff;
+  text-decoration: none;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.store small {
+  display: block;
+  font-weight: 400;
+  font-size: 0.75rem;
+}
+
+.store.soon {
+  background: transparent;
+  color: var(--muted);
+  border: 1px dashed var(--line);
+  font-weight: 500;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 48px;
+  padding: 10px 18px;
+  border-radius: 999px;
+  font-weight: 650;
+  text-decoration: none;
+}
+
+.btn.primary {
+  background: var(--accent);
+  color: #fff;
+}
+
+.btn.ghost {
+  border: 1.5px solid var(--line);
+  background: var(--surface);
+}
+
+.note {
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+.hero-shot {
+  width: min(320px, 78vw);
+  justify-self: center;
+  border-radius: 28px;
+  box-shadow: 0 20px 50px -20px color-mix(in srgb, var(--accent) 55%, transparent);
+}
+
+.benefits ul,
+.shots ul,
+.cards,
+.foot ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.benefits {
+  padding-bottom: 48px;
+}
+
+.benefits ul {
+  display: grid;
+  gap: 16px;
+}
+
+.benefits li,
+.card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 20px;
+}
+
+.benefits li {
+  border-top: 4px solid var(--accent);
+}
+
+.benefits p,
+.card p {
+  margin: 0;
+  color: var(--muted);
+}
+
+.shots {
+  padding-bottom: 56px;
+}
+
+.shots ul {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  padding-bottom: 8px;
+}
+
+.shots li {
+  flex: 0 0 min(240px, 66vw);
+  scroll-snap-align: start;
+}
+
+.shots img {
+  display: block;
+  border-radius: 20px;
+  border: 1px solid var(--line);
+}
+
+.cards {
+  display: grid;
+  gap: 16px;
+  padding-bottom: 56px;
+}
+
+.card {
+  position: relative;
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  border-left: 5px solid var(--accent);
+}
+
+.card h3 a {
+  text-decoration: none;
+}
+
+/* The whole card is clickable through the title link. */
+.card h3 a::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius);
+}
+
+.card .status {
+  margin: 4px 0 8px;
+}
+
+.foot {
+  border-top: 1px solid var(--line);
+  padding: 32px 0 24px;
+  font-size: 0.95rem;
+}
+
+.foot-grid {
+  display: grid;
+  gap: 24px;
+}
+
+.foot h2 {
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+
+.foot li {
+  margin: 4px 0;
+}
+
+.foot p {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.foot .copy {
+  margin: 24px auto 0;
+  color: var(--muted);
+}
+
+.notfound {
+  padding: 64px 16px;
+}
+
+@media (min-width: 760px) {
+  .hero {
+    grid-template-columns: 1.3fr 1fr;
+    padding-top: 48px;
+  }
+
+  .hero.home {
+    grid-template-columns: 1fr;
+  }
+
+  .benefits ul {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .cards {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .card {
+    flex-direction: column;
+  }
+
+  .foot-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .btn,
+  .store,
+  .card {
+    transition: transform 0.15s ease;
+  }
+
+  .btn:hover,
+  .store:hover {
+    transform: translateY(-1px);
+  }
+}

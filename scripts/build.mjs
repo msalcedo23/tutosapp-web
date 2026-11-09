@@ -238,6 +238,8 @@ const content = {
 
 // Path of each page, relative to the site root, per app and language.
 // Ojito leads in Spanish; the English-first apps lead in English.
+// The first key is the primary language: head() uses it as hreflang x-default,
+// so both pages of a pair point to the same x-default.
 const paths = {
   home: { es: '', en: 'en/' },
   ojito: { es: 'ojito/', en: 'ojito/en/' },

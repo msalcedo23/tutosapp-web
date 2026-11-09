@@ -68,9 +68,7 @@ const ui = {
     legal: 'Legal y soporte',
     allApps: 'Todas las apps de Tutos App',
     contact: 'Contacto',
-    langName: 'Español',
     switchTo: 'English',
-    see: 'Ver',
     skip: 'Saltar al contenido',
     screenshotOf: 'Pantalla de',
     notFound: 'Esta página no existe.',
@@ -90,9 +88,7 @@ const ui = {
     legal: 'Legal and support',
     allApps: 'All Tutos App apps',
     contact: 'Contact',
-    langName: 'English',
     switchTo: 'Español',
-    see: 'See',
     skip: 'Skip to content',
     screenshotOf: 'Screen from',
     notFound: 'This page does not exist.',
@@ -109,7 +105,6 @@ const content = {
       title: 'Ojito: escáner de alimentos y cuidado personal',
       description:
         'Escanea comida y cuidado personal en Colombia: una respuesta para tu bebé y otra para ti. Sellos de advertencia, aditivos y alergias en segundos.',
-      kicker: 'Ojito con lo que comen los tuyos',
       headline: '¿Y esto sí se lo puedo dar?',
       lead:
         'Apunta la cámara al código de barras y Ojito te dice Bueno, Regular o Evítalo, con una respuesta para cada persona de tu casa.',
@@ -134,7 +129,6 @@ const content = {
       title: 'Ojito: food and personal-care label scanner',
       description:
         'Scan food and personal-care products in Colombia: one answer for your baby and another for you. Warning labels, additives and allergies in seconds.',
-      kicker: 'Made for Colombian families',
       headline: 'Is this OK to give them?',
       lead:
         'Point your camera at the barcode and Ojito says Good, Fair or Avoid, with an answer for each person in your home. The app is in Spanish.',
@@ -162,7 +156,6 @@ const content = {
       title: 'Resume Roast: AI CV Review',
       description:
         'Brutally honest AI resume review. Get a score out of 100, match your CV to a real job, fix it and export an ATS-friendly PDF.',
-      kicker: 'AI CV review',
       headline: 'Your CV, with no filters.',
       lead:
         'The AI that tells you what recruiters only think. Paste your CV, or upload a PDF, Word file or photo, and get an honest verdict in seconds.',
@@ -181,7 +174,6 @@ const content = {
       title: 'Resume Roast: análisis de CV con IA',
       description:
         'Análisis de CV con IA, sin filtros. Puntaje de 0 a 100, compáralo con la vacante, arréglalo y expórtalo en un PDF que leen los filtros (ATS).',
-      kicker: 'Análisis de CV con IA',
       headline: 'Tu CV, sin filtros.',
       lead:
         'La IA que te dice lo que los reclutadores solo piensan. Pega tu CV, o sube un PDF, un Word o una foto, y recibe un veredicto honesto en segundos.',
@@ -205,7 +197,6 @@ const content = {
       title: 'Roast Interview: AI interview practice',
       description:
         'Practice job interviews out loud with an AI interviewer that asks the questions hiding in your resume. Get a score and a plan to improve.',
-      kicker: 'AI interview practice with voice',
       headline: 'Practice with an interviewer that tells you the truth.',
       lead:
         'Upload your resume and the role you want. An AI interviewer asks you, out loud, the questions you will really get, and tells you how ready you are.',
@@ -223,7 +214,6 @@ const content = {
       title: 'Roast Interview: practica entrevistas con IA',
       description:
         'Practica entrevistas de trabajo en voz alta con una IA que te pregunta lo que esconde tu CV. Recibe un puntaje y un plan de mejora.',
-      kicker: 'Práctica de entrevistas con IA y voz',
       headline: 'Practica con un entrevistador que te dice la verdad.',
       lead:
         'Sube tu CV y el cargo al que aplicas. Una IA entrevistadora te hace, en voz alta, las preguntas que te van a hacer de verdad, y te dice qué tan listo estás.',
@@ -379,7 +369,7 @@ function appPage(id, lang) {
       title: p.title,
       description: p.description,
       path,
-      alternates: { [lang]: path, [otherLang]: paths[id][otherLang] },
+      alternates: paths[id],
       og: `${id}-${lang}`,
       accent: app.accent,
     }) +
@@ -445,7 +435,7 @@ function homePage(lang) {
     .join('');
   const share = lang === 'es' ? 'Mira las apps de Tutos App:' : 'Check out the Tutos App apps:';
   return (
-    head({ lang, title, description, path, alternates: { [lang]: path, [otherLang]: paths.home[otherLang] }, og: `home-${lang}` }) +
+    head({ lang, title, description, path, alternates: paths.home, og: `home-${lang}` }) +
     header({ lang, path, other: { lang: otherLang, path: paths.home[otherLang] } }) +
     `
     <main id="main">

@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://msalcedo23.github.io/tutosapp-web/sitemap.xml

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  <url>
+    <loc>https://msalcedo23.github.io/tutosapp-web/</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://msalcedo23.github.io/tutosapp-web/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://msalcedo23.github.io/tutosapp-web/en/"/>
+  </url>
+  <url>
+    <loc>https://msalcedo23.github.io/tutosapp-web/en/</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://msalcedo23.github.io/tutosapp-web/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://msalcedo23.github.io/tutosapp-web/en/"/>
+  </url>
+  <url>
+    <loc>https://msalcedo23.github.io/tutosapp-web/ojito/</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://msalcedo23.github.io/tutosapp-web/ojito/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://msalcedo23.github.io/tutosapp-web/ojito/en/"/>
+  </url>
+  <url>
+    <loc>https://msalcedo23.github.io/tutosapp-web/ojito/en/</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://msalcedo23.github.io/tutosapp-web/ojito/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://msalcedo23.github.io/tutosapp-web/ojito/en/"/>
+  </url>
+  <url>
+    <loc>https://msalcedo23.github.io/tutosapp-web/resume-roast/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://msalcedo23.github.io/tutosapp-web/resume-roast/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://msalcedo23.github.io/tutosapp-web/resume-roast/es/"/>
+  </url>
+  <url>
+    <loc>https://msalcedo23.github.io/tutosapp-web/resume-roast/es/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://msalcedo23.github.io/tutosapp-web/resume-roast/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://msalcedo23.github.io/tutosapp-web/resume-roast/es/"/>
+  </url>
+  <url>
+    <loc>https://msalcedo23.github.io/tutosapp-web/roast-interview/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://msalcedo23.github.io/tutosapp-web/roast-interview/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://msalcedo23.github.io/tutosapp-web/roast-interview/es/"/>
+  </url>
+  <url>
+    <loc>https://msalcedo23.github.io/tutosapp-web/roast-interview/es/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://msalcedo23.github.io/tutosapp-web/roast-interview/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://msalcedo23.github.io/tutosapp-web/roast-interview/es/"/>
+  </url>
+</urlset>

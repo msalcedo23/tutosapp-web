@@ -1196,9 +1196,25 @@ h2 em {
 }
 
 .marquee:hover .track,
-.marquee:focus-within .track,
 .pause-toggle:checked ~ .marquee .track {
   animation-play-state: paused;
+}
+
+/* Keyboard focus turns the track into a still row of only the real tiles (as with reduced
+   motion), so the focused tile and its ring are always in view. */
+.marquee:focus-within {
+  mask-image: none;
+}
+
+.marquee:focus-within .track {
+  flex-wrap: wrap;
+  justify-content: center;
+  width: auto;
+  animation: none;
+}
+
+.marquee:focus-within .track li[aria-hidden="true"] {
+  display: none;
 }
 
 .track .tile {

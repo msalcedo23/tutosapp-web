@@ -123,6 +123,26 @@ test.describe('home marquee', () => {
       await expect(page.locator('.pause-label')).toBeHidden();
     });
   }
+
+  test('a keyboard-focused tile is shown inside the strip, wherever the animation was', async ({ page }) => {
+    await page.goto('/');
+    const tiles = page.locator('.track a.tile:not([tabindex="-1"])');
+    const n = await tiles.count();
+    const strip = await page.locator('.marquee').boundingBox();
+    // Move the animation to mid-cycle, where the focusable copies have slid out of view.
+    await page.evaluate(() => {
+      const [a] = document.querySelector('.track').getAnimations();
+      a.currentTime = a.effect.getComputedTiming().duration / 2;
+    });
+    await page.locator('.pause-toggle').focus();
+    for (let i = 0; i < n; i++) {
+      await page.keyboard.press('Tab');
+      await expect(tiles.nth(i)).toBeFocused();
+      const box = await tiles.nth(i).boundingBox();
+      expect(box.x, `tile ${i} left edge`).toBeGreaterThanOrEqual(strip.x - 1);
+      expect(box.x + box.width, `tile ${i} right edge`).toBeLessThanOrEqual(strip.x + strip.width + 1);
+    }
+  });
 });
 
 // A stylesheet that stops parsing part of the way leaves pages half unstyled while every other

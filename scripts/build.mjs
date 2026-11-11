@@ -12,7 +12,8 @@ import { fileURLToPath } from 'node:url';
 const DOMAIN = 'tutosapp.co';
 const SITE_URL = `https://${DOMAIN}/`;
 
-const EMAIL = 'castores.app@gmail.com';
+// Company contact address (info@tutosapp.co is an alias). No personal or Gmail address may appear on the site.
+const EMAIL = 'hola@tutosapp.co';
 const COMPANY = { name: 'TUTOS APP S.A.S.', nit: '902.125.524-7', city: 'Medellín, Colombia' };
 const YEAR = 2026;
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', 'site');
@@ -965,6 +966,10 @@ for (const app of apps) {
     }
     if (app[lang]?.shotAlt?.length !== app.shots(lang).length) problems.push(`${app.id}: ${lang} shotAlt must describe every screenshot`);
   }
+}
+
+for (const [name, body] of Object.entries(files)) {
+  if (/@gmail\.com/i.test(body)) problems.push(`${name}: contains a Gmail address; use ${EMAIL}`);
 }
 
 const stale = [];

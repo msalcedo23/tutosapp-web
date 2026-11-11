@@ -826,7 +826,7 @@ function marquee(lang, path) {
             ${[...first, ...half(true)].join('\n            ')}
           </ul>
         </div>
-        <label class="pause-label" for="pause-marquee"><span class="when-playing">${icons.pause} ${t.pause}</span><span class="when-paused">${icons.playSmall} ${t.resume}</span></label>
+        <label class="pause-label" for="pause-marquee"><span class="sr-only">${t.pause}</span><span class="when-playing" aria-hidden="true">${icons.pause} ${t.pause}</span><span class="when-paused" aria-hidden="true">${icons.playSmall} ${t.resume}</span></label>
       </section>`;
 }
 

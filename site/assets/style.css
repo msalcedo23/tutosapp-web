@@ -1196,6 +1196,7 @@ h2 em {
 }
 
 .marquee:hover .track,
+.marquee:focus-within .track,
 .pause-toggle:checked ~ .marquee .track {
   animation-play-state: paused;
 }

@@ -13,6 +13,7 @@ const TYPES = {
   '.svg': 'image/svg+xml',
   '.png': 'image/png',
   '.jpg': 'image/jpeg',
+  '.webp': 'image/webp',
   '.woff2': 'font/woff2',
   '.xml': 'application/xml',
   '.txt': 'text/plain; charset=utf-8',

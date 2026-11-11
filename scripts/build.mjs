@@ -3,6 +3,7 @@
 //   node scripts/build.mjs          write the files
 //   node scripts/build.mjs --check  fail if a committed file differs from what this script writes,
 //                                   if a relative link is broken, or if an app lacks its legal links
+import { createHash } from 'node:crypto';
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -36,6 +37,7 @@ const RI_LEGAL = 'https://msalcedo23.github.io/castores-legal/';
 // The apps, in the order they are shown. Adding an app is one more entry here (plus its images):
 // the home marquee, the home sections, the menus, the footers, the sitemap and its own page follow.
 // paths: the first language is the app's main one (hreflang x-default).
+// bg: the browser theme color, matching the top of the app's page. fonts: extra fonts its page preloads.
 // status: 'live' (in a store), 'test' (closed testing) or 'soon'.
 // stores: 'live' links to the listing; 'soon' shows a "coming soon" badge.
 // legal: privacy policy and terms are required for every app and language (checked by --check).
@@ -45,7 +47,8 @@ const apps = [
     name: 'Ojito',
     theme: 't-ojito',
     color: '#1f56d6',
-    bg: ['#f5f8ff', '#070d1f'],
+    bg: '#eef3ff',
+    fonts: ['instrument-serif-latin-italic'],
     icon: 'assets/img/ojito/icon.png',
     paths: { es: 'ojito/', en: 'ojito/en/' },
     status: 'test',
@@ -60,6 +63,11 @@ const apps = [
     shots: (lang) =>
       ['01-en-el-mercado', '05-alergias', '03-cuidado-personal', '06-otras-opciones'].map((f) => `assets/img/ojito/${lang}-${f}.jpg`),
     decor: 'scan',
+    // Real screens from the app, shown in a phone frame. The first is the hero's default; the
+    // hero tabs (tabs in each language) switch between them. feature illustrates the first benefit.
+    screenSize: [600, 1300],
+    screens: (lang) => ['01-gancho', '03-crema', '05-mani'].map((f) => `assets/img/ojito/screens/${lang}-${f}.webp`),
+    feature: (lang) => `assets/img/ojito/screens/${lang}-08-familia.webp`,
     es: {
       category: 'Escáner de etiquetas para familias',
       for: 'Para mamás, papás y familias en Colombia',
@@ -72,6 +80,20 @@ const apps = [
       pitch: 'Escanea un producto y descubre si es bueno para ti y para tu bebé.',
       highlights: ['Bueno, Regular o Evítalo en segundos', 'Alertas de alergias y cuidados de tu familia', 'Sin cuenta y sin marcas pagando'],
       floats: [['Bueno', 'var(--good)'], ['Regular', 'var(--fair)'], ['Evítalo', 'var(--avoid)']],
+      tabs: [
+        ['Galletas de avena', 'good', 'Ojito dice Bueno, 70 de 100, para unas galletas de avena, y para tu bebé, todavía no: trae azúcar añadida.'],
+        ['Crema humectante', 'good', 'Ojito dice Bueno, 94 de 100, para una crema humectante.'],
+        ['Producto con maní', 'avoid', 'Ojito avisa "Cuidado: tiene maní", por lo que marcaste para ti.'],
+      ],
+      featureAlt: 'La pantalla Mi familia de Ojito: un bebé de 8 meses, sin nombres ni fotos de niños.',
+      ask: {
+        chip: '¿Se lo doy a mi bebé?',
+        q: '¿Estas galletas de avena se las puedo dar a mi bebé?',
+        verdict: 'Bueno para ti · 70 de 100',
+        note: 'Tu bebé: todavía no. Trae azúcar añadida.',
+        tone: 'good',
+      },
+      navCta: 'Quiero probarla',
       shotAlt: ['Resultado Bueno para unas galletas, con la línea del bebé', 'Alerta de maní', 'Producto de cuidado personal', 'Otras opciones con mejor puntaje'],
       benefits: [
         ['family', 'Una respuesta para cada quien', 'Lo que te sirve a ti no siempre le sirve a tu bebé. Ojito te da tu resultado y, debajo, el de cada persona de tu casa según su edad.'],
@@ -116,6 +138,20 @@ const apps = [
       pitch: 'Scan a product and see if it’s good for you and your baby.',
       highlights: ['Good, Fair or Avoid in seconds', 'Alerts for your family’s allergies and conditions', 'No account, no paid placement'],
       floats: [['Good', 'var(--good)'], ['Fair', 'var(--fair)'], ['Avoid', 'var(--avoid)']],
+      tabs: [
+        ['Oat cookies', 'good', 'Ojito says Good, 70 out of 100, for oat cookies, and for your baby, not yet: they contain added sugar.'],
+        ['Moisturizing cream', 'good', 'Ojito says Good, 94 out of 100, for a moisturizing cream.'],
+        ['A product with peanuts', 'avoid', 'Ojito warns "Careful: contains peanuts", based on what you marked for yourself.'],
+      ],
+      featureAlt: 'Ojito’s My family screen: a baby of 8 months, with no names or photos of children.',
+      ask: {
+        chip: 'OK for my baby?',
+        q: 'Can my baby have these oat cookies?',
+        verdict: 'Good for you · 70 out of 100',
+        note: 'Your baby: not yet. Contains added sugar.',
+        tone: 'good',
+      },
+      navCta: 'Try it',
       shotAlt: ['A Good result for some cookies, with the line for the baby', 'A peanut alert', 'A personal-care product', 'Other options with a better score'],
       benefits: [
         ['family', 'An answer for everyone', 'What works for you may not work for your baby. Ojito gives you your result and, below it, one for each person in your home by age.'],
@@ -151,7 +187,8 @@ const apps = [
     name: 'Resume Roast',
     theme: 't-rr',
     color: '#ff6a2b',
-    bg: ['#fbf6f1', '#120d0b'],
+    bg: '#120b08',
+    fonts: ['anton-latin'],
     icon: 'assets/img/resume-roast/icon.png',
     paths: { en: 'resume-roast/', es: 'resume-roast/es/' },
     status: 'live',
@@ -165,6 +202,9 @@ const apps = [
     shotSize: [540, 960],
     shots: (lang) => ['01-result', '02-match', '04-rewrite', '06-share'].map((f) => `assets/img/resume-roast/${lang}-${f}.jpg`),
     decor: 'embers',
+    screenSize: [600, 1299],
+    screens: (lang) => ['result-dark', 'match', 'flags', 'rewrite'].map((f) => `assets/img/resume-roast/screens/${lang}-${f}.webp`),
+    feature: (lang) => `assets/img/resume-roast/screens/${lang}-flags.webp`,
     en: {
       category: 'AI resume review',
       for: 'For job seekers who want the truth about their resume',
@@ -177,6 +217,22 @@ const apps = [
       pitch: 'The AI that tells you what recruiters only think.',
       highlights: ['A score out of 100 and the red flags', 'Match it to a real job and rewrite it', 'Export a PDF that applicant tracking systems read'],
       floats: [['Score out of 100'], ['Red flags'], ['ATS-ready PDF']],
+      tabs: [
+        ['Verdict', 'fair', 'Resume Roast gives a resume 64 out of 100, with the verdict: “Real launch experience, hiding behind ‘responsible for’.”'],
+        ['Job match', 'good', 'Match with the job: 72%, 3 of 5 must-haves, with what lands and what is missing.'],
+        ['Red flags', 'avoid', 'Red flags: no measurable results anywhere in four years of work, and no LinkedIn or portfolio link.'],
+        ['Rewrite', 'good', 'The resume rewritten for the job, ready to copy or export as a PDF.'],
+      ],
+      featureAlt: 'The red flags Resume Roast found in a resume, with the button to rewrite it.',
+      ask: {
+        chip: 'Will my resume pass?',
+        q: 'Will my resume get past the filters?',
+        verdict: '64 out of 100',
+        note: '“Real launch experience, hiding behind ‘responsible for’.”',
+        tone: 'fair',
+      },
+      navCta: 'Get the app',
+      ticker: ['Unfiltered', 'Score out of 100', 'Red flags', 'Job match', 'ATS-ready PDF', 'No subscription'],
       shotAlt: ['An honest score with the verdict', 'How well the resume matches a job posting', 'The resume rewritten for the job', 'A share card without personal details'],
       benefits: [
         ['gauge', 'An honest score', 'A score out of 100 with a section-by-section breakdown, plus the red flags recruiters spot in seconds.'],
@@ -214,6 +270,22 @@ const apps = [
       pitch: 'La IA que te dice lo que los reclutadores solo piensan.',
       highlights: ['Puntaje sobre 100 y las red flags', 'Compáralo con una vacante real y reescríbelo', 'Exporta un PDF que leen los filtros (ATS)'],
       floats: [['Puntaje sobre 100'], ['Red flags'], ['PDF para ATS']],
+      tabs: [
+        ['Veredicto', 'fair', 'Resume Roast le da 64 de 100 a un CV, con el veredicto: “Experiencia real de lanzamiento, escondida tras un ‘encargada de’.”'],
+        ['Match', 'good', 'Match con la oferta: 72 %, 3 de 5 requisitos, con lo que encaja y lo que falta.'],
+        ['Red flags', 'avoid', 'Señales de alerta: ningún resultado medible en cuatro años de trabajo, y sin enlace a LinkedIn ni portafolio.'],
+        ['Reescritura', 'good', 'El CV reescrito para la vacante, listo para copiar o exportar en PDF.'],
+      ],
+      featureAlt: 'Las señales de alerta que Resume Roast encontró en un CV, con el botón para reescribirlo.',
+      ask: {
+        chip: '¿Mi CV pasa el filtro?',
+        q: '¿Mi CV sí pasa el filtro de la vacante?',
+        verdict: '64 de 100',
+        note: '“Experiencia real de lanzamiento, escondida tras un ‘encargada de’.”',
+        tone: 'fair',
+      },
+      navCta: 'Descargar',
+      ticker: ['Sin filtros', 'Puntaje sobre 100', 'Red flags', 'Match con la vacante', 'PDF para ATS', 'Sin suscripción'],
       shotAlt: ['Un puntaje honesto con el veredicto', 'Qué tanto encaja el CV con la vacante', 'El CV reescrito para la vacante', 'Una tarjeta para compartir sin datos personales'],
       benefits: [
         ['gauge', 'Un puntaje honesto', 'Puntaje sobre 100 con detalle por sección, y las red flags que un reclutador ve en segundos.'],
@@ -245,7 +317,8 @@ const apps = [
     name: 'Roast Interview',
     theme: 't-ri',
     color: '#3b7bff',
-    bg: ['#f6f7fb', '#080b14'],
+    bg: '#060a16',
+    fonts: [],
     icon: 'assets/img/roast-interview/icon.png',
     paths: { en: 'roast-interview/', es: 'roast-interview/es/' },
     status: 'soon',
@@ -263,6 +336,13 @@ const apps = [
         : ['phase1-es-dark-19-report-top', 'phase1-es-dark-12-room-second-question', 'phase1-es-dark-22-report-end']
       ).map((f) => `assets/img/roast-interview/${f}.jpg`),
     decor: 'wave',
+    screenSize: [552, 1200],
+    screens: (lang) =>
+      (lang === 'en'
+        ? ['en-16-room-last-question', 'en-19-report-top', 'en-21-report-locked']
+        : ['es-dark-12-room-second-question', 'es-dark-19-report-top', 'es-dark-22-report-end']
+      ).map((f) => `assets/img/roast-interview/screens/${f}.webp`),
+    feature: (lang) => `assets/img/roast-interview/screens/${lang === 'en' ? 'en-09-room-question' : 'es-dark-16-room-last-question'}.webp`,
     en: {
       category: 'AI interview practice',
       for: 'For candidates getting ready for a job interview',
@@ -275,6 +355,20 @@ const apps = [
       pitch: 'Rehearse the interview before it counts.',
       highlights: ['Questions that come from your resume', 'Answer by typing or out loud', 'A score and a verdict for that role'],
       floats: [['Answer out loud', 'wave'], ['Score and verdict'], ['Questions from your resume']],
+      tabs: [
+        ['The question', 'ask', 'The interviewer asks: “Your CV says you cut p95 latency by 40%. Measured where, against what baseline, and how do you know it wasn’t the new hardware?”'],
+        ['Your verdict', 'fair', 'Your verdict: 64 out of 100, hireable with reservations, with the level you claimed and your real level.'],
+        ['In one line', 'good', 'The report sums up the interview in one line: “Knows more than they sell, and sells more than they measured.”'],
+      ],
+      featureAlt: 'The interviewer opens: “Hi, I’m Valeria and I’ll be your interviewer today. To start: walk me through your last two years as a backend engineer, in two minutes.”',
+      ask: {
+        chip: 'Am I interview-ready?',
+        q: 'Am I ready for my interview?',
+        verdict: 'First, a question',
+        note: '“Your CV says you cut p95 latency by 40%. Measured where, against what baseline?”',
+        tone: 'ask',
+      },
+      navCta: 'Notify me',
       shotAlt: ['The report with the score and the verdict', 'The interviewer asks the first question'],
       benefits: [
         ['spark', 'Questions from your resume', 'Not a generic list: it spots inconsistencies and asks about them, like a real interviewer.'],
@@ -311,6 +405,20 @@ const apps = [
       pitch: 'Ensaya la entrevista antes de que cuente.',
       highlights: ['Preguntas que salen de tu CV', 'Responde por escrito o en voz alta', 'Un puntaje y un veredicto para ese cargo'],
       floats: [['Responde en voz alta', 'wave'], ['Puntaje y veredicto'], ['Preguntas desde tu CV']],
+      tabs: [
+        ['La pregunta', 'ask', 'La entrevistadora pregunta: “Dices que lideraste la migración a Kubernetes. ¿Qué se rompió exactamente la primera semana y qué cambiaste por eso?”'],
+        ['Tu veredicto', 'fair', 'Tu veredicto: 64 de 100, contratable con reservas, con el nivel que declaraste y tu nivel real.'],
+        ['En una frase', 'good', 'El informe resume la entrevista en una frase: “Sabe más de lo que vende… y vende más de lo que midió.”'],
+      ],
+      featureAlt: 'La entrevistadora pregunta por un dato del CV: “Tu CV dice que bajaste la latencia p95 un 40 %. ¿Medida dónde, contra qué línea base, y cómo sabes que no fue el hardware nuevo?”',
+      ask: {
+        chip: '¿Me irá bien en la entrevista?',
+        q: '¿Me va a ir bien en la entrevista?',
+        verdict: 'Antes, una pregunta',
+        note: '“Dices que lideraste la migración a Kubernetes. ¿Qué se rompió exactamente la primera semana?”',
+        tone: 'ask',
+      },
+      navCta: 'Avísame',
       shotAlt: ['El informe con el puntaje y el veredicto', 'La entrevistadora hace una pregunta sobre tu CV', 'El final del informe'],
       benefits: [
         ['spark', 'Preguntas que salen de tu CV', 'No es una lista genérica: detecta inconsistencias y te pregunta por ellas, como en una entrevista real.'],
@@ -356,6 +464,7 @@ const ui = {
     support: 'Soporte',
     contact: 'Contacto',
     switchTo: 'English',
+    switchShort: 'EN',
     skip: 'Saltar al contenido',
     screenshotOf: 'Pantalla de',
     see: 'Ver',
@@ -371,6 +480,18 @@ const ui = {
     notFound: 'Esta página no existe.',
     backHome: 'Volver al inicio',
     faqPrivacy: 'Lee la política de privacidad',
+    seeExample: 'Mira un ejemplo',
+    askTitle: 'Pregúntale a nuestras apps',
+    askLegend: 'Elige una pregunta',
+    askNote: 'Respuestas de ejemplo, tomadas de las apps',
+    question: 'Pregunta',
+    example: 'Ejemplo real',
+    swipe: 'Desliza para ver más pantallas',
+    shotsKicker: 'Capturas de la app',
+    faqKicker: 'Dudas',
+    // Each app page's own menu: links to its sections.
+    sections: { benefits: ['beneficios', 'Beneficios'], how: ['como-funciona', 'Cómo funciona'], shots: ['capturas', 'Capturas'], faq: ['preguntas', 'Preguntas'] },
+    appBy: (name) => `${name} es una app de Tutos App, estudio de apps con IA de Medellín, Colombia.`,
   },
   en: {
     apps: 'Apps',
@@ -389,6 +510,7 @@ const ui = {
     support: 'Support',
     contact: 'Contact',
     switchTo: 'Español',
+    switchShort: 'ES',
     skip: 'Skip to content',
     screenshotOf: 'Screen from',
     see: 'See',
@@ -404,6 +526,17 @@ const ui = {
     notFound: 'This page does not exist.',
     backHome: 'Back to home',
     faqPrivacy: 'Read the privacy policy',
+    seeExample: 'See an example',
+    askTitle: 'Ask our apps',
+    askLegend: 'Pick a question',
+    askNote: 'Sample answers, taken from the apps',
+    question: 'Question',
+    example: 'Real example',
+    swipe: 'Swipe to see more screens',
+    shotsKicker: 'App screenshots',
+    faqKicker: 'Questions',
+    sections: { benefits: ['benefits', 'Benefits'], how: ['how-it-works', 'How it works'], shots: ['screens', 'Screens'], faq: ['faq', 'FAQ'] },
+    appBy: (name) => `${name} is an app by Tutos App, an AI app studio from Medellín, Colombia.`,
   },
 };
 
@@ -418,11 +551,11 @@ const appCount = (lang) => {
 };
 const appNames = (lang) => new Intl.ListFormat(lang, { type: 'conjunction' }).format(apps.map((a) => a.name));
 
-// Home page copy. The hero states the studio's mission; each app speaks for itself in its own
-// card (category, pitch and highlights), so the hero never has to summarize every app.
+// Home page copy. The hero states the studio's mission and lets each app answer one real
+// question in the demo card, so the hero never has to summarize every app.
 const home = {
   paths: { es: '', en: 'en/' },
-  bg: ['#f7f6fb', '#0b0a12'],
+  bg: '#f6f6f8',
   es: {
     title: 'Tutos App: apps con IA para las decisiones de cada día',
     description: `Tutos App es un estudio de Medellín que crea apps con inteligencia artificial para las decisiones de cada día: ${appNames('es')}.`,
@@ -445,6 +578,19 @@ const home = {
       ['lock', 'Sin registro para empezar', 'Abres la app y la usas, sin crear una cuenta. Lo que se paga se dice claro, antes de pagar.'],
       ['pin', 'Hechas en Colombia', 'Diseñamos en Medellín pensando en cómo se compra, se busca trabajo y se habla aquí, en español y en inglés.'],
     ],
+    // Small illustrations for the principles, taken from what the apps really show.
+    visuals: {
+      eye: {
+        label: 'Ejemplo de Ojito',
+        title: 'Por qué este puntaje',
+        rows: [['Azúcar, sal y grasas en exceso', 34, 55], ['Procesamiento: ultraprocesado', 0, 25], ['Aditivos: pocos', 17, 20]],
+        of: 'de',
+      },
+      shield: { label: 'Una red flag de Resume Roast', quote: '“Ningún resultado medible en cuatro años de trabajo.”' },
+      lock: { yes: ['Abres la app', 'La usas'], no: 'Crear una cuenta' },
+      pin: { place: 'Medellín, Colombia', coords: '6.24° N · 75.58° W', langs: ['Español', 'English'] },
+    },
+    contactEyebrow: 'Hablemos',
     nextTitle: `${appCount('es')} hoy. *Vienen más.*`,
     nextLead:
       'Cada app nace de una pregunta real del día a día. ¿Tienes una idea, quieres probar nuestras apps antes que nadie o trabajar con nosotros? Escríbenos.',
@@ -472,6 +618,18 @@ const home = {
       ['lock', 'No sign-up to start', 'Open the app and use it, no account needed. What costs money is said clearly, before you pay.'],
       ['pin', 'Made in Colombia', 'We design in Medellín around how people here shop, look for work and talk, in Spanish and English.'],
     ],
+    visuals: {
+      eye: {
+        label: 'Example from Ojito',
+        title: 'Why this score',
+        rows: [['Sugar, salt and fats in excess', 34, 55], ['Processing: ultra-processed', 0, 25], ['Additives: few', 17, 20]],
+        of: 'of',
+      },
+      shield: { label: 'A Resume Roast red flag', quote: '“No measurable results anywhere in four years of work.”' },
+      lock: { yes: ['Open the app', 'Use it'], no: 'Create an account' },
+      pin: { place: 'Medellín, Colombia', coords: '6.24° N · 75.58° W', langs: ['Español', 'English'] },
+    },
+    contactEyebrow: 'Let’s talk',
     nextTitle: `${appCount('en')} today. *More on the way.*`,
     nextLead:
       'Each app starts from a real everyday question. Have an idea, want to try our apps before anyone else, or want to work with us? Email us.',
@@ -483,6 +641,16 @@ const home = {
 const langs = ['es', 'en'];
 
 const rel = (from, to) => '../'.repeat(from.split('/').filter(Boolean).length) + to || './';
+
+// The stylesheet URL carries a hash of its content. A browser or CDN that still holds an older
+// style.css then never pairs it with newer pages, which would leave them half unstyled.
+const CSS_PATH = 'assets/style.css';
+const CSS_VERSION = createHash('sha256').update(readFileSync(join(ROOT, CSS_PATH))).digest('hex').slice(0, 10);
+const stylesheet = (path) => `${rel(path, CSS_PATH)}?v=${CSS_VERSION}`;
+
+// The interactive demos (the home question card and each app's hero) switch panes with CSS only,
+// one radio per pane. style.css handles up to this many panes per demo.
+const MAX_PANES = 8;
 
 const svg = (d, size = 22, stroke = 1.8) =>
   `<svg aria-hidden="true" viewBox="0 0 24 24" width="${size}" height="${size}" fill="none" stroke="currentColor" stroke-width="${stroke}" stroke-linecap="round" stroke-linejoin="round">${d}</svg>`;
@@ -512,10 +680,12 @@ const icons = {
   check: svg('<path d="m5 12.5 4.5 4.5L19 7.5"/>', 18, 2.2),
   pause: svg('<path d="M9 5v14M15 5v14"/>', 14, 2.4),
   playSmall: svg('<path d="M7 4.5v15l12-7.5z"/>', 14),
+  plus: svg('<path d="M12 5v14M5 12h14"/>', 18, 2),
 };
 
 const wave = '<span class="wave" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>';
-const aurora = '<div class="aurora" aria-hidden="true"><span></span><span></span><span></span><span></span></div>';
+const pad = (n) => String(n).padStart(2, '0');
+const kicker = (n, label) => `<p class="kicker"><span class="num">${pad(n)}</span><span>${esc(label)}</span></p>`;
 
 // JSON-LD for search engines. "<" is escaped so the data can never close the script tag.
 const jsonLd = (data) => `<script type="application/ld+json">${JSON.stringify(data).replace(/</g, '\\u003c')}</script>`;
@@ -530,10 +700,13 @@ const organization = {
   address: { '@type': 'PostalAddress', addressLocality: 'Medellín', addressRegion: 'Antioquia', addressCountry: 'CO' },
 };
 
-function head({ lang, title, description, path, alternates, og, bg, ld }) {
+function head({ lang, title, description, path, alternates, og, bg, ld, fonts = [] }) {
   const url = SITE_URL + path;
   const alt = Object.entries(alternates)
     .map(([l, p]) => `<link rel="alternate" hreflang="${l}" href="${SITE_URL + p}">`)
+    .join('\n    ');
+  const preload = ['geist-latin-wght', ...fonts]
+    .map((f) => `<link rel="preload" href="${rel(path, `assets/fonts/${f}.woff2`)}" as="font" type="font/woff2" crossorigin>`)
     .join('\n    ');
   return `<!doctype html>
 <html lang="${lang}">
@@ -545,9 +718,8 @@ function head({ lang, title, description, path, alternates, og, bg, ld }) {
     <link rel="canonical" href="${url}">
     ${alt}
     <link rel="alternate" hreflang="x-default" href="${SITE_URL + Object.values(alternates)[0]}">
-    <meta name="color-scheme" content="light dark">
-    <meta name="theme-color" content="${bg[0]}" media="(prefers-color-scheme: light)">
-    <meta name="theme-color" content="${bg[1]}" media="(prefers-color-scheme: dark)">
+    <meta name="color-scheme" content="light">
+    <meta name="theme-color" content="${bg}">
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="Tutos App">
     <meta property="og:locale" content="${lang === 'es' ? 'es_CO' : 'en_US'}">
@@ -561,26 +733,36 @@ function head({ lang, title, description, path, alternates, og, bg, ld }) {
     <link rel="icon" href="${rel(path, 'favicon.svg')}" type="image/svg+xml">
     <link rel="icon" href="${rel(path, 'favicon.png')}" type="image/png" sizes="64x64">
     <link rel="apple-touch-icon" href="${rel(path, 'apple-touch-icon.png')}">
-    <link rel="preload" href="${rel(path, 'assets/fonts/geist-latin-wght.woff2')}" as="font" type="font/woff2" crossorigin>
-    <link rel="stylesheet" href="${rel(path, 'assets/style.css')}">
+    ${preload}
+    <link rel="stylesheet" href="${stylesheet(path)}">
     ${jsonLd({ '@context': 'https://schema.org', ...ld })}
   </head>`;
 }
 
-function nav({ lang, path, links, other }) {
+// The floating pill navigation: brand, page links, language switch and the page's main action.
+// An app page stands on its own: its brand and its own sections, with only a small Tutos App
+// logo that leads back to the home page.
+function nav({ lang, path, theme, items, other, cta, app }) {
   const t = ui[lang];
-  const switcher = `<a class="lang" href="${rel(path, other.path)}" hreflang="${other.lang}" lang="${other.lang}">${t.switchTo}</a>`;
+  const brand = app
+    ? `<a class="home-link" href="${rel(path, home.paths[lang])}"><img src="${rel(path, 'favicon.svg')}" alt="Tutos App" width="24" height="24"></a>
+        <span class="nav-sep" aria-hidden="true"></span>
+        <a class="brand" href="${rel(path, app.paths[lang])}" aria-current="page"><img src="${rel(path, app.icon)}" alt="" width="28" height="28"><span>${esc(app.name)}</span></a>`
+    : `<a class="brand" href="${rel(path, home.paths[lang])}"><img src="${rel(path, 'favicon.svg')}" alt="" width="28" height="28"><span>Tutos App</span></a>`;
   return `
-  <body class="${links.theme}">
+  <body class="${theme}">
     <a class="skip" href="#main">${t.skip}</a>
     <header class="nav">
-      <a class="brand" href="${rel(path, home.paths[lang])}"><img src="${rel(path, 'favicon.svg')}" alt="" width="30" height="30"> Tutos App</a>
-      <nav aria-label="${t.menu}">
-        <ul class="nav-links">${links.items
-          .map(([href, label, current]) => `<li><a href="${href}"${current ? ' aria-current="page"' : ''}>${esc(label)}</a></li>`)
-          .join('')}</ul>
-      </nav>
-      ${switcher}
+      <div class="nav-bar">
+        ${brand}
+        <nav class="nav-menu" aria-label="${t.menu}">
+          <ul class="nav-links">${items
+            .map(([href, label, current]) => `<li><a href="${href}"${current ? ' aria-current="page"' : ''}>${esc(label)}</a></li>`)
+            .join('')}</ul>
+        </nav>
+        <a class="lang" href="${rel(path, other.path)}" hreflang="${other.lang}" lang="${other.lang}"><span class="lang-long">${t.switchTo}</span><span class="lang-short" aria-hidden="true">${t.switchShort}</span></a>
+        <a class="nav-cta" href="${cta.href}">${esc(cta.label)}</a>
+      </div>
     </header>`;
 }
 
@@ -595,22 +777,23 @@ function legalLinks(app, lang) {
 function footer({ lang, path, only }) {
   const t = ui[lang];
   const h = home[lang];
-  const appLinks = apps.map((a) => `<li><a href="${rel(path, a.paths[lang])}">${esc(a.name)}</a></li>`).join('');
+  // The home footer lists every app; an app page's footer is about that app alone.
+  const appLinks = only
+    ? ''
+    : `<nav aria-label="${t.allApps}"><h2>${t.ourApps}</h2><ul>${apps.map((a) => `<li><a href="${rel(path, a.paths[lang])}">${esc(a.name)}</a></li>`).join('')}</ul></nav>`;
   const legal = only
     ? `<ul>${legalLinks(only, lang)}</ul>`
-    : apps
-        .map((a) => `<div class="legal-group"><b>${esc(a.name)}</b><ul>${legalLinks(a, lang)}</ul></div>`)
-        .join('');
+    : apps.map((a) => `<div class="legal-group"><b>${esc(a.name)}</b><ul>${legalLinks(a, lang)}</ul></div>`).join('');
   return `
     <footer class="foot">
       <div class="wrap">
-        <div class="foot-grid">
+        <div class="foot-grid${only ? ' three' : ''}">
           <div class="about">
-            <a class="brand" href="${rel(path, home.paths[lang])}"><img src="${rel(path, 'favicon.svg')}" alt="" width="30" height="30"> Tutos App</a>
-            <p>${esc(h.about)}</p>
+            <a class="brand" href="${rel(path, home.paths[lang])}"><img src="${rel(path, 'favicon.svg')}" alt="" width="28" height="28"><span>Tutos App</span></a>
+            <p>${esc(only ? t.appBy(only.name) : h.about)}</p>
             <p>${t.noCookies}</p>
           </div>
-          <nav aria-label="${t.allApps}"><h2>${t.ourApps}</h2><ul>${appLinks}</ul></nav>
+          ${appLinks}
           <nav aria-label="${only ? `${t.legal}: ${esc(only.name)}` : t.legal}"><h2>${only ? `${t.legal} · ${esc(only.name)}` : t.legal}</h2>${legal}</nav>
           <div><h2>${t.contact}</h2><ul><li><a href="mailto:${EMAIL}">${EMAIL}</a></li><li><p>${COMPANY.city}</p></li></ul></div>
         </div>
@@ -619,6 +802,7 @@ function footer({ lang, path, only }) {
           <p>${t.brandOf}</p>
         </div>
       </div>
+      <p class="wordmark" aria-hidden="true">Tutos App</p>
     </footer>
   </body>
 </html>
@@ -640,7 +824,7 @@ function availability(app, lang, extra = '') {
     : '';
   const names = new Intl.ListFormat(lang, { type: 'conjunction' }).format(soon.map((s) => s.inLine));
   const line = soon.length
-    ? `<p class="soon-line">${soon.map((s) => s.icon).join('')}<span>${t.soonOn} ${names}${extra ? ` · ${extra}` : ''}</span></p>`
+    ? `<p class="soon-line"><span class="soon-icons">${soon.map((s) => s.icon).join('')}</span><span>${t.soonOn} ${names}${extra ? ` · ${extra}` : ''}</span></p>`
     : '';
   return badges + line;
 }
@@ -649,24 +833,70 @@ const hasLiveStore = (app) => Object.values(app.stores).some((s) => s.status ===
 
 const statusChip = (app, lang) => `<span class="status ${app.status}">${ui[lang].status[app.status]}</span>`;
 
-function showcase(app, lang, path) {
+// The page's main action: the store when the app is live somewhere, otherwise the email call to action.
+function mainAction(app, lang) {
   const p = app[lang];
-  const [w, h] = app.shotSize;
-  const shots = app.shots(lang);
-  const alt = (i) => `${ui[lang].screenshotOf} ${esc(app.name)}: ${esc(p.shotAlt[i])}`;
-  const floats = p.floats
+  if (p.cta) return { href: p.cta.href, label: p.navCta };
+  if (hasLiveStore(app)) return { href: Object.values(app.stores).find((s) => s.status === 'live').url, label: p.navCta };
+  return { href: p.notify, label: p.navCta };
+}
+
+// A phone frame around real screens from the app. With several screens, they are the panes of a
+// demo: one shows at a time and the tabs next to it switch them.
+function phone(app, path, screens, { eager = false } = {}) {
+  const [w, h] = app.screenSize;
+  return `<div class="phone"><div class="screen panes">${screens
+    .map(
+      (s, i) =>
+        `<img src="${rel(path, s.src)}" alt="${esc(s.alt)}" width="${w}" height="${h}"${eager && i === 0 ? ' fetchpriority="high"' : ' loading="lazy"'} decoding="async">`
+    )
+    .join('')}</div></div>`;
+}
+
+// Radio buttons styled as chips. The selected one shows the matching pane (see .switch in style.css).
+function tabs(name, legend, options) {
+  return `<fieldset class="tabs"><legend class="sr-only">${esc(legend)}</legend>${options
+    .map(
+      (o, i) =>
+        `<input type="radio" name="${name}" id="${name}-${i + 1}"${i === 0 ? ' checked' : ''}><label for="${name}-${i + 1}">${o.dot ? `<span class="dot ${o.dot}" aria-hidden="true"></span>` : ''}${esc(o.label)}</label>`
+    )
+    .join('')}</fieldset>`;
+}
+
+function stickers(app, lang) {
+  return app[lang].floats
     .map(([label, sw], i) => {
       const lead = sw === 'wave' ? wave : `<span class="swatch"${sw ? ` style="--sw: ${sw}"` : ''}></span>`;
-      return `<span class="float f${i + 1}" aria-hidden="true">${lead}${esc(label)}</span>`;
+      return `<span class="sticker s${i + 1}" aria-hidden="true">${lead}${esc(label)}</span>`;
     })
     .join('');
-  const embers = app.decor === 'embers' ? '<span class="embers" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>' : '';
-  return `<div class="showcase${app.look === 'phone' ? ' phone' : ''}">
-          ${embers}
-          <span class="shot back"><img src="${rel(path, shots[1])}" alt="${alt(1)}" width="${w}" height="${h}" fetchpriority="low"></span>
-          <span class="shot front${app.decor === 'scan' ? ' scan' : ''}"><img src="${rel(path, shots[0])}" alt="${alt(0)}" width="${w}" height="${h}" fetchpriority="high"></span>
-          ${floats}
+}
+
+const decor = {
+  scan: '<span class="viewfinder" aria-hidden="true"><i></i><i></i><i></i><i></i></span>',
+  embers: '<span class="embers" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>',
+  wave: '<span class="rings" aria-hidden="true"><i></i><i></i><i></i><i></i></span>',
+};
+
+const screensFor = (app, lang) =>
+  app.screens(lang).map((src, i) => ({ src, alt: `${ui[lang].screenshotOf} ${app.name}: ${app[lang].tabs[i][2]}` }));
+
+function heroDemo(app, lang, path) {
+  const p = app[lang];
+  return `<div class="hero-demo switch">
+          <div class="stage">
+            ${decor[app.decor] || ''}
+            ${phone(app, path, screensFor(app, lang), { eager: true })}
+            ${stickers(app, lang)}
+          </div>
+          ${tabs(`${app.id}-demo`, ui[lang].seeExample, p.tabs.map(([label, dot]) => ({ label, dot })))}
         </div>`;
+}
+
+// A scrolling band of keywords under the hero. Decorative: every word is also in the page copy.
+function ticker(words) {
+  const run = words.map((w) => `<span>${esc(w)}</span>`).join('<i></i>');
+  return `<div class="ticker-wrap" aria-hidden="true"><div class="ticker"><div class="ticker-track"><p>${run}<i></i></p><p>${run}<i></i></p></div></div></div>`;
 }
 
 function appPage(app, lang) {
@@ -689,11 +919,13 @@ function appPage(app, lang) {
       : `<a class="btn primary" href="${p.notify}">${icons.mail}${esc(p.notifyLabel || t.notify)}</a>`;
   const action = primary ? `<div class="actions">${primary}</div>` : '';
   const offer = live ? availability(app, lang, notifyLink) + action : action + availability(app, lang);
-  const mailNote = primary ? `<p class="note">${t.mailFallback} <a href="mailto:${EMAIL}">${EMAIL}</a>.</p>` : '';
-  const notes = [p.cta?.note, p.disclaimer].filter(Boolean).map((n) => `<p class="note">${esc(n)}</p>`).join('\n            ');
+  const fine = [p.cta?.note, p.disclaimer].filter(Boolean).map((n) => `<p>${esc(n)}</p>`);
+  if (primary) fine.push(`<p>${t.mailFallback} <a href="mailto:${EMAIL}">${EMAIL}</a>.</p>`);
   const share = `<a class="share-link" href="${whatsapp(`${p.share} ${url}`)}">${icons.whatsapp}${t.share}</a>`;
 
-  const items = apps.map((a) => [rel(path, a.paths[lang]), a.name, a.id === app.id]);
+  const sec = t.sections;
+  const items = [sec.benefits, sec.how, sec.shots, sec.faq].map(([id, label]) => [`#${id}`, label]);
+  const featureShot = [{ src: app.feature(lang), alt: `${t.screenshotOf} ${app.name}: ${p.featureAlt}` }];
 
   return (
     head({
@@ -704,6 +936,7 @@ function appPage(app, lang) {
       alternates: app.paths,
       og: `${app.id}-${lang}`,
       bg: app.bg,
+      fonts: app.fonts,
       ld: {
         '@type': 'MobileApplication',
         name: app.name,
@@ -717,87 +950,100 @@ function appPage(app, lang) {
         ...(app.stores.play.status === 'live' ? { installUrl: app.stores.play.url } : {}),
       },
     }) +
-    nav({ lang, path, links: { theme: app.theme, items }, other: { lang: otherLang, path: app.paths[otherLang] } }) +
+    nav({
+      lang,
+      path,
+      theme: `page-app ${app.theme}`,
+      items,
+      other: { lang: otherLang, path: app.paths[otherLang] },
+      cta: mainAction(app, lang),
+      app,
+    }) +
     `
     <main id="main">
-      <section class="hero">
-        ${aurora}
+      <section class="app-hero">
+        <div class="hero-bg" aria-hidden="true"></div>
         <div class="wrap hero-grid">
           <div class="hero-copy">
-            <p class="app-mark"><img class="app-icon" src="${rel(path, app.icon)}" alt="" width="52" height="52"> ${esc(app.name)} ${statusChip(app, lang)}</p>
+            <p class="app-mark"><img class="app-icon" src="${rel(path, app.icon)}" alt="" width="56" height="56"><span>${esc(app.name)}</span>${statusChip(app, lang)}</p>
             <p class="for-line">${esc(p.for)}</p>
             <h1>${rich(p.headline)}</h1>
             <p class="lead">${esc(p.lead)}</p>
             ${offer}
-            ${notes}
-            ${mailNote}
+            <div class="fine">${fine.join('')}</div>
             ${share}
           </div>
-          ${showcase(app, lang, path)}
+          ${heroDemo(app, lang, path)}
         </div>
       </section>
+      ${p.ticker ? ticker(p.ticker) : ''}
 
-      <section class="section wrap" aria-labelledby="benefits-h">
+      <section class="section wrap" id="${sec.benefits[0]}" aria-labelledby="benefits-h">
         <div class="section-head reveal">
-          <p class="eyebrow"><span class="dot"></span>${esc(app.name)}</p>
+          ${kicker(1, app.name)}
           <h2 id="benefits-h">${t.benefits}</h2>
         </div>
-        <ul class="cards four two-up">${p.benefits
-          .map(
-            ([g, b, d]) => `
-          <li class="card reveal"><span class="glyph">${svg(glyphs[g])}</span><h3>${esc(b)}</h3><p>${esc(d)}</p></li>`
+        <ul class="bento">${p.benefits
+          .map(([g, b, d], i) =>
+            i === 0
+              ? `
+          <li class="tile feature reveal"><div class="tile-copy"><span class="glyph">${svg(glyphs[g])}</span><h3>${esc(b)}</h3><p>${esc(d)}</p></div><div class="tile-shot">${phone(app, path, featureShot)}</div></li>`
+              : `
+          <li class="tile reveal"><span class="glyph">${svg(glyphs[g])}</span><h3>${esc(b)}</h3><p>${esc(d)}</p></li>`
           )
           .join('')}
         </ul>
       </section>
 
-      <section class="section wrap" aria-labelledby="how-h">
+      <section class="section wrap" id="${sec.how[0]}" aria-labelledby="how-h">
         <div class="section-head reveal">
-          <h2 id="how-h">${t.how}</h2>
+          ${kicker(2, t.how)}
+          <h2 id="how-h">${esc(p.pitch)}</h2>
         </div>
         <ol class="steps">${p.steps
           .map(
-            ([s, d]) => `
-          <li class="reveal"><h3>${esc(s)}</h3><p>${esc(d)}</p></li>`
+            ([s, d], i) => `
+          <li class="step reveal"><span class="step-num" aria-hidden="true">${pad(i + 1)}</span><h3>${esc(s)}</h3><p>${esc(d)}</p></li>`
           )
           .join('')}
         </ol>
       </section>
 
-      <section class="section" aria-labelledby="shots-h">
-        <div class="wrap">
-          <div class="section-head reveal">
-            <h2 id="shots-h">${t.screens}</h2>
-          </div>
+      <section class="section shots-section" id="${sec.shots[0]}" aria-labelledby="shots-h">
+        <div class="wrap section-head reveal">
+          ${kicker(3, t.shotsKicker)}
+          <h2 id="shots-h">${t.screens}</h2>
+          <p class="swipe">${t.swipe} ${icons.arrow}</p>
         </div>
-        <ul class="gallery" tabindex="0" aria-labelledby="shots-h">${app
+        <ul class="gallery${app.look === 'phone' ? ' framed' : ''}" tabindex="0" aria-labelledby="shots-h">${app
           .shots(lang)
           .map(
             (s, i) => `
-          <li><img src="${rel(path, s)}" alt="${t.screenshotOf} ${esc(app.name)}: ${esc(p.shotAlt[i])}" width="${w}" height="${h}" loading="lazy"></li>`
+          <li><img src="${rel(path, s)}" alt="${t.screenshotOf} ${esc(app.name)}: ${esc(p.shotAlt[i])}" width="${w}" height="${h}" loading="lazy" decoding="async"></li>`
           )
           .join('')}
         </ul>
       </section>
 
-      <section class="section wrap" aria-labelledby="faq-h">
-        <div class="section-head reveal">
+      <section class="section wrap faq-section" id="${sec.faq[0]}" aria-labelledby="faq-h">
+        <div class="faq-head reveal">
+          ${kicker(4, t.faqKicker)}
           <h2 id="faq-h">${t.faq}</h2>
+          <p><a href="${app.legal[lang].privacy}">${t.faqPrivacy}</a><br><a href="${app.legal[lang].terms}">${t.terms}</a><br><a href="mailto:${EMAIL}">${EMAIL}</a></p>
         </div>
         <div class="faq">${p.faq
           .map(
             ([q, a]) => `
-          <details class="reveal"><summary>${esc(q)}</summary><p>${esc(a)}</p></details>`
+          <details class="reveal"><summary>${esc(q)}<span class="plus" aria-hidden="true">${icons.plus}</span></summary><p>${esc(a)}</p></details>`
           )
           .join('')}
-          <p class="note"><a href="${app.legal[lang].privacy}">${t.faqPrivacy}</a> · <a href="${app.legal[lang].terms}">${t.terms}</a></p>
         </div>
       </section>
 
-      <section class="section wrap">
+      <section class="section wrap closing" aria-labelledby="closing-h">
         <div class="cta-band reveal">
-          <img class="app-icon" src="${rel(path, app.icon)}" alt="" width="72" height="72" loading="lazy">
-          <h2>${rich(p.closing[0])}</h2>
+          <img class="app-icon" src="${rel(path, app.icon)}" alt="" width="84" height="84" loading="lazy">
+          <h2 id="closing-h">${rich(p.closing[0])}</h2>
           <p class="lead">${esc(p.closing[1])}</p>
           ${offer}
         </div>
@@ -809,12 +1055,13 @@ function appPage(app, lang) {
 
 // The marquee repeats the app list until each half of the track holds at least 8 tiles, so it
 // fills wide screens whether there are 3 apps or 12. The first copy is the accessible one; the
-// repeats are hidden from assistive technology and from keyboard focus.
+// repeats are hidden from assistive technology and from keyboard focus. The icons stay muted so
+// the band never competes with the hero, and take their color on hover or focus.
 function marquee(lang, path) {
   const t = ui[lang];
   const copies = Math.max(1, Math.ceil(8 / apps.length));
   const tile = (a, hidden) =>
-    `<li${hidden ? ' aria-hidden="true"' : ''}><a class="tile" href="${rel(path, a.paths[lang])}" style="--tile: ${a.color}"${hidden ? ' tabindex="-1"' : ''}><img src="${rel(path, a.icon)}" alt="" width="76" height="76"><span><b>${esc(a.name)}</b><span>${esc(a[lang].category)}</span></span></a></li>`;
+    `<li${hidden ? ' aria-hidden="true"' : ''}><a class="tile" href="${rel(path, a.paths[lang])}"${hidden ? ' tabindex="-1"' : ''}><img src="${rel(path, a.icon)}" alt="" width="44" height="44"><span><b>${esc(a.name)}</b><span>${esc(a[lang].category)}</span></span></a></li>`;
   // The track holds two identical halves; the animation slides it by one half and starts over.
   const half = (repeat) => Array.from({ length: copies }, (_, c) => apps.map((a) => tile(a, repeat || c > 0))).flat();
   const first = half(false);
@@ -826,30 +1073,94 @@ function marquee(lang, path) {
             ${[...first, ...half(true)].join('\n            ')}
           </ul>
         </div>
-        <label class="pause-label" for="pause-marquee"><span class="sr-only">${t.pause}</span><span class="when-playing" aria-hidden="true">${icons.pause} ${t.pause}</span><span class="when-paused" aria-hidden="true">${icons.playSmall} ${t.resume}</span></label>
+        <label class="pause-label" for="pause-marquee"><span class="sr-only">${t.pause}</span><span class="when-playing" aria-hidden="true">${icons.pause}</span><span class="when-paused" aria-hidden="true">${icons.playSmall}</span></label>
       </section>`;
 }
 
-function homeBand(app, lang, path) {
+// The orb is drawn from the Tutos App violet and the apps' own colors, so it changes when an app
+// is added.
+const BRAND_VIOLET = '#6a45ff';
+const orbStyle = () => {
+  const colors = [BRAND_VIOLET, ...apps.map((a) => a.color), BRAND_VIOLET];
+  return `--orb: conic-gradient(from 90deg, ${colors.join(', ')}); --n: ${apps.length}`;
+};
+
+// The home hero's card: one question per app, answered with what that app really shows.
+function askDemo(lang, path) {
+  const t = ui[lang];
+  const list = apps.filter((a) => a[lang].ask);
+  const orbit = apps
+    .map((a, i) => `<img src="${rel(path, a.icon)}" alt="" width="40" height="40" style="--i: ${i}">`)
+    .join('');
+  const answers = list
+    .map((a) => {
+      const x = a[lang].ask;
+      return `<div class="answer" style="--app: ${a.color}">
+              <p class="bubble"><span class="sr-only">${t.question}: </span>${esc(x.q)}</p>
+              <span class="thinking" aria-hidden="true"><i></i><i></i><i></i></span>
+              <div class="reply">
+                <p class="reply-head"><img src="${rel(path, a.icon)}" alt="" width="28" height="28"><b>${esc(a.name)}</b><span class="tag">${t.example}</span></p>
+                <p class="verdict"><span class="dot ${x.tone}" aria-hidden="true"></span>${esc(x.verdict)}</p>
+                <p class="reply-note">${esc(x.note)}</p>
+                <a class="reply-link" href="${rel(path, a.paths[lang])}">${t.see} ${esc(a.name)} ${icons.arrow}</a>
+              </div>
+            </div>`;
+    })
+    .join('\n            ');
+  return `<div class="ask-card switch">
+          <div class="ask-top">
+            <div class="orb-wrap" aria-hidden="true" style="${orbStyle()}"><span class="orb"></span><span class="orbit">${orbit}</span></div>
+            <div class="ask-title">
+              <p>${t.askTitle}</p>
+              <p class="mono">${t.askNote}</p>
+            </div>
+          </div>
+          ${tabs('ask', t.askLegend, list.map((a) => ({ label: a[lang].ask.chip })))}
+          <div class="panes answers">
+            ${answers}
+          </div>
+        </div>`;
+}
+
+function appCard(app, lang, path, i) {
   const p = app[lang];
   const t = ui[lang];
-  const [w, h] = app.shotSize;
-  const shots = app.shots(lang);
+  const shot = [{ src: app.screens(lang)[0], alt: `${t.screenshotOf} ${app.name}: ${p.tabs[0][2]}` }];
   return `
-        <article class="app-band reveal" style="--band: ${app.color}" aria-labelledby="band-${app.id}">
-          <div class="copy">
-            <p class="app-mark"><img class="app-icon" src="${rel(path, app.icon)}" alt="" width="52" height="52" loading="lazy"> ${esc(app.name)} ${statusChip(app, lang)}</p>
-            <h3 id="band-${app.id}">${esc(p.pitch)}</h3>
-            <p class="for">${esc(p.for)}</p>
-            <ul class="ticks">${p.highlights.map((x) => `<li>${icons.check}<span>${esc(x)}</span></li>`).join('')}</ul>
-            ${availability(app, lang)}
-            <a class="more" href="${rel(path, app.paths[lang])}">${t.see} ${esc(app.name)} ${icons.arrow}</a>
-          </div>
-          <div class="band-shots">
-            <img src="${rel(path, shots[0])}" alt="${t.screenshotOf} ${esc(app.name)}: ${esc(p.shotAlt[0])}" width="${w}" height="${h}" loading="lazy">
-            <img src="${rel(path, shots[1])}" alt="${t.screenshotOf} ${esc(app.name)}: ${esc(p.shotAlt[1])}" width="${w}" height="${h}" loading="lazy">
-          </div>
-        </article>`;
+          <article class="app-card ${app.theme}" style="--i: ${i}" aria-labelledby="card-${app.id}">
+            <div class="card-copy">
+              <p class="app-mark"><img class="app-icon" src="${rel(path, app.icon)}" alt="" width="52" height="52" loading="lazy"><span>${esc(app.name)}</span>${statusChip(app, lang)}</p>
+              <p class="card-cat">${esc(p.category)}</p>
+              <h3 id="card-${app.id}">${esc(p.pitch)}</h3>
+              <p class="for">${esc(p.for)}</p>
+              <ul class="ticks">${p.highlights.map((x) => `<li>${icons.check}<span>${esc(x)}</span></li>`).join('')}</ul>
+              ${availability(app, lang)}
+              <a class="more" href="${rel(path, app.paths[lang])}">${t.see} ${esc(app.name)} ${icons.arrow}</a>
+            </div>
+            <div class="card-visual">
+              ${decor[app.decor] || ''}
+              ${phone(app, path, shot)}
+              ${stickers(app, lang)}
+            </div>
+          </article>`;
+}
+
+function principleVisual(g, v) {
+  if (!v) return '';
+  if (g === 'eye')
+    return `<div class="mini why" aria-hidden="true"><p class="mini-label">${esc(v.label)}</p><p class="mini-title">${esc(v.title)}</p>${v.rows
+      .map(
+        ([label, n, max]) =>
+          `<p class="row"><span>${esc(label)}</span><b>${n} ${v.of} ${max}</b><i style="--v: ${n / max}"></i></p>`
+      )
+      .join('')}</div>`;
+  if (g === 'shield')
+    return `<div class="mini flag" aria-hidden="true"><p class="mini-label">${esc(v.label)}</p><p class="quote">${esc(v.quote)}</p></div>`;
+  if (g === 'lock')
+    return `<div class="mini steps-mini" aria-hidden="true">${v.yes.map((x) => `<span class="yes">${icons.check}${esc(x)}</span>`).join('')}<span class="no">${esc(v.no)}</span></div>`;
+  if (g === 'pin')
+    return `<div class="mini place" aria-hidden="true"><p class="coords">${esc(v.coords)}</p><p class="mini-title">${esc(v.place)}</p><p>${v.langs.map((x) => `<span>${esc(x)}</span>`).join('')}</p></div>`;
+  return '';
 }
 
 function homePage(lang) {
@@ -869,19 +1180,29 @@ function homePage(lang) {
       bg: home.bg,
       ld: { ...organization, description: h.description },
     }) +
-    nav({ lang, path, links: { theme: 't-home', items: h.nav }, other: { lang: otherLang, path: home.paths[otherLang] } }) +
+    nav({
+      lang,
+      path,
+      theme: 't-home',
+      items: h.nav,
+      other: { lang: otherLang, path: home.paths[otherLang] },
+      cta: { href: `mailto:${EMAIL}`, label: h.write },
+    }) +
     `
     <main id="main">
-      <section class="hero home-hero">
-        ${aurora}
-        <div class="wrap hero-copy">
-          <p class="eyebrow"><span class="dot"></span>${esc(h.eyebrow)}</p>
-          <h1>${rich(h.headline)}</h1>
-          <p class="lead">${esc(h.lead)}</p>
-          <div class="actions">
-            <a class="btn primary" href="#apps">${esc(h.primary)} ${icons.arrow}</a>
-            <a class="btn ghost" href="mailto:${EMAIL}">${icons.mail}${esc(h.write)}</a>
+      <section class="home-hero">
+        <div class="hero-bg" aria-hidden="true"></div>
+        <div class="wrap hero-grid">
+          <div class="hero-copy">
+            <p class="eyebrow"><span class="pulse" aria-hidden="true"></span>${esc(h.eyebrow)}</p>
+            <h1>${rich(h.headline)}</h1>
+            <p class="lead">${esc(h.lead)}</p>
+            <div class="actions">
+              <a class="btn primary" href="#apps">${esc(h.primary)} ${icons.arrow}</a>
+              <a class="btn ghost" href="mailto:${EMAIL}">${icons.mail}${esc(h.write)}</a>
+            </div>
           </div>
+          ${askDemo(lang, path)}
         </div>
       </section>
 
@@ -889,35 +1210,39 @@ function homePage(lang) {
 
       <section class="section wrap" id="apps" aria-labelledby="apps-h">
         <div class="section-head reveal">
-          <p class="eyebrow"><span class="dot"></span>${esc(h.appsEyebrow)}</p>
+          ${kicker(1, h.appsEyebrow)}
           <h2 id="apps-h">${rich(h.appsTitle)}</h2>
           <p class="lead">${esc(h.appsLead)}</p>
-        </div>${apps.map((a) => homeBand(a, lang, path)).join('')}
+        </div>
+        <div class="app-stack">${apps.map((a, i) => appCard(a, lang, path, i)).join('')}
+        </div>
       </section>
 
       <section class="section wrap" id="${h.principlesId}" aria-labelledby="principles-h">
         <div class="section-head reveal">
-          <p class="eyebrow"><span class="dot"></span>${esc(h.principlesEyebrow)}</p>
+          ${kicker(2, h.principlesEyebrow)}
           <h2 id="principles-h">${rich(h.principlesTitle)}</h2>
         </div>
-        <ul class="cards four">${h.principles
+        <ul class="bento principles">${h.principles
           .map(
             ([g, b, d]) => `
-          <li class="card reveal"><span class="glyph">${svg(glyphs[g])}</span><h3>${esc(b)}</h3><p>${esc(d)}</p></li>`
+          <li class="tile p-${g} reveal"><div class="tile-copy"><span class="glyph">${svg(glyphs[g])}</span><h3>${esc(b)}</h3><p>${esc(d)}</p></div>${principleVisual(g, h.visuals?.[g])}</li>`
           )
           .join('')}
         </ul>
       </section>
 
-      <section class="section wrap" id="${contactId}">
-        <div class="cta-band reveal">
-          <h2>${rich(h.nextTitle)}</h2>
+      <section class="section wrap contact" id="${contactId}" aria-labelledby="contact-h">
+        <div class="contact-panel reveal">
+          <div class="orb-wrap" aria-hidden="true" style="${orbStyle()}"><span class="orb"></span></div>
+          ${kicker(3, h.contactEyebrow)}
+          <h2 id="contact-h">${rich(h.nextTitle)}</h2>
           <p class="lead">${esc(h.nextLead)}</p>
           <div class="actions">
             <a class="btn primary" href="mailto:${EMAIL}">${icons.mail}${esc(h.write)}</a>
             <a class="btn ghost" href="${whatsapp(`${h.share} ${SITE_URL + path}`)}">${icons.whatsapp}${t.share}</a>
           </div>
-          <p class="note"><a href="mailto:${EMAIL}">${EMAIL}</a> · ${COMPANY.city}</p>
+          <p class="big-mail"><a href="mailto:${EMAIL}">${EMAIL}</a><span>${COMPANY.city}</span></p>
         </div>
       </section>
     </main>` +
@@ -936,19 +1261,17 @@ function notFoundPage() {
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Página no encontrada · Tutos App</title>
     <meta name="robots" content="noindex">
-    <meta name="color-scheme" content="light dark">
+    <meta name="color-scheme" content="light">
     <link rel="icon" href="${base}favicon.svg" type="image/svg+xml">
-    <link rel="stylesheet" href="${base}assets/style.css">
+    <link rel="stylesheet" href="${base}${CSS_PATH}?v=${CSS_VERSION}">
   </head>
   <body class="t-home">
-    <header class="nav"><a class="brand" href="${base}"><img src="${base}favicon.svg" alt="" width="30" height="30"> Tutos App</a><a class="lang" href="${base}en/" hreflang="en" lang="en">English</a></header>
-    <main id="main" class="hero">
-      ${aurora}
-      <div class="wrap notfound">
-        <h1>4<em>0</em>4</h1>
-        <p class="lead">${t.notFound} <span lang="en">${ui.en.notFound}</span></p>
-        <div class="actions"><a class="btn primary" href="${base}">${t.backHome}</a><a class="btn ghost" href="${base}en/" lang="en">${ui.en.backHome}</a></div>
-      </div>
+    <header class="nav"><div class="nav-bar"><a class="brand" href="${base}"><img src="${base}favicon.svg" alt="" width="28" height="28"><span>Tutos App</span></a><a class="lang" href="${base}en/" hreflang="en" lang="en">English</a></div></header>
+    <main id="main" class="notfound">
+      <div class="orb-wrap" aria-hidden="true" style="${orbStyle()}"><span class="orb"></span></div>
+      <h1>404</h1>
+      <p class="lead">${t.notFound} <span lang="en">${ui.en.notFound}</span></p>
+      <div class="actions"><a class="btn primary" href="${base}">${t.backHome}</a><a class="btn ghost" href="${base}en/" lang="en">${ui.en.backHome}</a></div>
     </main>
   </body>
 </html>
@@ -994,11 +1317,16 @@ function run() {
       for (const k of ['privacy', 'terms']) {
         if (!/^https:\/\//.test(app.legal?.[lang]?.[k] || '')) problems.push(`${app.id}: missing ${lang} ${k} link`);
       }
-      for (const k of ['category', 'for', 'title', 'description', 'headline', 'lead', 'pitch', 'share']) {
+      for (const k of ['category', 'for', 'title', 'description', 'headline', 'lead', 'pitch', 'share', 'navCta', 'featureAlt']) {
         if (!app[lang]?.[k]) problems.push(`${app.id}: missing ${lang} ${k}`);
       }
       if (app[lang]?.shotAlt?.length !== app.shots(lang).length) problems.push(`${app.id}: ${lang} shotAlt must describe every screenshot`);
+      if (app[lang]?.tabs?.length !== app.screens(lang).length) problems.push(`${app.id}: ${lang} tabs must describe every hero screen`);
+      if (app.screens(lang).length > MAX_PANES) problems.push(`${app.id}: at most ${MAX_PANES} hero screens`);
     }
+  }
+  for (const lang of langs) {
+    if (apps.filter((a) => a[lang].ask).length > MAX_PANES) problems.push(`home: at most ${MAX_PANES} apps in the question card`);
   }
 
   for (const [name, body] of Object.entries(files)) {
@@ -1028,7 +1356,8 @@ function run() {
         if (!body.includes(`id="${ref.slice(1)}"`)) problems.push(`${name} -> ${ref} (no such id)`);
         continue;
       }
-      const target = join(ROOT, dirname(name), ref.endsWith('/') ? ref + 'index.html' : ref);
+      const file = ref.split(/[?#]/)[0];
+      const target = join(ROOT, dirname(name), file.endsWith('/') ? file + 'index.html' : file);
       if (!existsSync(target)) problems.push(`${name} -> ${ref}`);
     }
   }

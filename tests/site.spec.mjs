@@ -1,7 +1,9 @@
 // Every page in the sitemap, on each project (phone and desktop), in light and dark:
 // no axe-core violations (WCAG 2.2 A/AA plus best practices), no sideways scroll, no broken
 // images or requests, no console errors, and the SEO basics point at https://tutosapp.co.
-// Full-page screenshots land in test-results/screens/ for visual review.
+// The stylesheet must parse whole in Chromium and load by its content hash, and the
+// CSS-only demos must switch panes. Full-page screenshots land in test-results/screens/.
+import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { test, expect } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
@@ -11,7 +13,31 @@ const pages = [...readFileSync(new URL('../site/sitemap.xml', import.meta.url), 
   ([, loc]) => '/' + loc.slice(SITE.length)
 );
 const name = (path) => path.replace(/^\/|\/$/g, '').replace(/\//g, '-') || 'home';
-const STILL = '.reveal, .showcase { animation: none !important; }';
+const STILL = '.reveal, .stage, .ask-card, .hero-bg { animation: none !important; }';
+
+// Top-level rules in a stylesheet (rules, at-rules with a block, and statement at-rules), the
+// number Chromium reports in CSSStyleSheet.cssRules when it parses the whole file.
+function countRules(css) {
+  let depth = 0;
+  let count = 0;
+  for (let i = 0; i < css.length; i++) {
+    const c = css[i];
+    if (c === '/' && css[i + 1] === '*') {
+      i = css.indexOf('*/', i + 2) + 1;
+    } else if (c === '"' || c === "'") {
+      for (i++; i < css.length && css[i] !== c; i++) if (css[i] === '\\') i++;
+    } else if (c === '{') {
+      if (depth++ === 0) count++;
+    } else if (c === '}') {
+      depth--;
+    } else if (c === ';' && depth === 0) {
+      count++;
+    }
+  }
+  return count;
+}
+const CSS = readFileSync(new URL('../site/assets/style.css', import.meta.url), 'utf8');
+const CSS_VERSION = createHash('sha256').update(CSS).digest('hex').slice(0, 10);
 
 for (const path of pages) {
   for (const scheme of ['light', 'dark']) {
@@ -25,13 +51,14 @@ for (const path of pages) {
       const res = await page.goto(path);
       expect(res.status()).toBe(200);
 
-      // Scroll through so lazy images load and every scroll-driven reveal has finished.
+      // Scroll through so lazy images load and every scroll-driven reveal has finished. Instant,
+      // because the page asks for smooth scrolling and each smooth scroll would cut the last short.
       await page.evaluate(async () => {
         for (let y = 0; y < document.body.scrollHeight; y += innerHeight / 2) {
-          scrollTo(0, y);
+          scrollTo({ top: y, behavior: 'instant' });
           await new Promise((r) => setTimeout(r, 60));
         }
-        scrollTo(0, document.body.scrollHeight);
+        scrollTo({ top: document.body.scrollHeight, behavior: 'instant' });
       });
       await page.waitForLoadState('networkidle');
       await page.waitForFunction(() => [...document.images].every((i) => i.complete), null, { timeout: 10_000 });
@@ -66,7 +93,7 @@ for (const path of pages) {
 
       // Screenshots show every section in its resting position.
       await page.addStyleTag({ content: STILL });
-      await page.evaluate(() => scrollTo(0, 0));
+      await page.evaluate(() => scrollTo({ top: 0, behavior: 'instant' }));
       await page.screenshot({ path: `test-results/screens/${name(path)}-${info.project.name}-${scheme}.png`, fullPage: true });
     });
   }
@@ -77,7 +104,7 @@ test.describe('home marquee', () => {
     test(`${path} tiles are links with names, pausable, and still with reduced motion`, async ({ page }) => {
       await page.goto(path);
       const tiles = page.locator('.track a.tile:not([tabindex="-1"])');
-      const apps = await page.locator('.app-band').count();
+      const apps = await page.locator('.app-card').count();
       await expect(tiles).toHaveCount(apps);
       for (const tile of await tiles.all()) await expect(tile).toHaveAccessibleName(/\S/);
       // Repeated tiles are decoration only: hidden from screen readers and out of the tab order.
@@ -94,6 +121,70 @@ test.describe('home marquee', () => {
       await expect(track).toHaveCSS('animation-name', 'none');
       await expect(page.locator('.track li[aria-hidden="true"]').first()).toBeHidden();
       await expect(page.locator('.pause-label')).toBeHidden();
+    });
+  }
+
+  test('a keyboard-focused tile is shown inside the strip, wherever the animation was', async ({ page }) => {
+    await page.goto('/');
+    const tiles = page.locator('.track a.tile:not([tabindex="-1"])');
+    const n = await tiles.count();
+    const strip = await page.locator('.marquee').boundingBox();
+    // Move the animation to mid-cycle, where the focusable copies have slid out of view.
+    await page.evaluate(() => {
+      const [a] = document.querySelector('.track').getAnimations();
+      a.currentTime = a.effect.getComputedTiming().duration / 2;
+    });
+    await page.locator('.pause-toggle').focus();
+    for (let i = 0; i < n; i++) {
+      await page.keyboard.press('Tab');
+      await expect(tiles.nth(i)).toBeFocused();
+      const box = await tiles.nth(i).boundingBox();
+      expect(box.x, `tile ${i} left edge`).toBeGreaterThanOrEqual(strip.x - 1);
+      expect(box.x + box.width, `tile ${i} right edge`).toBeLessThanOrEqual(strip.x + strip.width + 1);
+    }
+  });
+});
+
+// A stylesheet that stops parsing part of the way leaves pages half unstyled while every other
+// check still passes; the live site once showed its nav as a bulleted list that way.
+test.describe('stylesheet', () => {
+  test('Chromium parses every rule and each page loads it by content hash', async ({ page }) => {
+    const authored = countRules(CSS);
+    for (const path of pages) {
+      await page.goto(path);
+      const sheet = await page.evaluate(() => {
+        const s = [...document.styleSheets].find((x) => x.href?.includes('/assets/style.css'));
+        return { href: s?.href, rules: s?.cssRules.length ?? 0 };
+      });
+      expect(sheet.href, `${path} stylesheet URL`).toContain(`style.css?v=${CSS_VERSION}`);
+      expect(sheet.rules, `${path}: Chromium parsed ${sheet.rules} of ${authored} rules`).toBeGreaterThanOrEqual(Math.floor(authored * 0.95));
+    }
+  });
+});
+
+test.describe('demos', () => {
+  test('the home question card shows the answer of the chosen question', async ({ page }) => {
+    await page.goto('/');
+    const answers = page.locator('.answers > *');
+    const n = await answers.count();
+    expect(n).toBeGreaterThan(1);
+    await expect(answers.nth(0)).toBeVisible();
+    await page.locator('.ask-card .tabs label').nth(n - 1).click();
+    await expect(answers.nth(n - 1)).toBeVisible();
+    await expect(answers.nth(0)).toBeHidden();
+  });
+
+  for (const path of pages.filter((p) => p !== '/' && p !== '/en/')) {
+    test(`${path} hero tabs switch the phone screen`, async ({ page }) => {
+      await page.goto(path);
+      const screens = page.locator('.hero-demo .screen > img');
+      const n = await screens.count();
+      expect(n).toBeGreaterThan(1);
+      await expect(screens.nth(0)).toBeVisible();
+      await page.locator('.hero-demo .tabs label').nth(n - 1).click();
+      await expect(screens.nth(n - 1)).toBeVisible();
+      await expect(screens.nth(0)).toBeHidden();
+      await expect(page.locator(`.hero-demo .tabs input`).nth(n - 1)).toBeChecked();
     });
   }
 });

@@ -24,9 +24,37 @@ jobs:
       - name: Pages are up to date and links resolve
         run: node scripts/build.mjs --check
 
+  # HTML and CSS validation, accessibility (axe-core) and layout checks on a phone and a
+  # desktop in light and dark (Playwright), and Lighthouse scores. Uses the runner's Chrome.
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - name: HTML and CSS validation
+        run: npm run lint
+      - name: Accessibility, layout and screenshots
+        run: npm run test:ui
+      - name: Lighthouse
+        run: npm run lighthouse
+      - name: Keep reports and screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: quality-reports
+          path: |
+            test-results/
+            playwright-report/
+            .lighthouseci/
+          retention-days: 14
+
   deploy:
     if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
-    needs: check
+    needs: [check, quality]
     runs-on: ubuntu-latest
     permissions:
       pages: write

@@ -35,6 +35,8 @@ jobs:
           node-version: 24
           cache: npm
       - run: npm ci
+      - name: WebKit for the iPhone checks
+        run: npx playwright install --with-deps webkit
       - name: HTML and CSS validation
         run: npm run lint
       - name: Accessibility, layout and screenshots

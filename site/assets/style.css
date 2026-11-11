@@ -954,7 +954,12 @@ h2 em {
   mask-image: radial-gradient(ellipse 75% 65% at 50% 30%, #000 25%, transparent 75%);
 }
 
+/* The hero content gets its own layer above .hero-bg. Safari composites the scroll-driven
+   drift on .hero-bg and, without this, paints that opaque layer over the title and buttons,
+   so phones showed an empty hero until the first scroll. */
 .hero-grid {
+  position: relative;
+  z-index: 1;
   display: grid;
   gap: 48px;
   align-items: center;

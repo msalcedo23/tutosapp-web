@@ -1,0 +1,20 @@
+{
+  "extends": ["stylelint-config-standard"],
+  "rules": {
+    "property-no-vendor-prefix": [
+      true,
+      {
+        "ignoreProperties": [
+          "-webkit-backdrop-filter",
+          "-webkit-background-clip",
+          "-webkit-mask",
+          "-webkit-mask-image",
+          "-webkit-mask-composite",
+          "-webkit-text-size-adjust"
+        ]
+      }
+    ],
+    "media-feature-range-notation": "prefix",
+    "no-descending-specificity": null
+  }
+}

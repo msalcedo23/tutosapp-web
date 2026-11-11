@@ -1,0 +1,26 @@
+{
+  "name": "tutosapp-web",
+  "private": true,
+  "type": "module",
+  "description": "Tutos App site generator and its quality checks. The site itself has no runtime dependencies.",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "check": "node scripts/build.mjs --check",
+    "lint:html": "html-validate \"site/**/*.html\"",
+    "lint:css": "stylelint \"site/assets/*.css\"",
+    "lint": "npm run lint:html && npm run lint:css",
+    "test:ui": "playwright test",
+    "lighthouse": "lhci autorun",
+    "quality": "npm run check && npm run lint && npm run test:ui && npm run lighthouse",
+    "serve": "node scripts/serve.mjs",
+    "og": "node scripts/og.mjs"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "4.14.0",
+    "@lhci/cli": "0.15.1",
+    "@playwright/test": "1.64.1",
+    "html-validate": "11.17.0",
+    "stylelint": "17.16.0",
+    "stylelint-config-standard": "40.0.0"
+  }
+}

@@ -34,12 +34,29 @@ Después se hace commit de `scripts/build.mjs` y de `site/` juntos. El flujo `.g
 Para verlo en el computador:
 
 ```sh
-python3 -m http.server 8000 --directory site   # y abrir http://localhost:8000
+node scripts/serve.mjs   # y abrir http://127.0.0.1:4173
 ```
+
+## Calidad
+
+Las herramientas son solo para revisar; el sitio publicado sigue sin dependencias. Se instalan con `npm ci` (necesita Node 24 y Google Chrome) y corren en cada PR en el trabajo `quality` de `.github/workflows/pages.yml`. Si falla, no se publica.
+
+| Comando | Qué revisa |
+|---|---|
+| `npm run lint` | HTML válido ([html-validate](https://html-validate.org)) y CSS ([stylelint](https://stylelint.io) con `stylelint-config-standard`) |
+| `npm run test:ui` | Con [Playwright](https://playwright.dev) abre cada página del sitemap en un teléfono y en un computador, en tema claro y oscuro: cero problemas de accesibilidad de [axe-core](https://github.com/dequelabs/axe-core) (WCAG 2.2 A y AA y buenas prácticas), sin scroll de lado, sin imágenes rotas, sin errores en consola, un solo `h1`, canonical y `og:url` en `https://tutosapp.co`. También revisa que la fila de íconos tenga un enlace con nombre por app, se pueda pausar y quede quieta con "reducir movimiento". Deja capturas de página completa en `test-results/screens/` |
+| `npm run lighthouse` | [Lighthouse CI](https://github.com/GoogleChrome/lighthouse-ci) en las 8 páginas: accesibilidad y SEO en 100, buenas prácticas en 95 o más, y aviso si el rendimiento baja de 90. Los informes quedan en `.lighthouseci/` |
+| `npm run quality` | Todo lo anterior, más `node scripts/build.mjs --check` |
+
+En GitHub, los informes y las capturas quedan como artefacto `quality-reports` de cada ejecución.
+
+Las herramientas automáticas encuentran solo una parte de los problemas de accesibilidad. Antes de un cambio grande conviene probar con el teclado y con el lector de pantalla del teléfono.
 
 ### Agregar una app
 
 Se agrega una entrada a la lista `apps` de `scripts/build.mjs` (copiando una de las que hay) y sus imágenes en `site/assets/img/<id>/`: ícono de 256 × 256, cuatro capturas por idioma y dos imágenes para redes de 1200 × 630 (`site/assets/img/og/<id>-es.jpg` y `-en.jpg`). Con eso aparece sola en la fila de íconos, en el inicio, en los menús, en los pies de página, en el sitemap y con su propia página. `--check` exige que tenga enlace a su política de privacidad y a sus términos en los dos idiomas.
+
+Después se corre `npm run og`, que vuelve a dibujar las imágenes para redes del inicio (`home-es.jpg` y `home-en.jpg`) con el titular del inicio y un ícono por app. También se corre si cambia el titular del inicio.
 
 Si la app trae un estilo nuevo, se le pone un `theme` (por ejemplo `t-nueva`) y se definen sus colores en `style.css`, como `.t-ojito`.
 

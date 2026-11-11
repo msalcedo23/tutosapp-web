@@ -4,7 +4,7 @@
 //   node scripts/build.mjs --check  fail if a committed file differs from what this script writes,
 //                                   if a relative link is broken, or if an app lacks its legal links
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs';
-import { dirname, join } from 'node:path';
+import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 // Public address of the site. GitHub Pages serves it with the custom domain set in the repo settings;
@@ -62,14 +62,14 @@ const apps = [
     decor: 'scan',
     es: {
       category: 'Escáner de etiquetas para familias',
-      for: 'Para mamás, papás y cuidadores en Colombia',
+      for: 'Para mamás, papás y familias en Colombia',
       title: 'Ojito: escáner de alimentos y cuidado personal',
       description:
         'Escanea comida y cuidado personal en Colombia: una respuesta para tu bebé y otra para ti. Sellos de advertencia, aditivos y alergias en segundos.',
       headline: '¿Y esto sí se lo *puedo dar*?',
       lead:
         'Apunta la cámara al código de barras y Ojito te dice Bueno, Regular o Evítalo, con tu resultado y, debajo, el de cada persona de tu casa.',
-      pitch: 'Escanea un producto y sabe si es bueno para ti y para tu bebé.',
+      pitch: 'Escanea un producto y descubre si es bueno para ti y para tu bebé.',
       highlights: ['Bueno, Regular o Evítalo en segundos', 'Alertas de alergias y cuidados de tu familia', 'Sin cuenta y sin marcas pagando'],
       floats: [['Bueno', 'var(--good)'], ['Regular', 'var(--fair)'], ['Evítalo', 'var(--avoid)']],
       shotAlt: ['Resultado Bueno para unas galletas, con la línea del bebé', 'Alerta de maní', 'Producto de cuidado personal', 'Otras opciones con mejor puntaje'],
@@ -98,22 +98,22 @@ const apps = [
           'Quiero probar Ojito',
           'Hola, quiero entrar al grupo de prueba de Ojito.\n\nMi correo de Google Play (Gmail) es: \nMi teléfono es Android / iPhone: '
         ),
-        note: 'Te escribimos para sumarte al grupo de prueba de Android.',
+        note: 'Se abre tu correo con el mensaje listo: agrega tu Gmail de Google Play y te sumamos al grupo de prueba de Android.',
       },
       disclaimer: 'Ojito no es un dispositivo médico y no diagnostica, trata, cura ni previene ninguna enfermedad.',
-      closing: ['Haz el mercado *con calma*.', 'Súmate al grupo de prueba de Android o escríbenos para saber cuando Ojito salga en tu tienda.'],
+      closing: ['Haz el mercado *con calma*.', 'Súmate al grupo de prueba de Android, o escríbenos y te avisamos cuando Ojito llegue a tu tienda.'],
       share: 'Mira Ojito: escaneas un producto y te dice si es bueno para ti y para tu bebé.',
     },
     en: {
       category: 'Label scanner for families',
-      for: 'For parents and caregivers in Colombia',
+      for: 'For parents and families in Colombia',
       title: 'Ojito: food and personal-care label scanner',
       description:
         'Scan food and personal-care products in Colombia: one answer for your baby and another for you. Warning labels, additives and allergies in seconds.',
-      headline: 'Is this OK to *give them*?',
+      headline: 'Can I give this *to my baby*?',
       lead:
         'Point your camera at the barcode and Ojito says Good, Fair or Avoid, with your result and, below it, one for each person in your home. Made for products sold in Colombia.',
-      pitch: 'Scan a product and know if it is good for you and for your baby.',
+      pitch: 'Scan a product and see if it’s good for you and your baby.',
       highlights: ['Good, Fair or Avoid in seconds', 'Alerts for your family’s allergies and conditions', 'No account, no paid placement'],
       floats: [['Good', 'var(--good)'], ['Fair', 'var(--fair)'], ['Avoid', 'var(--avoid)']],
       shotAlt: ['A Good result for some cookies, with the line for the baby', 'A peanut alert', 'A personal-care product', 'Other options with a better score'],
@@ -130,16 +130,16 @@ const apps = [
       ],
       faq: [
         ['Which products does it work with?', 'Packaged food and personal-care products with a barcode. If a product is missing, take a photo of the nutrition table and the ingredients, and Ojito’s AI reads them.'],
-        ['How does it know what is good for my baby?', 'It only asks for their age, never a name or photos. Below your result you then see a line for your baby, for pregnancy or breastfeeding, or for another adult at home, with the reason in a few words.'],
-        ['Does Ojito replace a pediatrician or doctor?', 'No. Ojito is not a medical device and does not diagnose, treat, cure or prevent any disease. It helps you read the label. No alert does not mean the product is free of that allergen: always check the package.'],
+        ['How does it know what’s good for my baby?', 'It only asks for their age, never a name or photos. Below your result you then see a line for your baby, for pregnancy or breastfeeding, or for another adult at home, with the reason in a few words.'],
+        ['Does Ojito replace a pediatrician or doctor?', 'No. Ojito is not a medical device and does not diagnose, treat, cure or prevent any disease. It helps you read the label. No alert doesn’t mean the product is free of that allergen: always check the package.'],
         ['Do I need an account?', 'No. Open the app and scan. Your family’s details stay on your phone.'],
         ['How much does it cost?', 'Scanning, the result, the reasons, your family’s alerts and other options cost nothing. An optional subscription, Ojito Familia, will later add full history and a shopping list.'],
-        ['When does it launch?', 'Ojito is in testing and coming soon to Google Play and the App Store. To try it early on Android, email us and we will add you to the testing group.'],
+        ['When does it launch?', 'Ojito is in testing and coming soon to Google Play and the App Store. To try it early on Android, email us and we’ll add you to the testing group.'],
       ],
       cta: {
         label: 'I want to try it',
         href: mailto('I want to try Ojito', 'Hi, I would like to join the Ojito testing group.\n\nMy Google Play (Gmail) address is: \nMy phone is Android / iPhone: '),
-        note: 'We will email you to join the Android testing group.',
+        note: 'This opens your email with the message ready: add your Google Play Gmail address and we’ll add you to the Android testing group.',
       },
       disclaimer: 'Ojito is not a medical device and does not diagnose, treat, cure or prevent any disease.',
       closing: ['Shop *with peace of mind*.', 'Join the Android testing group, or email us to hear when Ojito reaches your store.'],
@@ -167,40 +167,40 @@ const apps = [
     decor: 'embers',
     en: {
       category: 'AI resume review',
-      for: 'For job seekers who want the truth about their CV',
-      title: 'Resume Roast: AI CV Review',
+      for: 'For job seekers who want the truth about their resume',
+      title: 'Resume Roast: AI resume review',
       description:
-        'Brutally honest AI resume review. Get a score out of 100, match your CV to a real job, fix it and export an ATS-friendly PDF.',
-      headline: 'Your CV, *with no filters*.',
+        'Brutally honest AI resume review. Get a score out of 100, match your resume to a real job, fix it and export an ATS-friendly PDF.',
+      headline: 'Your resume, *unfiltered*.',
       lead:
-        'The AI that tells you what recruiters only think. Paste your CV, or upload a PDF, Word file or photo, and get an honest verdict in seconds. Funny where it helps, never cruel, always useful.',
+        'The AI that tells you what recruiters only think. Paste your resume, or upload a PDF, Word file or photo, and get an honest verdict in seconds. Funny where it helps, never cruel, always useful.',
       pitch: 'The AI that tells you what recruiters only think.',
       highlights: ['A score out of 100 and the red flags', 'Match it to a real job and rewrite it', 'Export a PDF that applicant tracking systems read'],
       floats: [['Score out of 100'], ['Red flags'], ['ATS-ready PDF']],
-      shotAlt: ['An honest score with the verdict', 'How well the CV matches a job posting', 'The CV rewritten for the job', 'A share card without personal details'],
+      shotAlt: ['An honest score with the verdict', 'How well the resume matches a job posting', 'The resume rewritten for the job', 'A share card without personal details'],
       benefits: [
         ['gauge', 'An honest score', 'A score out of 100 with a section-by-section breakdown, plus the red flags recruiters spot in seconds.'],
-        ['target', 'Match it to a real job', 'Paste the job posting and see what already fits, what is missing, and rewrite your CV around it. It never invents experience.'],
+        ['target', 'Match it to a real job', 'Paste the job posting and see what already fits, what’s missing, and rewrite your resume around it. It never invents experience.'],
         ['file', 'A PDF that passes the filters', 'Export a selectable-text PDF that applicant tracking systems can read, in three modern templates.'],
         ['coin', 'No subscription', 'Your first 3 credits are free. One credit is one roast or one rewrite. Need more? Buy a pack once, no account needed.'],
       ],
       steps: [
-        ['Paste or upload your CV', 'Text, PDF, Word or a photo. Add the job posting if you have one.'],
+        ['Paste or upload your resume', 'Text, PDF, Word or a photo. Add the job posting if you have one.'],
         ['Get the verdict', 'A score out of 100, a breakdown by section and the red flags. With a posting, you also see how well you match.'],
-        ['Fix it and export it', 'Rewrite your CV for that job, without inventing anything, and download a PDF that the filters can read.'],
+        ['Fix it and export it', 'Rewrite your resume for that job, without inventing anything, and download a PDF that the filters can read.'],
       ],
       faq: [
         ['How much does it cost?', 'You start with 3 free credits. One credit is one roast or one rewrite, and if the AI fails you get the credit back. Need more? Buy a pack once: no subscription, no ads and no account.'],
         ['Does the AI invent experience?', 'No. The rewrite reorganizes and sharpens what you already have for the job, but it never invents jobs, titles or experience.'],
-        ['What happens to my CV?', 'To analyze it, your CV text goes through our server and an AI provider, and it is not stored. Your history, photo and PDFs stay on your phone. The privacy policy has the details.'],
-        ['Which languages does it support?', 'The app is in English and Spanish, and your CV can come out in English, Spanish, Portuguese, French, Italian or German.'],
-        ['What is an ATS-friendly PDF?', 'Many companies use software that reads your CV before a person does. Resume Roast exports a PDF with selectable text that those systems can read, in three modern templates.'],
-        ['Is it on iPhone?', 'It is on Google Play today. The iPhone version is coming soon: leave us your email and we will let you know.'],
+        ['What happens to my resume?', 'To analyze it, your resume text goes through our server and an AI provider, and it isn’t stored. Your history, photo and PDFs stay on your phone. The privacy policy has the details.'],
+        ['Which languages does it support?', 'The app is in English and Spanish, and your resume can come out in English, Spanish, Portuguese, French, Italian or German.'],
+        ['What is an ATS-friendly PDF?', 'Many companies use software that reads your resume before a person does. Resume Roast exports a PDF with selectable text that those systems can read, in three modern templates.'],
+        ['Is it on iPhone?', 'It’s on Google Play today. The iPhone version is coming soon: email us and we’ll let you know.'],
       ],
-      notifyLabel: 'Tell me when it is on iPhone',
+      notifyLabel: 'On iPhone? Get notified',
       notify: mailto('Resume Roast for iPhone', 'Hi, please let me know when Resume Roast is on the App Store.'),
-      closing: ['Stop guessing *what your CV is missing*.', 'Get Resume Roast on Google Play and see your first verdict in seconds.'],
-      share: 'Resume Roast gives your CV an honest score and tells you how to fix it.',
+      closing: ['Stop guessing *what your resume is missing*.', 'Get Resume Roast on Google Play and see your first verdict in seconds.'],
+      share: 'Resume Roast gives your resume an honest score and tells you how to fix it.',
     },
     es: {
       category: 'Análisis de CV con IA',
@@ -232,9 +232,9 @@ const apps = [
         ['¿Qué pasa con mi CV?', 'Para analizarlo, el texto de tu CV pasa por nuestro servidor y por un proveedor de inteligencia artificial, y no se guarda. Tu historial, tu foto y tus PDF se quedan en tu celular. Los detalles están en la política de privacidad.'],
         ['¿En qué idiomas funciona?', 'La app está en español y en inglés, y tu CV puede salir en español, inglés, portugués, francés, italiano o alemán.'],
         ['¿Qué es un PDF que pasa los filtros (ATS)?', 'Muchas empresas usan programas que leen tu CV antes que una persona. Resume Roast exporta un PDF con texto seleccionable que esos programas pueden leer, con tres plantillas modernas.'],
-        ['¿Está en iPhone?', 'Hoy está en Google Play. La versión para iPhone viene pronto: déjanos tu correo y te avisamos.'],
+        ['¿Está en iPhone?', 'Hoy está en Google Play. La versión para iPhone viene pronto: escríbenos y te avisamos.'],
       ],
-      notifyLabel: 'Avísame cuando esté en iPhone',
+      notifyLabel: '¿Tienes iPhone? Te avisamos',
       notify: mailto('Resume Roast para iPhone', 'Hola, avísenme cuando Resume Roast esté en App Store.'),
       closing: ['Deja de adivinar *qué le falta a tu CV*.', 'Descarga Resume Roast en Google Play y recibe tu primer veredicto en segundos.'],
       share: 'Resume Roast le pone un puntaje honesto a tu CV y te dice cómo mejorarlo.',
@@ -259,8 +259,8 @@ const apps = [
     shotSize: [441, 960],
     shots: (lang) =>
       (lang === 'en'
-        ? ['phase1-en-09-room-question', 'phase1-en-19-report-top', 'phase1-en-08-setup-ready', 'phase1-en-03-home']
-        : ['phase1-es-dark-12-room-second-question', 'phase1-es-dark-19-report-top', 'phase1-es-dark-06-setup', 'phase1-es-dark-22-report-end']
+        ? ['phase1-en-19-report-top', 'phase1-en-09-room-question']
+        : ['phase1-es-dark-19-report-top', 'phase1-es-dark-12-room-second-question', 'phase1-es-dark-22-report-end']
       ).map((f) => `assets/img/roast-interview/${f}.jpg`),
     decor: 'wave',
     en: {
@@ -274,8 +274,8 @@ const apps = [
         'Upload your resume and the role you want. An AI interviewer asks the questions you will really get, you answer by typing or out loud, and at the end you get your score and an honest verdict.',
       pitch: 'Rehearse the interview before it counts.',
       highlights: ['Questions that come from your resume', 'Answer by typing or out loud', 'A score and a verdict for that role'],
-      floats: [['Answer out loud', 'wave'], ['Score and verdict'], ['Questions from your CV']],
-      shotAlt: ['The interviewer asks the first question', 'The report with the score and the verdict', 'Setting up the interview', 'The app home screen'],
+      floats: [['Answer out loud', 'wave'], ['Score and verdict'], ['Questions from your resume']],
+      shotAlt: ['The report with the score and the verdict', 'The interviewer asks the first question'],
       benefits: [
         ['spark', 'Questions from your resume', 'Not a generic list: it spots inconsistencies and asks about them, like a real interviewer.'],
         ['bolt', 'Adaptive pressure', 'Strong answers raise the bar. If you stumble, it helps you get back on track.'],
@@ -288,15 +288,15 @@ const apps = [
         ['Get your verdict', 'Your score, detected level and what you did well. The full report adds red flags, your weakest moment with a better answer, and a plan to improve.'],
       ],
       faq: [
-        ['When does it launch?', 'We are finishing testing. It is coming soon to Google Play and the App Store: leave us your email and we will tell you the day it launches.'],
+        ['When does it launch?', 'We’re finishing testing. It’s coming soon to Google Play and the App Store: email us and we’ll tell you the day it launches.'],
         ['How much will it cost?', 'Every day you get one free mini interview of 8 questions, with a score and a verdict. Full interviews with the full report are bought with credits, once, with no subscription.'],
         ['Which language is the interview in?', 'Spanish or English. By default it follows the language of your resume, and you can change it before you start.'],
         ['Can I answer out loud?', 'Yes. Answer by typing or with your voice; your voice is turned into text and the audio is not kept.'],
-        ['Do I need internet or an account?', 'You need internet during the interview. You do not need to create an account.'],
+        ['Do I need internet or an account?', 'You need internet during the interview. You don’t need to create an account.'],
         ['What happens to my data?', 'Interview sessions are deleted after 24 hours, and you can delete your data from Settings. The privacy policy has the details.'],
       ],
       notify: mailto('Roast Interview: tell me when it launches', 'Hi, please let me know when Roast Interview launches.\n\nMy phone is Android / iPhone: '),
-      closing: ['Walk into your next interview *already practiced*.', 'Roast Interview is coming soon. Leave us your email and we will let you know when it launches.'],
+      closing: ['Walk into your next interview *already practiced*.', 'Roast Interview is coming soon. Email us and we’ll let you know when it launches.'],
       share: 'Roast Interview: practice job interviews with an AI that tells you the truth. Coming soon.',
     },
     es: {
@@ -305,15 +305,15 @@ const apps = [
       title: 'Roast Interview: practica entrevistas con IA',
       description:
         'Practica entrevistas de trabajo con una IA que te pregunta lo que esconde tu CV. Responde por escrito o en voz alta, y recibe un puntaje y un veredicto honesto.',
-      headline: 'Practica con un entrevistador que *te dice la verdad*.',
+      headline: 'Practica con una entrevistadora que *te dice la verdad*.',
       lead:
         'Sube tu CV y el cargo al que aplicas. Una IA entrevistadora te hace las preguntas que te van a hacer de verdad, respondes por escrito o en voz alta, y al final recibes tu puntaje y un veredicto honesto.',
       pitch: 'Ensaya la entrevista antes de que cuente.',
       highlights: ['Preguntas que salen de tu CV', 'Responde por escrito o en voz alta', 'Un puntaje y un veredicto para ese cargo'],
       floats: [['Responde en voz alta', 'wave'], ['Puntaje y veredicto'], ['Preguntas desde tu CV']],
-      shotAlt: ['La entrevistadora hace una pregunta sobre tu CV', 'El informe con el puntaje y el veredicto', 'La preparación de la entrevista', 'El final del informe'],
+      shotAlt: ['El informe con el puntaje y el veredicto', 'La entrevistadora hace una pregunta sobre tu CV', 'El final del informe'],
       benefits: [
-        ['spark', 'Preguntas que salen de tu CV', 'No es una lista genérica: detecta inconsistencias y te pregunta por ellas, como un entrevistador real.'],
+        ['spark', 'Preguntas que salen de tu CV', 'No es una lista genérica: detecta inconsistencias y te pregunta por ellas, como en una entrevista real.'],
         ['bolt', 'Presión que se adapta', 'Si respondes bien, sube la exigencia. Si te trabas, te ayuda a retomar.'],
         ['gauge', 'Un puntaje para ese cargo', 'Al final recibes tu puntaje, tu nivel detectado y lo que hiciste bien, medido para ese puesto.'],
         ['repeat', 'Mide tu progreso', 'Repite la entrevista con preguntas nuevas sobre los mismos temas y compara tus puntajes.'],
@@ -324,7 +324,7 @@ const apps = [
         ['Recibe tu veredicto', 'Tu puntaje, tu nivel detectado y lo que hiciste bien. El informe completo suma las red flags, tu peor momento con una mejor respuesta y un plan de mejora.'],
       ],
       faq: [
-        ['¿Cuándo sale?', 'Estamos terminando las pruebas. Muy pronto estará en Google Play y en App Store: déjanos tu correo y te avisamos el día que salga.'],
+        ['¿Cuándo sale?', 'Estamos terminando las pruebas. Muy pronto estará en Google Play y en App Store: escríbenos y te avisamos el día que salga.'],
         ['¿Cuánto va a costar?', 'Cada día tienes una mini entrevista gratis de 8 preguntas, con puntaje y veredicto. Las entrevistas completas, con el informe completo, se compran con créditos, una sola vez y sin suscripción.'],
         ['¿En qué idioma es la entrevista?', 'En español o en inglés. Por defecto sigue el idioma de tu CV, y puedes cambiarlo antes de empezar.'],
         ['¿Puedo responder hablando?', 'Sí. Respondes por escrito o con tu voz; tu voz se convierte en texto y el audio no se guarda.'],
@@ -332,7 +332,7 @@ const apps = [
         ['¿Qué pasa con mis datos?', 'Las sesiones de entrevista se borran a las 24 horas y puedes eliminar tus datos desde Ajustes. Los detalles están en la política de privacidad.'],
       ],
       notify: mailto('Roast Interview: avísame cuando salga', 'Hola, avísenme cuando salga Roast Interview.\n\nMi teléfono es Android / iPhone: '),
-      closing: ['Llega a tu próxima entrevista *con práctica*.', 'Roast Interview sale muy pronto. Déjanos tu correo y te avisamos cuando esté lista.'],
+      closing: ['Llega a tu próxima entrevista *con práctica*.', 'Roast Interview sale muy pronto. Escríbenos y te avisamos cuando esté lista.'],
       share: 'Roast Interview: practica entrevistas de trabajo con una IA que te dice la verdad. Muy pronto.',
     },
   },
@@ -364,7 +364,8 @@ const ui = {
     status: { live: 'Disponible', test: 'En pruebas', soon: 'Próximamente' },
     pause: 'Pausar animación',
     resume: 'Reanudar animación',
-    brandOf: `Tutos App es una marca de ${COMPANY.name}.`,
+    brandOf: `Tutos App es una marca de ${COMPANY.name}`,
+    mailFallback: '¿No se abre tu correo? Escríbenos a',
     noCookies: 'Este sitio no usa cookies ni analítica.',
     rights: 'Todos los derechos reservados.',
     notFound: 'Esta página no existe.',
@@ -381,7 +382,7 @@ const ui = {
     getOn: 'Get it on',
     soonOn: 'Coming soon to',
     share: 'Share on WhatsApp',
-    notify: 'Tell me when it launches',
+    notify: 'Notify me when it launches',
     legal: 'Legal',
     privacy: 'Privacy policy',
     terms: 'Terms and conditions',
@@ -396,7 +397,8 @@ const ui = {
     status: { live: 'Available', test: 'In testing', soon: 'Coming soon' },
     pause: 'Pause animation',
     resume: 'Resume animation',
-    brandOf: `Tutos App is a brand of ${COMPANY.name}.`,
+    brandOf: `Tutos App is a brand of ${COMPANY.name}`,
+    mailFallback: 'Email app didn’t open? Write to',
     noCookies: 'This site uses no cookies and no analytics.',
     rights: 'All rights reserved.',
     notFound: 'This page does not exist.',
@@ -405,67 +407,76 @@ const ui = {
   },
 };
 
-// Home page copy.
+// Copy that depends on the app list, so it stays true when an app is added.
+const countWords = {
+  es: ['ninguna', 'una', 'dos', 'tres', 'cuatro', 'cinco', 'seis', 'siete', 'ocho', 'nueve', 'diez', 'once', 'doce'],
+  en: ['no', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve'],
+};
+const appCount = (lang) => {
+  const word = countWords[lang][apps.length] ?? String(apps.length);
+  return `${word[0].toUpperCase()}${word.slice(1)} ${apps.length === 1 ? 'app' : 'apps'}`;
+};
+const appNames = (lang) => new Intl.ListFormat(lang, { type: 'conjunction' }).format(apps.map((a) => a.name));
+
+// Home page copy. The hero states the studio's mission; each app speaks for itself in its own
+// card (category, pitch and highlights), so the hero never has to summarize every app.
 const home = {
   paths: { es: '', en: 'en/' },
   bg: ['#f7f6fb', '#0b0a12'],
   es: {
-    title: 'Tutos App: Ojito, Resume Roast y Roast Interview',
-    description:
-      'Tutos App es un estudio de apps de Medellín: Ojito, el escáner de etiquetas para familias en Colombia; Resume Roast, el análisis de CV con IA; y Roast Interview, para practicar entrevistas.',
-    eyebrow: 'Estudio de apps · Medellín, Colombia',
-    headline: 'Hacemos apps que te *ayudan a decidir*.',
+    title: 'Tutos App: apps con IA para las decisiones de cada día',
+    description: `Tutos App es un estudio de Medellín que crea apps con inteligencia artificial para las decisiones de cada día: ${appNames('es')}.`,
+    eyebrow: 'Estudio de apps con IA · Medellín, Colombia',
+    headline: 'Decisiones de todos los días, *más simples*.',
     lead:
-      'Somos Tutos App. Usamos inteligencia artificial y buen diseño para resolver preguntas concretas del día a día: qué darle a tu familia, cómo mejorar tu hoja de vida y cómo practicar antes de una entrevista.',
+      'Tutos App crea apps con inteligencia artificial que te dan una respuesta clara, te explican el porqué y no te piden más de lo necesario.',
     primary: 'Conoce las apps',
     write: 'Escríbenos',
     appsEyebrow: 'Nuestras apps',
     appsTitle: 'Cada app resuelve *una cosa*, y la resuelve bien.',
-    appsLead: 'Apps pequeñas y honestas, en español y en inglés, para Android y iPhone.',
+    appsLead: 'Apps pequeñas y honestas, en español y en inglés.',
     nav: [['#apps', 'Apps'], ['#principios', 'Cómo trabajamos'], ['#contacto', 'Contacto']],
     principlesId: 'principios',
     principlesEyebrow: 'Cómo trabajamos',
     principlesTitle: 'Tecnología útil, *sin letra pequeña*.',
     principles: [
-      ['eye', 'La IA explica, no adivina', 'Cada resultado trae el porqué: el sello o el ingrediente en Ojito, la sección del CV en Resume Roast, la respuesta concreta en Roast Interview.'],
-      ['shield', 'Honestas contigo', 'Te decimos lo que vemos, aunque no sea lo que quieres oír. Ninguna marca paga por aparecer en Ojito y Resume Roast nunca inventa experiencia.'],
-      ['lock', 'Sin registro para empezar', 'Abres la app y la usas: ninguna te pide crear una cuenta. Lo que se paga se dice claro, antes de pagar.'],
+      ['eye', 'La IA explica, no adivina', 'Cada resultado viene con el porqué, en palabras simples, para que la decisión sea tuya y no de la app.'],
+      ['shield', 'Honestas contigo', 'Te decimos lo que vemos, aunque no sea lo que quieres oír. Nadie paga por un mejor resultado y la IA no inventa datos.'],
+      ['lock', 'Sin registro para empezar', 'Abres la app y la usas, sin crear una cuenta. Lo que se paga se dice claro, antes de pagar.'],
       ['pin', 'Hechas en Colombia', 'Diseñamos en Medellín pensando en cómo se compra, se busca trabajo y se habla aquí, en español y en inglés.'],
     ],
-    nextTitle: 'Tres apps hoy. *Vienen más.*',
+    nextTitle: `${appCount('es')} hoy. *Vienen más.*`,
     nextLead:
       'Cada app nace de una pregunta real del día a día. ¿Tienes una idea, quieres probar nuestras apps antes que nadie o trabajar con nosotros? Escríbenos.',
     share: 'Mira las apps de Tutos App:',
-    about: 'Estudio de apps de Medellín, Colombia. Apps pequeñas y honestas que te ayudan a decidir.',
+    about: 'Estudio de apps con IA de Medellín, Colombia. Decisiones de todos los días, más simples.',
   },
   en: {
-    title: 'Tutos App: Ojito, Resume Roast and Roast Interview',
-    description:
-      'Tutos App is an app studio from Medellín, Colombia: Ojito, the label scanner for Colombian families; Resume Roast, the AI CV review; and Roast Interview, for interview practice.',
-    eyebrow: 'App studio · Medellín, Colombia',
-    headline: 'We build apps that *help you decide*.',
-    lead:
-      'We are Tutos App. We use AI and careful design to answer concrete, everyday questions: what to give your family, how to fix your resume and how to practice before an interview.',
+    title: 'Tutos App: AI apps for everyday decisions',
+    description: `Tutos App is a studio from Medellín, Colombia, that builds AI apps for everyday decisions: ${appNames('en')}.`,
+    eyebrow: 'AI app studio · Medellín, Colombia',
+    headline: 'Everyday decisions, *made simpler*.',
+    lead: 'Tutos App builds AI apps that give you a clear answer, explain the reason behind it and ask for nothing more than they need.',
     primary: 'Meet the apps',
     write: 'Email us',
     appsEyebrow: 'Our apps',
     appsTitle: 'Each app does *one thing*, and does it well.',
-    appsLead: 'Small, honest apps in English and Spanish, for Android and iPhone.',
+    appsLead: 'Small, honest apps in Spanish and English.',
     nav: [['#apps', 'Apps'], ['#principles', 'How we work'], ['#contact', 'Contact']],
     principlesId: 'principles',
     principlesEyebrow: 'How we work',
     principlesTitle: 'Useful technology, *no fine print*.',
     principles: [
-      ['eye', 'AI that explains', 'Every result comes with the reason: the label or ingredient in Ojito, the CV section in Resume Roast, the exact answer in Roast Interview.'],
-      ['shield', 'Honest with you', 'We tell you what we see, even when it is not what you want to hear. No brand pays to appear in Ojito, and Resume Roast never invents experience.'],
-      ['lock', 'No sign-up to start', 'Open the app and use it: none of them asks you to create an account. What costs money is said clearly, before you pay.'],
+      ['eye', 'AI that explains', 'Every result comes with the reason, in plain words, so the decision stays yours and not the app’s.'],
+      ['shield', 'Honest with you', 'We tell you what we see, even when it is not what you want to hear. Nobody pays for a better result, and the AI does not make things up.'],
+      ['lock', 'No sign-up to start', 'Open the app and use it, no account needed. What costs money is said clearly, before you pay.'],
       ['pin', 'Made in Colombia', 'We design in Medellín around how people here shop, look for work and talk, in Spanish and English.'],
     ],
-    nextTitle: 'Three apps today. *More on the way.*',
+    nextTitle: `${appCount('en')} today. *More on the way.*`,
     nextLead:
       'Each app starts from a real everyday question. Have an idea, want to try our apps before anyone else, or want to work with us? Email us.',
     share: 'Check out the Tutos App apps:',
-    about: 'App studio from Medellín, Colombia. Small, honest apps that help you decide.',
+    about: 'AI app studio from Medellín, Colombia. Everyday decisions, made simpler.',
   },
 };
 
@@ -473,8 +484,8 @@ const langs = ['es', 'en'];
 
 const rel = (from, to) => '../'.repeat(from.split('/').filter(Boolean).length) + to || './';
 
-const svg = (d, size = 22, extra = '') =>
-  `<svg aria-hidden="true" viewBox="0 0 24 24" width="${size}" height="${size}" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"${extra}>${d}</svg>`;
+const svg = (d, size = 22, stroke = 1.8) =>
+  `<svg aria-hidden="true" viewBox="0 0 24 24" width="${size}" height="${size}" fill="none" stroke="currentColor" stroke-width="${stroke}" stroke-linecap="round" stroke-linejoin="round">${d}</svg>`;
 
 const glyphs = {
   family: '<circle cx="9" cy="7" r="3"/><circle cx="17" cy="9" r="2.2"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6M14.5 20c.2-2.5 1.5-4.5 3.5-4.5s3.3 2 3.5 4.5"/>',
@@ -498,8 +509,8 @@ const icons = {
   whatsapp: '<svg aria-hidden="true" viewBox="0 0 24 24" width="20" height="20"><path fill="currentColor" d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2c-1.5 0-3-.4-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1-.7-.3-1.5-.7-2.3-1.5-.6-.5-1-1.2-1.1-1.4-.1-.2 0-.4.1-.5l.4-.4.2-.4v-.4l-.8-1.9c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.3-.2.3-.9.9-.9 2.2s1 2.5 1.1 2.7c.1.2 1.9 2.9 4.6 4 1.7.7 2.3.8 3.2.6.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.2-1.2-.1-.1-.3-.2-.5-.3z"/></svg>',
   mail: svg('<path d="M3.5 6h17v12h-17zM3.5 7l8.5 6 8.5-6"/>', 20),
   arrow: svg('<path d="M5 12h14M13 6l6 6-6 6"/>', 18),
-  check: svg('<path d="m5 12.5 4.5 4.5L19 7.5"/>', 18, ' stroke-width="2.2"'),
-  pause: svg('<path d="M9 5v14M15 5v14"/>', 14, ' stroke-width="2.4"'),
+  check: svg('<path d="m5 12.5 4.5 4.5L19 7.5"/>', 18, 2.2),
+  pause: svg('<path d="M9 5v14M15 5v14"/>', 14, 2.4),
   playSmall: svg('<path d="M7 4.5v15l12-7.5z"/>', 14),
 };
 
@@ -614,15 +625,27 @@ function footer({ lang, path, only }) {
 `;
 }
 
-function storeButtons(app, lang) {
+// Stores where the app is live get real badges, the page's main action. Stores still to come
+// share one quiet line, so placeholders never compete with what a visitor can do today.
+function availability(app, lang, extra = '') {
   const t = ui[lang];
-  const { play, appStore } = app.stores;
-  const badge = (store, icon, name) =>
-    store.status === 'live'
-      ? `<a class="store" href="${store.url}">${icon}<span><small>${t.getOn}</small><b>${name}</b></span></a>`
-      : `<span class="store soon">${icon}<span><small>${t.soonOn}</small><b>${name}</b></span></span>`;
-  return `<div class="stores">${badge(play, icons.play, 'Google Play')}${badge(appStore, icons.apple, 'App Store')}</div>`;
+  const stores = [
+    { name: 'Google Play', inLine: 'Google Play', icon: icons.play, ...app.stores.play },
+    { name: 'App Store', inLine: lang === 'en' ? 'the App Store' : 'App Store', icon: icons.apple, ...app.stores.appStore },
+  ];
+  const live = stores.filter((s) => s.status === 'live');
+  const soon = stores.filter((s) => s.status !== 'live');
+  const badges = live.length
+    ? `<div class="stores">${live.map((s) => `<a class="store" href="${s.url}">${s.icon}<span><small>${t.getOn}</small><b>${s.name}</b></span></a>`).join('')}</div>`
+    : '';
+  const names = new Intl.ListFormat(lang, { type: 'conjunction' }).format(soon.map((s) => s.inLine));
+  const line = soon.length
+    ? `<p class="soon-line">${soon.map((s) => s.icon).join('')}<span>${t.soonOn} ${names}${extra ? ` · ${extra}` : ''}</span></p>`
+    : '';
+  return badges + line;
 }
+
+const hasLiveStore = (app) => Object.values(app.stores).some((s) => s.status === 'live');
 
 const statusChip = (app, lang) => `<span class="status ${app.status}">${ui[lang].status[app.status]}</span>`;
 
@@ -654,14 +677,21 @@ function appPage(app, lang) {
   const url = SITE_URL + path;
   const [w, h] = app.shotSize;
 
-  const bothLive = app.stores.play.status === 'live' && app.stores.appStore.status === 'live';
+  // Live in a store: the badges are the main action and "notify me" for the missing store is a
+  // link on the availability line. Not live anywhere yet: the email button is the main action.
+  const live = hasLiveStore(app);
+  const allLive = Object.values(app.stores).every((s) => s.status === 'live');
+  const notifyLink = live && !allLive && p.notify ? `<a class="inline-link" href="${p.notify}">${esc(p.notifyLabel)}</a>` : '';
   const primary = p.cta
     ? `<a class="btn primary" href="${p.cta.href}">${icons.mail}${esc(p.cta.label)}</a>`
-    : bothLive
+    : live
       ? ''
       : `<a class="btn primary" href="${p.notify}">${icons.mail}${esc(p.notifyLabel || t.notify)}</a>`;
-  const shareBtn = `<a class="btn ghost" href="${whatsapp(`${p.share} ${url}`)}">${icons.whatsapp}${t.share}</a>`;
-  const notes = [p.cta?.note, p.disclaimer].filter(Boolean).map((n) => `<p class="note">${esc(n)}</p>`).join('\n          ');
+  const action = primary ? `<div class="actions">${primary}</div>` : '';
+  const offer = live ? availability(app, lang, notifyLink) + action : action + availability(app, lang);
+  const mailNote = primary ? `<p class="note">${t.mailFallback} <a href="mailto:${EMAIL}">${EMAIL}</a>.</p>` : '';
+  const notes = [p.cta?.note, p.disclaimer].filter(Boolean).map((n) => `<p class="note">${esc(n)}</p>`).join('\n            ');
+  const share = `<a class="share-link" href="${whatsapp(`${p.share} ${url}`)}">${icons.whatsapp}${t.share}</a>`;
 
   const items = apps.map((a) => [rel(path, a.paths[lang]), a.name, a.id === app.id]);
 
@@ -695,12 +725,13 @@ function appPage(app, lang) {
         <div class="wrap hero-grid">
           <div class="hero-copy">
             <p class="app-mark"><img class="app-icon" src="${rel(path, app.icon)}" alt="" width="52" height="52"> ${esc(app.name)} ${statusChip(app, lang)}</p>
+            <p class="for-line">${esc(p.for)}</p>
             <h1>${rich(p.headline)}</h1>
             <p class="lead">${esc(p.lead)}</p>
-            <p class="eyebrow"><span class="dot"></span>${esc(p.for)}</p>
-            ${storeButtons(app, lang)}
-            <div class="actions">${primary}${shareBtn}</div>
+            ${offer}
             ${notes}
+            ${mailNote}
+            ${share}
           </div>
           ${showcase(app, lang, path)}
         </div>
@@ -739,7 +770,7 @@ function appPage(app, lang) {
             <h2 id="shots-h">${t.screens}</h2>
           </div>
         </div>
-        <ul class="gallery">${app
+        <ul class="gallery" tabindex="0" aria-labelledby="shots-h">${app
           .shots(lang)
           .map(
             (s, i) => `
@@ -768,8 +799,7 @@ function appPage(app, lang) {
           <img class="app-icon" src="${rel(path, app.icon)}" alt="" width="72" height="72" loading="lazy">
           <h2>${rich(p.closing[0])}</h2>
           <p class="lead">${esc(p.closing[1])}</p>
-          ${storeButtons(app, lang)}
-          ${primary ? `<div class="actions">${primary}</div>` : ''}
+          ${offer}
         </div>
       </section>
     </main>` +
@@ -812,7 +842,7 @@ function homeBand(app, lang, path) {
             <h3 id="band-${app.id}">${esc(p.pitch)}</h3>
             <p class="for">${esc(p.for)}</p>
             <ul class="ticks">${p.highlights.map((x) => `<li>${icons.check}<span>${esc(x)}</span></li>`).join('')}</ul>
-            ${storeButtons(app, lang)}
+            ${availability(app, lang)}
             <a class="more" href="${rel(path, app.paths[lang])}">${t.see} ${esc(app.name)} ${icons.arrow}</a>
           </div>
           <div class="band-shots">
@@ -952,56 +982,67 @@ ${Object.entries(paths)
 `;
 files['robots.txt'] = `User-agent: *\nAllow: /\n\nSitemap: ${SITE_URL}sitemap.xml\n`;
 
-const check = process.argv.includes('--check');
-const problems = [];
+// Writes (or, with --check, verifies) the files. Runs only when this file is the script being
+// run, so scripts/og.mjs can import the app data without writing anything.
+function run() {
+  const check = process.argv.includes('--check');
+  const problems = [];
 
-// Every app needs its own privacy policy and terms, in every language, and every piece of copy.
-for (const app of apps) {
-  for (const lang of langs) {
-    for (const k of ['privacy', 'terms']) {
-      if (!/^https:\/\//.test(app.legal?.[lang]?.[k] || '')) problems.push(`${app.id}: missing ${lang} ${k} link`);
+  // Every app needs its own privacy policy and terms, in every language, and every piece of copy.
+  for (const app of apps) {
+    for (const lang of langs) {
+      for (const k of ['privacy', 'terms']) {
+        if (!/^https:\/\//.test(app.legal?.[lang]?.[k] || '')) problems.push(`${app.id}: missing ${lang} ${k} link`);
+      }
+      for (const k of ['category', 'for', 'title', 'description', 'headline', 'lead', 'pitch', 'share']) {
+        if (!app[lang]?.[k]) problems.push(`${app.id}: missing ${lang} ${k}`);
+      }
+      if (app[lang]?.shotAlt?.length !== app.shots(lang).length) problems.push(`${app.id}: ${lang} shotAlt must describe every screenshot`);
     }
-    for (const k of ['category', 'for', 'title', 'description', 'headline', 'lead', 'pitch', 'share']) {
-      if (!app[lang]?.[k]) problems.push(`${app.id}: missing ${lang} ${k}`);
-    }
-    if (app[lang]?.shotAlt?.length !== app.shots(lang).length) problems.push(`${app.id}: ${lang} shotAlt must describe every screenshot`);
   }
+
+  for (const [name, body] of Object.entries(files)) {
+    if (/@gmail\.com/i.test(body)) problems.push(`${name}: contains a Gmail address; use ${EMAIL}`);
+  }
+
+  // Templates leave indentation behind where an optional block is empty; drop it.
+  for (const name of Object.keys(files)) files[name] = files[name].replace(/[ \t]+$/gm, '');
+
+  const stale = [];
+  for (const [name, body] of Object.entries(files)) {
+    const target = join(ROOT, name);
+    if (check) {
+      if (!existsSync(target) || readFileSync(target, 'utf8') !== body) stale.push(name);
+    } else {
+      mkdirSync(dirname(target), { recursive: true });
+      writeFileSync(target, body);
+    }
+  }
+  // Every relative href and src in the pages must point at a file in site/, and every in-page
+  // anchor must point at an id on that page.
+  for (const [name, body] of Object.entries(files)) {
+    if (!name.endsWith('.html')) continue;
+    for (const [, ref] of body.matchAll(/(?:href|src)="([^"]+)"/g)) {
+      if (/^(https?:|mailto:)/.test(ref)) continue;
+      if (ref.startsWith('#')) {
+        if (!body.includes(`id="${ref.slice(1)}"`)) problems.push(`${name} -> ${ref} (no such id)`);
+        continue;
+      }
+      const target = join(ROOT, dirname(name), ref.endsWith('/') ? ref + 'index.html' : ref);
+      if (!existsSync(target)) problems.push(`${name} -> ${ref}`);
+    }
+  }
+  if (problems.length) {
+    console.error(`Problems:\n  ${problems.join('\n  ')}`);
+    process.exit(1);
+  }
+  if (check && stale.length) {
+    console.error(`Out of date, run node scripts/build.mjs: ${stale.join(', ')}`);
+    process.exit(1);
+  }
+  console.log(check ? `${Object.keys(files).length} files up to date` : `Wrote ${Object.keys(files).length} files to site/`);
 }
 
-for (const [name, body] of Object.entries(files)) {
-  if (/@gmail\.com/i.test(body)) problems.push(`${name}: contains a Gmail address; use ${EMAIL}`);
-}
+export { apps, home, COMPANY, DOMAIN, SITE_URL };
 
-const stale = [];
-for (const [name, body] of Object.entries(files)) {
-  const target = join(ROOT, name);
-  if (check) {
-    if (!existsSync(target) || readFileSync(target, 'utf8') !== body) stale.push(name);
-  } else {
-    mkdirSync(dirname(target), { recursive: true });
-    writeFileSync(target, body);
-  }
-}
-// Every relative href and src in the pages must point at a file in site/, and every in-page
-// anchor must point at an id on that page.
-for (const [name, body] of Object.entries(files)) {
-  if (!name.endsWith('.html')) continue;
-  for (const [, ref] of body.matchAll(/(?:href|src)="([^"]+)"/g)) {
-    if (/^(https?:|mailto:)/.test(ref)) continue;
-    if (ref.startsWith('#')) {
-      if (!body.includes(`id="${ref.slice(1)}"`)) problems.push(`${name} -> ${ref} (no such id)`);
-      continue;
-    }
-    const target = join(ROOT, dirname(name), ref.endsWith('/') ? ref + 'index.html' : ref);
-    if (!existsSync(target)) problems.push(`${name} -> ${ref}`);
-  }
-}
-if (problems.length) {
-  console.error(`Problems:\n  ${problems.join('\n  ')}`);
-  process.exit(1);
-}
-if (check && stale.length) {
-  console.error(`Out of date, run node scripts/build.mjs: ${stale.join(', ')}`);
-  process.exit(1);
-}
-console.log(check ? `${Object.keys(files).length} files up to date` : `Wrote ${Object.keys(files).length} files to site/`);
+if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) run();

@@ -9,9 +9,8 @@
     <link rel="alternate" hreflang="es" href="https://tutosapp.co/ojito/">
     <link rel="alternate" hreflang="en" href="https://tutosapp.co/ojito/en/">
     <link rel="alternate" hreflang="x-default" href="https://tutosapp.co/ojito/">
-    <meta name="color-scheme" content="light dark">
-    <meta name="theme-color" content="#f5f8ff" media="(prefers-color-scheme: light)">
-    <meta name="theme-color" content="#070d1f" media="(prefers-color-scheme: dark)">
+    <meta name="color-scheme" content="light">
+    <meta name="theme-color" content="#eef3ff">
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="Tutos App">
     <meta property="og:locale" content="en_US">
@@ -26,113 +25,122 @@
     <link rel="icon" href="../../favicon.png" type="image/png" sizes="64x64">
     <link rel="apple-touch-icon" href="../../apple-touch-icon.png">
     <link rel="preload" href="../../assets/fonts/geist-latin-wght.woff2" as="font" type="font/woff2" crossorigin>
-    <link rel="stylesheet" href="../../assets/style.css">
+    <link rel="preload" href="../../assets/fonts/instrument-serif-latin-italic.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="stylesheet" href="../../assets/style.css?v=89a038a90e">
     <script type="application/ld+json">{"@context":"https://schema.org","@type":"MobileApplication","name":"Ojito","description":"Scan food and personal-care products in Colombia: one answer for your baby and another for you. Warning labels, additives and allergies in seconds.","url":"https://tutosapp.co/ojito/en/","inLanguage":"en","operatingSystem":"Android, iOS","applicationCategory":"FoodAndDrinkApplication","image":"https://tutosapp.co/assets/img/ojito/icon.png","publisher":{"@type":"Organization","name":"Tutos App","legalName":"TUTOS APP S.A.S.","taxID":"902.125.524-7","url":"https://tutosapp.co/","logo":"https://tutosapp.co/apple-touch-icon.png","email":"hola@tutosapp.co","address":{"@type":"PostalAddress","addressLocality":"Medellín","addressRegion":"Antioquia","addressCountry":"CO"}}}</script>
   </head>
-  <body class="t-ojito">
+  <body class="page-app t-ojito">
     <a class="skip" href="#main">Skip to content</a>
     <header class="nav">
-      <a class="brand" href="../../en/"><img src="../../favicon.svg" alt="" width="30" height="30"> Tutos App</a>
-      <nav aria-label="Main menu">
-        <ul class="nav-links"><li><a href="../../ojito/en/" aria-current="page">Ojito</a></li><li><a href="../../resume-roast/">Resume Roast</a></li><li><a href="../../roast-interview/">Roast Interview</a></li></ul>
-      </nav>
-      <a class="lang" href="../../ojito/" hreflang="es" lang="es">Español</a>
+      <div class="nav-bar">
+        <a class="home-link" href="../../en/"><img src="../../favicon.svg" alt="Tutos App" width="24" height="24"></a>
+        <span class="nav-sep" aria-hidden="true"></span>
+        <a class="brand" href="../../ojito/en/" aria-current="page"><img src="../../assets/img/ojito/icon.png" alt="" width="28" height="28"><span>Ojito</span></a>
+        <nav class="nav-menu" aria-label="Main menu">
+          <ul class="nav-links"><li><a href="#benefits">Benefits</a></li><li><a href="#how-it-works">How it works</a></li><li><a href="#screens">Screens</a></li><li><a href="#faq">FAQ</a></li></ul>
+        </nav>
+        <a class="lang" href="../../ojito/" hreflang="es" lang="es"><span class="lang-long">Español</span><span class="lang-short" aria-hidden="true">ES</span></a>
+        <a class="nav-cta" href="mailto:hola@tutosapp.co?subject=I%20want%20to%20try%20Ojito&body=Hi%2C%20I%20would%20like%20to%20join%20the%20Ojito%20testing%20group.%0A%0AMy%20Google%20Play%20(Gmail)%20address%20is%3A%20%0AMy%20phone%20is%20Android%20%2F%20iPhone%3A%20">Try it</a>
+      </div>
     </header>
     <main id="main">
-      <section class="hero">
-        <div class="aurora" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+      <section class="app-hero">
+        <div class="hero-bg" aria-hidden="true"></div>
         <div class="wrap hero-grid">
           <div class="hero-copy">
-            <p class="app-mark"><img class="app-icon" src="../../assets/img/ojito/icon.png" alt="" width="52" height="52"> Ojito <span class="status test">In testing</span></p>
+            <p class="app-mark"><img class="app-icon" src="../../assets/img/ojito/icon.png" alt="" width="56" height="56"><span>Ojito</span><span class="status test">In testing</span></p>
             <p class="for-line">For parents and families in Colombia</p>
             <h1>Can I give this <em>to my baby?</em></h1>
             <p class="lead">Point your camera at the barcode and Ojito says Good, Fair or Avoid, with your result and, below it, one for each person in your home. Made for products sold in Colombia.</p>
-            <div class="actions"><a class="btn primary" href="mailto:hola@tutosapp.co?subject=I%20want%20to%20try%20Ojito&body=Hi%2C%20I%20would%20like%20to%20join%20the%20Ojito%20testing%20group.%0A%0AMy%20Google%20Play%20(Gmail)%20address%20is%3A%20%0AMy%20phone%20is%20Android%20%2F%20iPhone%3A%20"><svg aria-hidden="true" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 6h17v12h-17zM3.5 7l8.5 6 8.5-6"/></svg>I want to try it</a></div><p class="soon-line"><svg aria-hidden="true" viewBox="0 0 24 24" width="26" height="26"><path fill="#00d17f" d="M4.6 2.3c-.3.3-.4.7-.4 1.2v17c0 .5.1.9.4 1.2l9.5-9.7z"/><path fill="#ffce00" d="m19.9 9-3-1.7-3.3 3.3 3.3 3.3 3-1.7c.9-.5.9-1.9 0-2.4z"/><path fill="#00a0ff" d="M15.5 10.6 18.4 7.6 6.5 1c-.5-.3-1-.4-1.4-.3z" opacity=".95"/><path fill="#ff3a44" d="M15.5 13.4 5.1 23.3c.4.1.9 0 1.4-.3l11.9-6.6z"/></svg><svg aria-hidden="true" viewBox="0 0 24 24" width="24" height="24"><path fill="currentColor" d="M16.4 12.6c0-2.6 2.1-3.8 2.2-3.9-1.2-1.8-3.1-2-3.7-2-1.6-.2-3.1.9-3.9.9-.8 0-2-.9-3.4-.9-1.7 0-3.3 1-4.2 2.6-1.8 3.1-.5 7.7 1.3 10.2.8 1.2 1.8 2.6 3.1 2.5 1.2 0 1.7-.8 3.2-.8s1.9.8 3.2.8c1.3 0 2.2-1.2 3-2.4.9-1.4 1.3-2.7 1.3-2.8-.1 0-2.6-1-2.6-4.2zM13.9 5c.7-.8 1.1-1.9 1-3-1 0-2.1.7-2.8 1.5-.6.7-1.2 1.8-1 2.9 1 .1 2.1-.6 2.8-1.4z"/></svg><span>Coming soon to Google Play and the App Store</span></p>
-            <p class="note">This opens your email with the message ready: add your Google Play Gmail address and we’ll add you to the Android testing group.</p>
-            <p class="note">Ojito is not a medical device and does not diagnose, treat, cure or prevent any disease.</p>
-            <p class="note">Email app didn’t open? Write to <a href="mailto:hola@tutosapp.co">hola@tutosapp.co</a>.</p>
+            <div class="actions"><a class="btn primary" href="mailto:hola@tutosapp.co?subject=I%20want%20to%20try%20Ojito&body=Hi%2C%20I%20would%20like%20to%20join%20the%20Ojito%20testing%20group.%0A%0AMy%20Google%20Play%20(Gmail)%20address%20is%3A%20%0AMy%20phone%20is%20Android%20%2F%20iPhone%3A%20"><svg aria-hidden="true" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 6h17v12h-17zM3.5 7l8.5 6 8.5-6"/></svg>I want to try it</a></div><p class="soon-line"><span class="soon-icons"><svg aria-hidden="true" viewBox="0 0 24 24" width="26" height="26"><path fill="#00d17f" d="M4.6 2.3c-.3.3-.4.7-.4 1.2v17c0 .5.1.9.4 1.2l9.5-9.7z"/><path fill="#ffce00" d="m19.9 9-3-1.7-3.3 3.3 3.3 3.3 3-1.7c.9-.5.9-1.9 0-2.4z"/><path fill="#00a0ff" d="M15.5 10.6 18.4 7.6 6.5 1c-.5-.3-1-.4-1.4-.3z" opacity=".95"/><path fill="#ff3a44" d="M15.5 13.4 5.1 23.3c.4.1.9 0 1.4-.3l11.9-6.6z"/></svg><svg aria-hidden="true" viewBox="0 0 24 24" width="24" height="24"><path fill="currentColor" d="M16.4 12.6c0-2.6 2.1-3.8 2.2-3.9-1.2-1.8-3.1-2-3.7-2-1.6-.2-3.1.9-3.9.9-.8 0-2-.9-3.4-.9-1.7 0-3.3 1-4.2 2.6-1.8 3.1-.5 7.7 1.3 10.2.8 1.2 1.8 2.6 3.1 2.5 1.2 0 1.7-.8 3.2-.8s1.9.8 3.2.8c1.3 0 2.2-1.2 3-2.4.9-1.4 1.3-2.7 1.3-2.8-.1 0-2.6-1-2.6-4.2zM13.9 5c.7-.8 1.1-1.9 1-3-1 0-2.1.7-2.8 1.5-.6.7-1.2 1.8-1 2.9 1 .1 2.1-.6 2.8-1.4z"/></svg></span><span>Coming soon to Google Play and the App Store</span></p>
+            <div class="fine"><p>This opens your email with the message ready: add your Google Play Gmail address and we’ll add you to the Android testing group.</p><p>Ojito is not a medical device and does not diagnose, treat, cure or prevent any disease.</p><p>Email app didn’t open? Write to <a href="mailto:hola@tutosapp.co">hola@tutosapp.co</a>.</p></div>
             <a class="share-link" href="https://wa.me/?text=Check%20out%20Ojito%3A%20scan%20a%20product%20and%20see%20if%20it%20is%20good%20for%20you%20and%20your%20baby.%20https%3A%2F%2Ftutosapp.co%2Fojito%2Fen%2F"><svg aria-hidden="true" viewBox="0 0 24 24" width="20" height="20"><path fill="currentColor" d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2c-1.5 0-3-.4-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1-.7-.3-1.5-.7-2.3-1.5-.6-.5-1-1.2-1.1-1.4-.1-.2 0-.4.1-.5l.4-.4.2-.4v-.4l-.8-1.9c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.3-.2.3-.9.9-.9 2.2s1 2.5 1.1 2.7c.1.2 1.9 2.9 4.6 4 1.7.7 2.3.8 3.2.6.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.2-1.2-.1-.1-.3-.2-.5-.3z"/></svg>Share on WhatsApp</a>
           </div>
-          <div class="showcase">
-
-          <span class="shot back"><img src="../../assets/img/ojito/en-05-alergias.jpg" alt="Screen from Ojito: A peanut alert" width="540" height="960" fetchpriority="low"></span>
-          <span class="shot front scan"><img src="../../assets/img/ojito/en-01-en-el-mercado.jpg" alt="Screen from Ojito: A Good result for some cookies, with the line for the baby" width="540" height="960" fetchpriority="high"></span>
-          <span class="float f1" aria-hidden="true"><span class="swatch" style="--sw: var(--good)"></span>Good</span><span class="float f2" aria-hidden="true"><span class="swatch" style="--sw: var(--fair)"></span>Fair</span><span class="float f3" aria-hidden="true"><span class="swatch" style="--sw: var(--avoid)"></span>Avoid</span>
+          <div class="hero-demo switch">
+          <div class="stage">
+            <span class="viewfinder" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+            <div class="phone"><div class="screen panes"><img src="../../assets/img/ojito/screens/en-01-gancho.webp" alt="Screen from Ojito: Ojito says Good, 70 out of 100, for oat cookies, and for your baby, not yet: they contain added sugar." width="600" height="1300" fetchpriority="high" decoding="async"><img src="../../assets/img/ojito/screens/en-03-crema.webp" alt="Screen from Ojito: Ojito says Good, 94 out of 100, for a moisturizing cream." width="600" height="1300" loading="lazy" decoding="async"><img src="../../assets/img/ojito/screens/en-05-mani.webp" alt="Screen from Ojito: Ojito warns &quot;Careful: contains peanuts&quot;, based on what you marked for yourself." width="600" height="1300" loading="lazy" decoding="async"></div></div>
+            <span class="sticker s1" aria-hidden="true"><span class="swatch" style="--sw: var(--good)"></span>Good</span><span class="sticker s2" aria-hidden="true"><span class="swatch" style="--sw: var(--fair)"></span>Fair</span><span class="sticker s3" aria-hidden="true"><span class="swatch" style="--sw: var(--avoid)"></span>Avoid</span>
+          </div>
+          <fieldset class="tabs"><legend class="sr-only">See an example</legend><input type="radio" name="ojito-demo" id="ojito-demo-1" checked><label for="ojito-demo-1"><span class="dot good" aria-hidden="true"></span>Oat cookies</label><input type="radio" name="ojito-demo" id="ojito-demo-2"><label for="ojito-demo-2"><span class="dot good" aria-hidden="true"></span>Moisturizing cream</label><input type="radio" name="ojito-demo" id="ojito-demo-3"><label for="ojito-demo-3"><span class="dot avoid" aria-hidden="true"></span>A product with peanuts</label></fieldset>
         </div>
         </div>
       </section>
 
-      <section class="section wrap" aria-labelledby="benefits-h">
+
+      <section class="section wrap" id="benefits" aria-labelledby="benefits-h">
         <div class="section-head reveal">
-          <p class="eyebrow"><span class="dot"></span>Ojito</p>
+          <p class="kicker"><span class="num">01</span><span>Ojito</span></p>
           <h2 id="benefits-h">What it does for you</h2>
         </div>
-        <ul class="cards four two-up">
-          <li class="card reveal"><span class="glyph"><svg aria-hidden="true" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="7" r="3"/><circle cx="17" cy="9" r="2.2"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6M14.5 20c.2-2.5 1.5-4.5 3.5-4.5s3.3 2 3.5 4.5"/></svg></span><h3>An answer for everyone</h3><p>What works for you may not work for your baby. Ojito gives you your result and, below it, one for each person in your home by age.</p></li>
-          <li class="card reveal"><span class="glyph"><svg aria-hidden="true" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5 2.5 20h19L12 3.5z"/><path d="M12 10v4.5M12 17.2v.3"/></svg></span><h3>Allergies and conditions</h3><p>Flag peanuts, dairy, gluten, diabetes or high blood pressure, among others, and Ojito warns you when it sees them on the label.</p></li>
-          <li class="card reveal"><span class="glyph"><svg aria-hidden="true" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-6.2 7-11.5A7 7 0 0 0 5 9.5C5 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg></span><h3>Built for Colombia</h3><p>The score looks at Colombian warning labels, additives and how processed the product is. For personal care it checks ingredients against Andean Community and European Union lists.</p></li>
-          <li class="card reveal"><span class="glyph"><svg aria-hidden="true" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 4.5 6v6c0 4.4 3.2 8.1 7.5 9 4.3-.9 7.5-4.6 7.5-9V6L12 3z"/><path d="m9 12 2 2 4-4"/></svg></span><h3>No account, no paid placement</h3><p>No sign-up, and no names or photos of your children. No brand pays to appear or to improve its score.</p></li>
+        <ul class="bento">
+          <li class="tile feature reveal"><div class="tile-copy"><span class="glyph"><svg aria-hidden="true" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="7" r="3"/><circle cx="17" cy="9" r="2.2"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6M14.5 20c.2-2.5 1.5-4.5 3.5-4.5s3.3 2 3.5 4.5"/></svg></span><h3>An answer for everyone</h3><p>What works for you may not work for your baby. Ojito gives you your result and, below it, one for each person in your home by age.</p></div><div class="tile-shot"><div class="phone"><div class="screen panes"><img src="../../assets/img/ojito/screens/en-08-familia.webp" alt="Screen from Ojito: Ojito’s My family screen: a baby of 8 months, with no names or photos of children." width="600" height="1300" loading="lazy" decoding="async"></div></div></div></li>
+          <li class="tile reveal"><span class="glyph"><svg aria-hidden="true" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5 2.5 20h19L12 3.5z"/><path d="M12 10v4.5M12 17.2v.3"/></svg></span><h3>Allergies and conditions</h3><p>Flag peanuts, dairy, gluten, diabetes or high blood pressure, among others, and Ojito warns you when it sees them on the label.</p></li>
+          <li class="tile reveal"><span class="glyph"><svg aria-hidden="true" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-6.2 7-11.5A7 7 0 0 0 5 9.5C5 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg></span><h3>Built for Colombia</h3><p>The score looks at Colombian warning labels, additives and how processed the product is. For personal care it checks ingredients against Andean Community and European Union lists.</p></li>
+          <li class="tile reveal"><span class="glyph"><svg aria-hidden="true" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 4.5 6v6c0 4.4 3.2 8.1 7.5 9 4.3-.9 7.5-4.6 7.5-9V6L12 3z"/><path d="m9 12 2 2 4-4"/></svg></span><h3>No account, no paid placement</h3><p>No sign-up, and no names or photos of your children. No brand pays to appear or to improve its score.</p></li>
         </ul>
       </section>
 
-      <section class="section wrap" aria-labelledby="how-h">
+      <section class="section wrap" id="how-it-works" aria-labelledby="how-h">
         <div class="section-head reveal">
-          <h2 id="how-h">How it works</h2>
+          <p class="kicker"><span class="num">02</span><span>How it works</span></p>
+          <h2 id="how-h">Scan a product and see if it’s good for you and your baby.</h2>
         </div>
         <ol class="steps">
-          <li class="reveal"><h3>Point at the barcode</h3><p>Ojito reads it on its own, no photo needed. You can also type the code.</p></li>
-          <li class="reveal"><h3>See your home’s result</h3><p>Good, Fair or Avoid with a score from 0 to 100 for you, plus a line for your baby or another person in your family.</p></li>
-          <li class="reveal"><h3>Understand why</h3><p>Tap &quot;See why&quot; to learn what drove the score, and see similar options with a better score.</p></li>
+          <li class="step reveal"><span class="step-num" aria-hidden="true">01</span><h3>Point at the barcode</h3><p>Ojito reads it on its own, no photo needed. You can also type the code.</p></li>
+          <li class="step reveal"><span class="step-num" aria-hidden="true">02</span><h3>See your home’s result</h3><p>Good, Fair or Avoid with a score from 0 to 100 for you, plus a line for your baby or another person in your family.</p></li>
+          <li class="step reveal"><span class="step-num" aria-hidden="true">03</span><h3>Understand why</h3><p>Tap &quot;See why&quot; to learn what drove the score, and see similar options with a better score.</p></li>
         </ol>
       </section>
 
-      <section class="section" aria-labelledby="shots-h">
-        <div class="wrap">
-          <div class="section-head reveal">
-            <h2 id="shots-h">Take a look</h2>
-          </div>
+      <section class="section shots-section" id="screens" aria-labelledby="shots-h">
+        <div class="wrap section-head reveal">
+          <p class="kicker"><span class="num">03</span><span>App screenshots</span></p>
+          <h2 id="shots-h">Take a look</h2>
+          <p class="swipe">Swipe to see more screens <svg aria-hidden="true" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></p>
         </div>
         <ul class="gallery" tabindex="0" aria-labelledby="shots-h">
-          <li><img src="../../assets/img/ojito/en-01-en-el-mercado.jpg" alt="Screen from Ojito: A Good result for some cookies, with the line for the baby" width="540" height="960" loading="lazy"></li>
-          <li><img src="../../assets/img/ojito/en-05-alergias.jpg" alt="Screen from Ojito: A peanut alert" width="540" height="960" loading="lazy"></li>
-          <li><img src="../../assets/img/ojito/en-03-cuidado-personal.jpg" alt="Screen from Ojito: A personal-care product" width="540" height="960" loading="lazy"></li>
-          <li><img src="../../assets/img/ojito/en-06-otras-opciones.jpg" alt="Screen from Ojito: Other options with a better score" width="540" height="960" loading="lazy"></li>
+          <li><img src="../../assets/img/ojito/en-01-en-el-mercado.jpg" alt="Screen from Ojito: A Good result for some cookies, with the line for the baby" width="540" height="960" loading="lazy" decoding="async"></li>
+          <li><img src="../../assets/img/ojito/en-05-alergias.jpg" alt="Screen from Ojito: A peanut alert" width="540" height="960" loading="lazy" decoding="async"></li>
+          <li><img src="../../assets/img/ojito/en-03-cuidado-personal.jpg" alt="Screen from Ojito: A personal-care product" width="540" height="960" loading="lazy" decoding="async"></li>
+          <li><img src="../../assets/img/ojito/en-06-otras-opciones.jpg" alt="Screen from Ojito: Other options with a better score" width="540" height="960" loading="lazy" decoding="async"></li>
         </ul>
       </section>
 
-      <section class="section wrap" aria-labelledby="faq-h">
-        <div class="section-head reveal">
+      <section class="section wrap faq-section" id="faq" aria-labelledby="faq-h">
+        <div class="faq-head reveal">
+          <p class="kicker"><span class="num">04</span><span>Questions</span></p>
           <h2 id="faq-h">Frequently asked questions</h2>
+          <p><a href="https://msalcedo23.github.io/ojito-legal/privacy.html">Read the privacy policy</a><br><a href="https://msalcedo23.github.io/ojito-legal/terms.html">Terms and conditions</a><br><a href="mailto:hola@tutosapp.co">hola@tutosapp.co</a></p>
         </div>
         <div class="faq">
-          <details class="reveal"><summary>Which products does it work with?</summary><p>Packaged food and personal-care products with a barcode. If a product is missing, take a photo of the nutrition table and the ingredients, and Ojito’s AI reads them.</p></details>
-          <details class="reveal"><summary>How does it know what’s good for my baby?</summary><p>It only asks for their age, never a name or photos. Below your result you then see a line for your baby, for pregnancy or breastfeeding, or for another adult at home, with the reason in a few words.</p></details>
-          <details class="reveal"><summary>Does Ojito replace a pediatrician or doctor?</summary><p>No. Ojito is not a medical device and does not diagnose, treat, cure or prevent any disease. It helps you read the label. No alert doesn’t mean the product is free of that allergen: always check the package.</p></details>
-          <details class="reveal"><summary>Do I need an account?</summary><p>No. Open the app and scan. Your family’s details stay on your phone.</p></details>
-          <details class="reveal"><summary>How much does it cost?</summary><p>Scanning, the result, the reasons, your family’s alerts and other options cost nothing. An optional subscription, Ojito Familia, will later add full history and a shopping list.</p></details>
-          <details class="reveal"><summary>When does it launch?</summary><p>Ojito is in testing and coming soon to Google Play and the App Store. To try it early on Android, email us and we’ll add you to the testing group.</p></details>
-          <p class="note"><a href="https://msalcedo23.github.io/ojito-legal/privacy.html">Read the privacy policy</a> · <a href="https://msalcedo23.github.io/ojito-legal/terms.html">Terms and conditions</a></p>
+          <details class="reveal"><summary>Which products does it work with?<span class="plus" aria-hidden="true"><svg aria-hidden="true" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg></span></summary><p>Packaged food and personal-care products with a barcode. If a product is missing, take a photo of the nutrition table and the ingredients, and Ojito’s AI reads them.</p></details>
+          <details class="reveal"><summary>How does it know what’s good for my baby?<span class="plus" aria-hidden="true"><svg aria-hidden="true" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg></span></summary><p>It only asks for their age, never a name or photos. Below your result you then see a line for your baby, for pregnancy or breastfeeding, or for another adult at home, with the reason in a few words.</p></details>
+          <details class="reveal"><summary>Does Ojito replace a pediatrician or doctor?<span class="plus" aria-hidden="true"><svg aria-hidden="true" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg></span></summary><p>No. Ojito is not a medical device and does not diagnose, treat, cure or prevent any disease. It helps you read the label. No alert doesn’t mean the product is free of that allergen: always check the package.</p></details>
+          <details class="reveal"><summary>Do I need an account?<span class="plus" aria-hidden="true"><svg aria-hidden="true" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg></span></summary><p>No. Open the app and scan. Your family’s details stay on your phone.</p></details>
+          <details class="reveal"><summary>How much does it cost?<span class="plus" aria-hidden="true"><svg aria-hidden="true" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg></span></summary><p>Scanning, the result, the reasons, your family’s alerts and other options cost nothing. An optional subscription, Ojito Familia, will later add full history and a shopping list.</p></details>
+          <details class="reveal"><summary>When does it launch?<span class="plus" aria-hidden="true"><svg aria-hidden="true" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg></span></summary><p>Ojito is in testing and coming soon to Google Play and the App Store. To try it early on Android, email us and we’ll add you to the testing group.</p></details>
         </div>
       </section>
 
-      <section class="section wrap">
+      <section class="section wrap closing" aria-labelledby="closing-h">
         <div class="cta-band reveal">
-          <img class="app-icon" src="../../assets/img/ojito/icon.png" alt="" width="72" height="72" loading="lazy">
-          <h2>Shop <em>with peace of mind.</em></h2>
+          <img class="app-icon" src="../../assets/img/ojito/icon.png" alt="" width="84" height="84" loading="lazy">
+          <h2 id="closing-h">Shop <em>with peace of mind.</em></h2>
           <p class="lead">Join the Android testing group, or email us to hear when Ojito reaches your store.</p>
-          <div class="actions"><a class="btn primary" href="mailto:hola@tutosapp.co?subject=I%20want%20to%20try%20Ojito&body=Hi%2C%20I%20would%20like%20to%20join%20the%20Ojito%20testing%20group.%0A%0AMy%20Google%20Play%20(Gmail)%20address%20is%3A%20%0AMy%20phone%20is%20Android%20%2F%20iPhone%3A%20"><svg aria-hidden="true" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 6h17v12h-17zM3.5 7l8.5 6 8.5-6"/></svg>I want to try it</a></div><p class="soon-line"><svg aria-hidden="true" viewBox="0 0 24 24" width="26" height="26"><path fill="#00d17f" d="M4.6 2.3c-.3.3-.4.7-.4 1.2v17c0 .5.1.9.4 1.2l9.5-9.7z"/><path fill="#ffce00" d="m19.9 9-3-1.7-3.3 3.3 3.3 3.3 3-1.7c.9-.5.9-1.9 0-2.4z"/><path fill="#00a0ff" d="M15.5 10.6 18.4 7.6 6.5 1c-.5-.3-1-.4-1.4-.3z" opacity=".95"/><path fill="#ff3a44" d="M15.5 13.4 5.1 23.3c.4.1.9 0 1.4-.3l11.9-6.6z"/></svg><svg aria-hidden="true" viewBox="0 0 24 24" width="24" height="24"><path fill="currentColor" d="M16.4 12.6c0-2.6 2.1-3.8 2.2-3.9-1.2-1.8-3.1-2-3.7-2-1.6-.2-3.1.9-3.9.9-.8 0-2-.9-3.4-.9-1.7 0-3.3 1-4.2 2.6-1.8 3.1-.5 7.7 1.3 10.2.8 1.2 1.8 2.6 3.1 2.5 1.2 0 1.7-.8 3.2-.8s1.9.8 3.2.8c1.3 0 2.2-1.2 3-2.4.9-1.4 1.3-2.7 1.3-2.8-.1 0-2.6-1-2.6-4.2zM13.9 5c.7-.8 1.1-1.9 1-3-1 0-2.1.7-2.8 1.5-.6.7-1.2 1.8-1 2.9 1 .1 2.1-.6 2.8-1.4z"/></svg><span>Coming soon to Google Play and the App Store</span></p>
+          <div class="actions"><a class="btn primary" href="mailto:hola@tutosapp.co?subject=I%20want%20to%20try%20Ojito&body=Hi%2C%20I%20would%20like%20to%20join%20the%20Ojito%20testing%20group.%0A%0AMy%20Google%20Play%20(Gmail)%20address%20is%3A%20%0AMy%20phone%20is%20Android%20%2F%20iPhone%3A%20"><svg aria-hidden="true" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 6h17v12h-17zM3.5 7l8.5 6 8.5-6"/></svg>I want to try it</a></div><p class="soon-line"><span class="soon-icons"><svg aria-hidden="true" viewBox="0 0 24 24" width="26" height="26"><path fill="#00d17f" d="M4.6 2.3c-.3.3-.4.7-.4 1.2v17c0 .5.1.9.4 1.2l9.5-9.7z"/><path fill="#ffce00" d="m19.9 9-3-1.7-3.3 3.3 3.3 3.3 3-1.7c.9-.5.9-1.9 0-2.4z"/><path fill="#00a0ff" d="M15.5 10.6 18.4 7.6 6.5 1c-.5-.3-1-.4-1.4-.3z" opacity=".95"/><path fill="#ff3a44" d="M15.5 13.4 5.1 23.3c.4.1.9 0 1.4-.3l11.9-6.6z"/></svg><svg aria-hidden="true" viewBox="0 0 24 24" width="24" height="24"><path fill="currentColor" d="M16.4 12.6c0-2.6 2.1-3.8 2.2-3.9-1.2-1.8-3.1-2-3.7-2-1.6-.2-3.1.9-3.9.9-.8 0-2-.9-3.4-.9-1.7 0-3.3 1-4.2 2.6-1.8 3.1-.5 7.7 1.3 10.2.8 1.2 1.8 2.6 3.1 2.5 1.2 0 1.7-.8 3.2-.8s1.9.8 3.2.8c1.3 0 2.2-1.2 3-2.4.9-1.4 1.3-2.7 1.3-2.8-.1 0-2.6-1-2.6-4.2zM13.9 5c.7-.8 1.1-1.9 1-3-1 0-2.1.7-2.8 1.5-.6.7-1.2 1.8-1 2.9 1 .1 2.1-.6 2.8-1.4z"/></svg></span><span>Coming soon to Google Play and the App Store</span></p>
         </div>
       </section>
     </main>
     <footer class="foot">
       <div class="wrap">
-        <div class="foot-grid">
+        <div class="foot-grid three">
           <div class="about">
-            <a class="brand" href="../../en/"><img src="../../favicon.svg" alt="" width="30" height="30"> Tutos App</a>
-            <p>AI app studio from Medellín, Colombia. Everyday decisions, made simpler.</p>
+            <a class="brand" href="../../en/"><img src="../../favicon.svg" alt="" width="28" height="28"><span>Tutos App</span></a>
+            <p>Ojito is an app by Tutos App, an AI app studio from Medellín, Colombia.</p>
             <p>This site uses no cookies and no analytics.</p>
           </div>
-          <nav aria-label="All Tutos App apps"><h2>Our apps</h2><ul><li><a href="../../ojito/en/">Ojito</a></li><li><a href="../../resume-roast/">Resume Roast</a></li><li><a href="../../roast-interview/">Roast Interview</a></li></ul></nav>
+
           <nav aria-label="Legal: Ojito"><h2>Legal · Ojito</h2><ul><li><a href="https://msalcedo23.github.io/ojito-legal/privacy.html">Privacy policy</a></li><li><a href="https://msalcedo23.github.io/ojito-legal/terms.html">Terms and conditions</a></li><li><a href="https://msalcedo23.github.io/ojito-legal/support.html">Support</a></li></ul></nav>
           <div><h2>Contact</h2><ul><li><a href="mailto:hola@tutosapp.co">hola@tutosapp.co</a></li><li><p>Medellín, Colombia</p></li></ul></div>
         </div>
@@ -141,6 +149,7 @@
           <p>Tutos App is a brand of TUTOS APP S.A.S.</p>
         </div>
       </div>
+      <p class="wordmark" aria-hidden="true">Tutos App</p>
     </footer>
   </body>
 </html>

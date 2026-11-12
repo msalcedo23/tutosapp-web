@@ -7,6 +7,7 @@ import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { test, expect } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
+import { legalPages } from '../scripts/build.mjs';
 
 const SITE = 'https://tutosapp.co/';
 const pages = [...readFileSync(new URL('../site/sitemap.xml', import.meta.url), 'utf8').matchAll(/<loc>([^<]+)<\/loc>/g)].map(
@@ -177,7 +178,8 @@ test.describe('demos', () => {
     await expect(answers.nth(0)).toBeHidden();
   });
 
-  for (const path of pages.filter((p) => p !== '/' && p !== '/en/')) {
+  const legal = new Set(legalPages.map((l) => '/' + l.path));
+  for (const path of pages.filter((p) => p !== '/' && p !== '/en/' && !legal.has(p))) {
     test(`${path} hero tabs switch the phone screen`, async ({ page }) => {
       await page.goto(path);
       const screens = page.locator('.hero-demo .screen > img');

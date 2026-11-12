@@ -2,13 +2,16 @@
 // button. Runs on an iPhone in WebKit (Safari's engine) and on an Android phone in Chrome, each
 // page in a fresh context. iPhone Safari once showed app pages as an empty hero until the first
 // scroll, because it painted the scroll-animated .hero-bg over the hero content.
+// Legal pages have no hero; tests/legal.spec.mjs covers them.
 import { readFileSync } from 'node:fs';
 import { test, expect } from '@playwright/test';
+import { legalPages } from '../scripts/build.mjs';
 
 const SITE = 'https://tutosapp.co/';
-const pages = [...readFileSync(new URL('../site/sitemap.xml', import.meta.url), 'utf8').matchAll(/<loc>([^<]+)<\/loc>/g)].map(
-  ([, loc]) => '/' + loc.slice(SITE.length)
-);
+const legal = new Set(legalPages.map((l) => '/' + l.path));
+const pages = [...readFileSync(new URL('../site/sitemap.xml', import.meta.url), 'utf8').matchAll(/<loc>([^<]+)<\/loc>/g)]
+  .map(([, loc]) => '/' + loc.slice(SITE.length))
+  .filter((path) => !legal.has(path));
 
 for (const path of pages) {
   test(`${path} shows its title and main button without scrolling`, async ({ page }) => {

@@ -48,4 +48,100 @@
     <xhtml:link rel="alternate" hreflang="es" href="https://tutosapp.co/roast-interview/es/"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://tutosapp.co/roast-interview/"/>
   </url>
+  <url>
+    <loc>https://tutosapp.co/ojito/privacidad/</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://tutosapp.co/ojito/privacidad/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://tutosapp.co/ojito/en/privacy/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://tutosapp.co/ojito/privacidad/"/>
+  </url>
+  <url>
+    <loc>https://tutosapp.co/ojito/en/privacy/</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://tutosapp.co/ojito/privacidad/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://tutosapp.co/ojito/en/privacy/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://tutosapp.co/ojito/privacidad/"/>
+  </url>
+  <url>
+    <loc>https://tutosapp.co/ojito/terminos/</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://tutosapp.co/ojito/terminos/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://tutosapp.co/ojito/en/terms/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://tutosapp.co/ojito/terminos/"/>
+  </url>
+  <url>
+    <loc>https://tutosapp.co/ojito/en/terms/</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://tutosapp.co/ojito/terminos/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://tutosapp.co/ojito/en/terms/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://tutosapp.co/ojito/terminos/"/>
+  </url>
+  <url>
+    <loc>https://tutosapp.co/ojito/soporte/</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://tutosapp.co/ojito/soporte/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://tutosapp.co/ojito/en/support/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://tutosapp.co/ojito/soporte/"/>
+  </url>
+  <url>
+    <loc>https://tutosapp.co/ojito/en/support/</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://tutosapp.co/ojito/soporte/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://tutosapp.co/ojito/en/support/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://tutosapp.co/ojito/soporte/"/>
+  </url>
+  <url>
+    <loc>https://tutosapp.co/resume-roast/privacy/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://tutosapp.co/resume-roast/privacy/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://tutosapp.co/resume-roast/es/privacidad/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://tutosapp.co/resume-roast/privacy/"/>
+  </url>
+  <url>
+    <loc>https://tutosapp.co/resume-roast/es/privacidad/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://tutosapp.co/resume-roast/privacy/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://tutosapp.co/resume-roast/es/privacidad/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://tutosapp.co/resume-roast/privacy/"/>
+  </url>
+  <url>
+    <loc>https://tutosapp.co/resume-roast/terms/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://tutosapp.co/resume-roast/terms/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://tutosapp.co/resume-roast/es/terminos/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://tutosapp.co/resume-roast/terms/"/>
+  </url>
+  <url>
+    <loc>https://tutosapp.co/resume-roast/es/terminos/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://tutosapp.co/resume-roast/terms/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://tutosapp.co/resume-roast/es/terminos/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://tutosapp.co/resume-roast/terms/"/>
+  </url>
+  <url>
+    <loc>https://tutosapp.co/resume-roast/support/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://tutosapp.co/resume-roast/support/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://tutosapp.co/resume-roast/es/soporte/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://tutosapp.co/resume-roast/support/"/>
+  </url>
+  <url>
+    <loc>https://tutosapp.co/resume-roast/es/soporte/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://tutosapp.co/resume-roast/support/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://tutosapp.co/resume-roast/es/soporte/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://tutosapp.co/resume-roast/support/"/>
+  </url>
+  <url>
+    <loc>https://tutosapp.co/roast-interview/privacy/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://tutosapp.co/roast-interview/privacy/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://tutosapp.co/roast-interview/es/privacidad/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://tutosapp.co/roast-interview/privacy/"/>
+  </url>
+  <url>
+    <loc>https://tutosapp.co/roast-interview/es/privacidad/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://tutosapp.co/roast-interview/privacy/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://tutosapp.co/roast-interview/es/privacidad/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://tutosapp.co/roast-interview/privacy/"/>
+  </url>
+  <url>
+    <loc>https://tutosapp.co/roast-interview/terms/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://tutosapp.co/roast-interview/terms/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://tutosapp.co/roast-interview/es/terminos/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://tutosapp.co/roast-interview/terms/"/>
+  </url>
+  <url>
+    <loc>https://tutosapp.co/roast-interview/es/terminos/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://tutosapp.co/roast-interview/terms/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://tutosapp.co/roast-interview/es/terminos/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://tutosapp.co/roast-interview/terms/"/>
+  </url>
 </urlset>

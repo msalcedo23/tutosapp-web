@@ -13,6 +13,7 @@
   const done = root.querySelector('.chat-done');
   const fail = root.querySelector('.chat-fail');
   let at = 0;
+  let advance;
   let pointer = 0;
 
   const el = (tag, cls, text) => {
@@ -126,7 +127,9 @@
     const step = e.target.closest('fieldset.q');
     if (step !== steps[at] || !/^(radio|checkbox)$/.test(e.target.type)) return;
     check(step);
-    if (e.target.type === 'radio' && Date.now() - pointer < 1500) setTimeout(forward, 220);
+    if (e.target.type !== 'radio' || Date.now() - pointer >= 1500) return;
+    clearTimeout(advance);
+    advance = setTimeout(() => step === steps[at] && forward(), 220);
   });
   // A shown error goes away as soon as the answer is good. Only while typing, so the layout never
   // moves under a click on the button.

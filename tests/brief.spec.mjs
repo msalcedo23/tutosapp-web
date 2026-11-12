@@ -156,6 +156,25 @@ test('nothing is sent without consent', async ({ page }) => {
   expect(sent).toHaveLength(0);
 });
 
+test('changing the option right after a tap moves on once, with the last choice', async ({ page }) => {
+  await open(page, '/' + services.paths.es, 200);
+  await page.locator('#brief-nombre').fill('Ana');
+  await next(page).click();
+  await page.locator('#brief-contacto').fill('ana@empresa.co');
+  await next(page).click();
+  await next(page).click();
+  await page.locator('#brief-idea').fill(IDEA);
+  await next(page).click();
+  await expect(active(page)).toHaveAttribute('data-key', 'tipo');
+  await active(page).locator('.choice', { hasText: 'App móvil' }).click();
+  await active(page).locator('.choice', { hasText: 'Web o landing' }).click();
+  await expect(active(page)).toHaveAttribute('data-key', 'plazo');
+  await page.waitForTimeout(500);
+  await expect(active(page)).toHaveAttribute('data-key', 'plazo');
+  await expect(active(page).locator('.q-error')).toHaveText('');
+  await expect(page.locator('#brief .q.done .bubble.me').last()).toHaveText('Web o landing');
+});
+
 test.describe('without JavaScript', () => {
   test.use({ javaScriptEnabled: false });
   test('the same form shows every question and sends an email', async ({ page }) => {

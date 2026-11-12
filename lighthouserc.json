@@ -10,7 +10,10 @@
         "http://localhost/resume-roast/index.html",
         "http://localhost/resume-roast/es/index.html",
         "http://localhost/roast-interview/index.html",
-        "http://localhost/roast-interview/es/index.html"
+        "http://localhost/roast-interview/es/index.html",
+        "http://localhost/ojito/privacidad/index.html",
+        "http://localhost/resume-roast/terms/index.html",
+        "http://localhost/roast-interview/es/privacidad/index.html"
       ],
       "numberOfRuns": 1,
       "settings": { "chromeFlags": "--no-sandbox" }

@@ -2,10 +2,11 @@
 // The output is committed, so GitHub Pages publishes site/ as is.
 //   node scripts/build.mjs          write the files
 //   node scripts/build.mjs --check  fail if a committed file differs from what this script writes,
-//                                   if a relative link is broken, or if an app lacks its legal links
+//                                   if a relative link is broken, if an app lacks its legal pages,
+//                                   or if any page links to github.io
 import { createHash } from 'node:crypto';
-import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs';
-import { dirname, join, resolve } from 'node:path';
+import { readFileSync, writeFileSync, mkdirSync, existsSync, readdirSync } from 'node:fs';
+import { dirname, join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 // Public address of the site. GitHub Pages serves it with the custom domain set in the repo settings;
@@ -30,17 +31,27 @@ const esc = (s) =>
 // right after the closing * goes inside, so the period does not float away from the italic word.
 const rich = (s) => esc(s).replace(/\*([^*]+)\*([.,!?]?)/g, '<em>$1$2</em>');
 
-const OJITO_LEGAL = 'https://msalcedo23.github.io/ojito-legal/';
-const RR_LEGAL = 'https://msalcedo23.github.io/daily-quest-privacy-policy/resume-roast/';
-const RI_LEGAL = 'https://msalcedo23.github.io/castores-legal/';
+// Legal pages. This repo is the single source of truth for every app's privacy policy, terms and
+// support page: the text of each lives in legal/<app>/<lang>-<doc>.html and the build wraps it in
+// the site's design at <app path><slug>/ (for example ojito/privacidad/ and ojito/en/privacy/).
+// A file starts with its <h1> title; the rest is the document as published. Links between
+// documents are written as legal:<app>/<doc>/<lang>[#id] and become relative links here.
+const LEGAL_DIR = join(dirname(fileURLToPath(import.meta.url)), '..', 'legal');
+const LEGAL_DOCS = ['privacy', 'terms', 'support'];
+const LEGAL_SLUGS = {
+  es: { privacy: 'privacidad', terms: 'terminos', support: 'soporte' },
+  en: { privacy: 'privacy', terms: 'terms', support: 'support' },
+};
 
 // The apps, in the order they are shown. Adding an app is one more entry here (plus its images):
 // the home marquee, the home sections, the menus, the footers, the sitemap and its own page follow.
 // paths: the first language is the app's main one (hreflang x-default).
-// bg: the browser theme color, matching the top of the app's page. fonts: extra fonts its page preloads.
+// bg: the browser theme color, matching the top of the app's page; light: the same for its legal pages,
+// which use the light page background of its theme (--bg in style.css). fonts: extra fonts its page preloads.
 // status: 'live' (in a store), 'test' (closed testing) or 'soon'.
 // stores: 'live' links to the listing; 'soon' shows a "coming soon" badge.
-// legal: privacy policy and terms are required for every app and language (checked by --check).
+// legal: the date each of its legal documents last changed, shown as "last updated" on the page.
+// A privacy policy and terms are required for every app (checked by --check); support is optional.
 const apps = [
   {
     id: 'ojito',
@@ -48,16 +59,14 @@ const apps = [
     theme: 't-ojito',
     color: '#1f56d6',
     bg: '#eef3ff',
+    light: '#f4f7fd',
     fonts: ['instrument-serif-latin-italic'],
     icon: 'assets/img/ojito/icon.png',
     paths: { es: 'ojito/', en: 'ojito/en/' },
     status: 'test',
     stores: { play: { status: 'soon', url: PLAY('co.ojito.ojito') }, appStore: { status: 'soon' } },
     category: 'FoodAndDrinkApplication',
-    legal: {
-      es: { privacy: `${OJITO_LEGAL}privacidad.html`, terms: `${OJITO_LEGAL}terminos.html`, support: `${OJITO_LEGAL}soporte.html` },
-      en: { privacy: `${OJITO_LEGAL}privacy.html`, terms: `${OJITO_LEGAL}terms.html`, support: `${OJITO_LEGAL}support.html` },
-    },
+    legal: { privacy: '2026-11-11', terms: '2026-11-11', support: '2026-11-11' },
     look: 'panels',
     shotSize: [540, 960],
     shots: (lang) =>
@@ -188,16 +197,14 @@ const apps = [
     theme: 't-rr',
     color: '#ff6a2b',
     bg: '#120b08',
+    light: '#fbf7f3',
     fonts: ['anton-latin'],
     icon: 'assets/img/resume-roast/icon.png',
     paths: { en: 'resume-roast/', es: 'resume-roast/es/' },
     status: 'live',
     stores: { play: { status: 'live', url: PLAY('com.resumeroast.app') }, appStore: { status: 'soon' } },
     category: 'BusinessApplication',
-    legal: {
-      es: { privacy: `${RR_LEGAL}#es`, terms: `${RR_LEGAL}terms.html#es`, support: 'https://msalcedo23.github.io/resumeroast-support/es/' },
-      en: { privacy: `${RR_LEGAL}#en`, terms: `${RR_LEGAL}terms.html#en`, support: 'https://msalcedo23.github.io/resumeroast-support/' },
-    },
+    legal: { privacy: '2026-11-11', terms: '2026-11-11', support: '2026-11-11' },
     look: 'panels',
     shotSize: [540, 960],
     shots: (lang) => ['01-result', '02-match', '04-rewrite', '06-share'].map((f) => `assets/img/resume-roast/${lang}-${f}.jpg`),
@@ -318,16 +325,14 @@ const apps = [
     theme: 't-ri',
     color: '#3b7bff',
     bg: '#060a16',
+    light: '#f5f7fb',
     fonts: [],
     icon: 'assets/img/roast-interview/icon.png',
     paths: { en: 'roast-interview/', es: 'roast-interview/es/' },
     status: 'soon',
     stores: { play: { status: 'soon' }, appStore: { status: 'soon' } },
     category: 'EducationalApplication',
-    legal: {
-      es: { privacy: `${RI_LEGAL}privacy/`, terms: `${RI_LEGAL}terms/` },
-      en: { privacy: `${RI_LEGAL}privacy/#en`, terms: `${RI_LEGAL}terms/#en` },
-    },
+    legal: { privacy: '2026-11-11', terms: '2026-11-11' },
     look: 'phone',
     shotSize: [441, 960],
     shots: (lang) =>
@@ -483,6 +488,13 @@ const ui = {
     notFound: 'Esta página no existe.',
     backHome: 'Volver al inicio',
     faqPrivacy: 'Lee la política de privacidad',
+    updated: 'Última actualización',
+    toc: 'En esta página',
+    legalAbout: {
+      privacy: (name) => `Política de privacidad de ${name}: qué datos usa la app, para qué, con quién se comparten, cuánto tiempo se guardan y cómo ejercer tus derechos.`,
+      terms: (name) => `Términos y condiciones de ${name}: las reglas para usar la app, las compras y tus derechos.`,
+      support: (name) => `Soporte de ${name}: cómo escribirnos, ayuda con la app y cómo borrar tus datos.`,
+    },
     seeExample: 'Mira un ejemplo',
     askTitle: 'Pregúntale a nuestras apps',
     askLegend: 'Elige una pregunta',
@@ -532,6 +544,13 @@ const ui = {
     notFound: 'This page does not exist.',
     backHome: 'Back to home',
     faqPrivacy: 'Read the privacy policy',
+    updated: 'Last updated',
+    toc: 'On this page',
+    legalAbout: {
+      privacy: (name) => `${name} privacy policy: what data the app uses, what for, who it is shared with, how long it is kept and how to exercise your rights.`,
+      terms: (name) => `${name} terms and conditions: the rules for using the app, purchases and your rights.`,
+      support: (name) => `${name} support: how to reach us, help with the app and how to delete your data.`,
+    },
     seeExample: 'See an example',
     askTitle: 'Ask our apps',
     askLegend: 'Pick a question',
@@ -648,6 +667,11 @@ const langs = ['es', 'en'];
 
 const rel = (from, to) => '../'.repeat(from.split('/').filter(Boolean).length) + to || './';
 
+// Where an app's legal document lives in a language, and which documents it has, in menu order.
+const legalPath = (app, lang, doc) => `${app.paths[lang]}${LEGAL_SLUGS[lang][doc]}/`;
+const legalDocs = (app) => LEGAL_DOCS.filter((doc) => app.legal[doc]);
+const legalAlternates = (app, doc) => Object.fromEntries(Object.keys(app.paths).map((l) => [l, legalPath(app, l, doc)]));
+
 // The stylesheet URL carries a hash of its content. A browser or CDN that still holds an older
 // style.css then never pairs it with newer pages, which would leave them half unstyled.
 const CSS_PATH = 'assets/style.css';
@@ -752,10 +776,10 @@ function head({ lang, title, description, path, alternates, og, bg, ld, fonts = 
 // popover, so it needs no JavaScript: the browser opens and closes it, closes it on Esc or a tap
 // outside, returns the focus to the button and tells screen readers whether it is open. Its icons
 // load lazily, so a closed list costs no downloads.
-function switcher(lang, path, app) {
+function switcher(lang, path, app, current = 'page') {
   const t = ui[lang];
-  const item = (href, img, name, line, current) =>
-    `<li><a href="${href}"${current ? ' aria-current="page"' : ''}><img src="${img}" alt="" width="36" height="36" loading="lazy"><span class="apps-name"><b>${esc(name)}</b>${line ? `<span>${esc(line)}</span>` : ''}</span>${current ? icons.check : ''}</a></li>`;
+  const item = (href, img, name, line, here) =>
+    `<li><a href="${href}"${here ? ` aria-current="${current}"` : ''}><img src="${img}" alt="" width="36" height="36" loading="lazy"><span class="apps-name"><b>${esc(name)}</b>${line ? `<span>${esc(line)}</span>` : ''}</span>${here ? icons.check : ''}</a></li>`;
   const logo = rel(path, 'favicon.svg');
   return `<button class="apps-toggle" type="button" popovertarget="apps-menu" aria-controls="apps-menu" aria-label="Tutos App: ${t.switcher}"><img src="${logo}" alt="" width="${app ? 24 : 28}" height="${app ? 24 : 28}">${app ? '' : '<span>Tutos App</span>'}${icons.chevron}</button>
         <nav class="apps-menu" id="apps-menu" popover aria-label="${t.switcherMenu}">
@@ -767,12 +791,13 @@ function switcher(lang, path, app) {
 // The floating pill navigation: the app switcher, page links, language switch and the page's main
 // action. An app page stands on its own: its brand and its own sections; the other apps and the
 // Tutos App home are one tap away in the switcher, behind the small Tutos App logo.
-function nav({ lang, path, theme, items, other, cta, app }) {
+// current: 'page' on the app's own page; 'true' on its legal pages, which belong to the app.
+function nav({ lang, path, theme, items, other, cta, app, current = 'page' }) {
   const t = ui[lang];
   const brand = app
-    ? `${switcher(lang, path, app)}
+    ? `${switcher(lang, path, app, current)}
         <span class="nav-sep" aria-hidden="true"></span>
-        <a class="brand" href="${rel(path, app.paths[lang])}" aria-current="page"><img src="${rel(path, app.icon)}" alt="" width="28" height="28"><span>${esc(app.name)}</span></a>`
+        <a class="brand" href="${rel(path, app.paths[lang])}"${current === 'page' ? ' aria-current="page"' : ''}><img src="${rel(path, app.icon)}" alt="" width="28" height="28"><span>${esc(app.name)}</span></a>`
     : switcher(lang, path);
   return `
   <body class="${theme}">
@@ -791,11 +816,13 @@ function nav({ lang, path, theme, items, other, cta, app }) {
     </header>`;
 }
 
-function legalLinks(app, lang) {
+function legalLinks(app, lang, path) {
   const t = ui[lang];
-  return ['privacy', 'terms', 'support']
-    .filter((k) => app.legal[lang][k])
-    .map((k) => `<li><a href="${app.legal[lang][k]}">${t[k]}</a></li>`)
+  return legalDocs(app)
+    .map((doc) => {
+      const href = legalPath(app, lang, doc);
+      return `<li><a href="${rel(path, href)}"${href === path ? ' aria-current="page"' : ''}>${t[doc]}</a></li>`;
+    })
     .join('');
 }
 
@@ -807,8 +834,8 @@ function footer({ lang, path, only }) {
     ? ''
     : `<nav aria-label="${t.allApps}"><h2>${t.ourApps}</h2><ul>${apps.map((a) => `<li><a href="${rel(path, a.paths[lang])}">${esc(a.name)}</a></li>`).join('')}</ul></nav>`;
   const legal = only
-    ? `<ul>${legalLinks(only, lang)}</ul>`
-    : apps.map((a) => `<div class="legal-group"><b>${esc(a.name)}</b><ul>${legalLinks(a, lang)}</ul></div>`).join('');
+    ? `<ul>${legalLinks(only, lang, path)}</ul>`
+    : apps.map((a) => `<div class="legal-group"><b>${esc(a.name)}</b><ul>${legalLinks(a, lang, path)}</ul></div>`).join('');
   return `
     <footer class="foot">
       <div class="wrap">
@@ -1054,7 +1081,7 @@ function appPage(app, lang) {
         <div class="faq-head reveal">
           ${kicker(4, t.faqKicker)}
           <h2 id="faq-h">${t.faq}</h2>
-          <p><a href="${app.legal[lang].privacy}">${t.faqPrivacy}</a><br><a href="${app.legal[lang].terms}">${t.terms}</a><br><a href="mailto:${EMAIL}">${EMAIL}</a></p>
+          <p><a href="${rel(path, legalPath(app, lang, 'privacy'))}">${t.faqPrivacy}</a><br><a href="${rel(path, legalPath(app, lang, 'terms'))}">${t.terms}</a><br><a href="mailto:${EMAIL}">${EMAIL}</a></p>
         </div>
         <div class="faq">${p.faq
           .map(
@@ -1073,6 +1100,125 @@ function appPage(app, lang) {
           ${offer}
         </div>
       </section>
+    </main>` +
+    footer({ lang, path, only: app })
+  );
+}
+
+// Plain text of a bit of HTML, for titles, labels and ids.
+const plain = (html) =>
+  html
+    .replace(/<[^>]+>/g, '')
+    .replace(/&nbsp;/g, ' ')
+    .replace(/&quot;/g, '"')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&amp;/g, '&')
+    .trim();
+const slugify = (s) =>
+  s
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '');
+
+// The text of a legal document: its <h1> title and the rest, exactly as written in legal/.
+function legalSource(app, lang, doc) {
+  const file = join(LEGAL_DIR, app.id, `${lang}-${doc}.html`);
+  const raw = readFileSync(file, 'utf8');
+  const m = raw.match(/^<h1>([\s\S]*?)<\/h1>\n/);
+  if (!m) throw new Error(`${relative(process.cwd(), file)} must start with its <h1> title`);
+  return { title: m[1], body: raw.slice(m[0].length) };
+}
+
+// A legal page: the document's own text, unchanged, in a readable column with a table of
+// contents built from its sections and the date it last changed. Only markup changes: each section
+// gets an id if it lacks one, a wide table that scrolls sideways becomes a labeled region that the
+// keyboard can reach, and phone numbers in links keep their digits on one line.
+function legalPage(app, lang, doc) {
+  const t = ui[lang];
+  const path = legalPath(app, lang, doc);
+  const otherLang = lang === 'es' ? 'en' : 'es';
+  const url = SITE_URL + path;
+  const { title, body: source } = legalSource(app, lang, doc);
+
+  const toc = [];
+  const ids = new Set(['main', 'apps-menu', 'toc-h']);
+  let section = plain(title);
+  const body = source
+    .replace(/<h2(?: id="([^"]+)")?>([\s\S]*?)<\/h2>|<div class="tabla">([\s\S]*?)<\/div>/g, (all, id, inner, table) => {
+      if (table) return `<section class="tabla" tabindex="0" aria-label="${esc(section)}">${table}</section>`;
+      section = plain(inner);
+      let key = id || slugify(section);
+      for (let n = 2; ids.has(key); n++) key = `${id || slugify(section)}-${n}`;
+      ids.add(key);
+      toc.push([key, inner]);
+      return `<h2 id="${key}">${inner}</h2>`;
+    })
+    .replace(/href="legal:([a-z0-9-]+)\/([a-z]+)\/([a-z]{2})(#[^"]*)?"/g, (all, id, d, l, frag = '') => {
+      const target = apps.find((a) => a.id === id);
+      // An unknown target stays as written, and the link check in run() reports it.
+      return target?.legal[d] && target.paths[l] ? `href="${rel(path, legalPath(target, l, d))}${frag}"` : all;
+    })
+    .replace(/(<a href="tel:[^"]+">)([^<]+)<\/a>/g, (all, open, number) => `${open}${number.replace(/ /g, '&nbsp;')}</a>`);
+
+  const date = app.legal[doc];
+  const updated = new Intl.DateTimeFormat(lang === 'es' ? 'es-CO' : 'en-US', { dateStyle: 'long', timeZone: 'UTC' }).format(
+    new Date(`${date}T00:00:00Z`)
+  );
+  const items = legalDocs(app).map((d) => [rel(path, legalPath(app, lang, d)), t[d], d === doc]);
+  const contents =
+    toc.length > 1
+      ? `
+        <nav class="toc" aria-labelledby="toc-h">
+          <h2 id="toc-h">${t.toc}</h2>
+          <ol>${toc.map(([id, inner]) => `<li><a href="#${id}">${inner}</a></li>`).join('')}</ol>
+        </nav>`
+      : '';
+
+  return (
+    head({
+      lang,
+      title: `${plain(title)} · Tutos App`,
+      description: t.legalAbout[doc](app.name),
+      path,
+      alternates: legalAlternates(app, doc),
+      og: `${app.id}-${lang}`,
+      bg: app.light,
+      ld: {
+        '@type': 'WebPage',
+        name: plain(title),
+        url,
+        inLanguage: lang,
+        dateModified: date,
+        isPartOf: { '@type': 'WebSite', name: 'Tutos App', url: SITE_URL },
+        about: { '@type': 'MobileApplication', name: app.name, url: SITE_URL + app.paths[lang] },
+        publisher: organization,
+      },
+    }) +
+    nav({
+      lang,
+      path,
+      theme: `page-app page-legal ${app.theme}`,
+      items,
+      other: { lang: otherLang, path: legalPath(app, otherLang, doc) },
+      cta: mainAction(app, lang),
+      app,
+      current: 'true',
+    }) +
+    `
+    <main id="main" class="legal">
+      <header class="wrap legal-head">
+        <p class="kicker"><span class="num">${t.legal}</span><span>${esc(app.name)}</span></p>
+        <h1>${title}</h1>
+        <p class="legal-updated">${t.updated}: <time datetime="${date}">${updated}</time></p>
+      </header>
+      <div class="wrap legal-grid${contents ? '' : ' single'}">${contents}
+        <article class="legal-body">
+${body.trim()}
+        </article>
+      </div>
     </main>` +
     footer({ lang, path, only: app })
   );
@@ -1306,11 +1452,14 @@ function notFoundPage() {
 const files = {};
 for (const lang of langs) files[home.paths[lang] + 'index.html'] = homePage(lang);
 for (const app of apps) for (const lang of langs) files[app.paths[lang] + 'index.html'] = appPage(app, lang);
+for (const app of apps) {
+  for (const doc of legalDocs(app)) for (const lang of langs) files[legalPath(app, lang, doc) + 'index.html'] = legalPage(app, lang, doc);
+}
 files['404.html'] = notFoundPage();
 // GitHub ignores CNAME when publishing with Actions (the domain lives in the repo settings),
 // but it keeps the domain on record and works if the site is ever published from a branch.
 files['CNAME'] = `${DOMAIN}\n`;
-const allPaths = [home.paths, ...apps.map((a) => a.paths)];
+const allPaths = [home.paths, ...apps.map((a) => a.paths), ...apps.flatMap((a) => legalDocs(a).map((doc) => legalAlternates(a, doc)))];
 files['sitemap.xml'] = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
 ${allPaths
@@ -1336,12 +1485,14 @@ function run() {
   const check = process.argv.includes('--check');
   const problems = [];
 
-  // Every app needs its own privacy policy and terms, in every language, and every piece of copy.
+  // Every app needs its own privacy policy and terms (its text in legal/, in every language, which
+  // the build reads), the date each legal document last changed, and every piece of copy.
   for (const app of apps) {
+    for (const doc of ['privacy', 'terms']) if (!app.legal?.[doc]) problems.push(`${app.id}: missing legal.${doc}`);
+    for (const doc of legalDocs(app)) {
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(app.legal[doc])) problems.push(`${app.id}: legal.${doc} must be a YYYY-MM-DD date`);
+    }
     for (const lang of langs) {
-      for (const k of ['privacy', 'terms']) {
-        if (!/^https:\/\//.test(app.legal?.[lang]?.[k] || '')) problems.push(`${app.id}: missing ${lang} ${k} link`);
-      }
       for (const k of ['category', 'for', 'title', 'description', 'headline', 'lead', 'pitch', 'share', 'navCta', 'featureAlt']) {
         if (!app[lang]?.[k]) problems.push(`${app.id}: missing ${lang} ${k}`);
       }
@@ -1356,6 +1507,16 @@ function run() {
 
   for (const [name, body] of Object.entries(files)) {
     if (/@gmail\.com/i.test(body)) problems.push(`${name}: contains a Gmail address; use ${EMAIL}`);
+  }
+
+  // Nothing published may point at GitHub Pages: the legal pages live on this domain now. Checks
+  // every page this script writes and every other text file in site/.
+  const walk = (dir) => readdirSync(dir, { withFileTypes: true }).flatMap((e) => (e.isDirectory() ? walk(join(dir, e.name)) : [join(dir, e.name)]));
+  const published = new Set([...Object.keys(files), ...walk(ROOT).map((f) => relative(ROOT, f).split('\\').join('/'))]);
+  for (const name of published) {
+    if (!/\.(html|xml|txt|css|js|json|svg|webmanifest)$|^CNAME$/.test(name)) continue;
+    const body = files[name] ?? readFileSync(join(ROOT, name), 'utf8');
+    if (/github\.io/i.test(body)) problems.push(`${name}: links to github.io; publish it on ${SITE_URL} instead`);
   }
 
   // Templates leave indentation behind where an optional block is empty; drop it.
@@ -1376,7 +1537,7 @@ function run() {
   for (const [name, body] of Object.entries(files)) {
     if (!name.endsWith('.html')) continue;
     for (const [, ref] of body.matchAll(/(?:href|src)="([^"]+)"/g)) {
-      if (/^(https?:|mailto:)/.test(ref)) continue;
+      if (/^(https?:|mailto:|tel:)/.test(ref)) continue;
       if (ref.startsWith('#')) {
         if (!body.includes(`id="${ref.slice(1)}"`)) problems.push(`${name} -> ${ref} (no such id)`);
         continue;
@@ -1397,6 +1558,9 @@ function run() {
   console.log(check ? `${Object.keys(files).length} files up to date` : `Wrote ${Object.keys(files).length} files to site/`);
 }
 
-export { apps, home, COMPANY, DOMAIN, SITE_URL };
+// Every legal page, for the tests: its path, language, app and document.
+const legalPages = apps.flatMap((app) => legalDocs(app).flatMap((doc) => langs.map((lang) => ({ path: legalPath(app, lang, doc), lang, app, doc }))));
+
+export { apps, home, legalPages, COMPANY, DOMAIN, SITE_URL };
 
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) run();

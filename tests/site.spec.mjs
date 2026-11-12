@@ -2,19 +2,19 @@
 // no axe-core violations (WCAG 2.2 A/AA plus best practices), no sideways scroll, no broken
 // images or requests, no console errors, and the SEO basics point at https://tutosapp.co.
 // The stylesheet must parse whole in Chromium and load by its content hash, and the
-// CSS-only demos must switch panes. Full-page screenshots land in test-results/screens/.
+// CSS-only demos of the app pages must switch panes. Full-page screenshots land in test-results/screens/.
 import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { test, expect } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
-import { legalPages } from '../scripts/build.mjs';
+import { apps } from '../scripts/build.mjs';
 
 const SITE = 'https://tutosapp.co/';
 const pages = [...readFileSync(new URL('../site/sitemap.xml', import.meta.url), 'utf8').matchAll(/<loc>([^<]+)<\/loc>/g)].map(
   ([, loc]) => '/' + loc.slice(SITE.length)
 );
 const name = (path) => path.replace(/^\/|\/$/g, '').replace(/\//g, '-') || 'home';
-const STILL = '.reveal, .stage, .ask-card, .hero-bg { animation: none !important; }';
+const STILL = '.reveal, .stage, .ask-card, .hero-bg, .studio-steps li { animation: none !important; }';
 // The images on screen. The closed app switcher's icons load lazily, once it opens, and
 // tests/app-switcher.spec.mjs checks them open.
 const SHOWN = 'img:not([popover]:not(:popover-open) img)';
@@ -108,8 +108,7 @@ test.describe('home marquee', () => {
     test(`${path} tiles are links with names, pausable, and still with reduced motion`, async ({ page }) => {
       await page.goto(path);
       const tiles = page.locator('.track a.tile:not([tabindex="-1"])');
-      const apps = await page.locator('.app-card').count();
-      await expect(tiles).toHaveCount(apps);
+      await expect(tiles).toHaveCount(apps.length);
       for (const tile of await tiles.all()) await expect(tile).toHaveAccessibleName(/\S/);
       // Repeated tiles are decoration only: hidden from screen readers and out of the tab order.
       const repeats = page.locator('.track li[aria-hidden="true"] a.tile');
@@ -167,19 +166,7 @@ test.describe('stylesheet', () => {
 });
 
 test.describe('demos', () => {
-  test('the home question card shows the answer of the chosen question', async ({ page }) => {
-    await page.goto('/');
-    const answers = page.locator('.answers > *');
-    const n = await answers.count();
-    expect(n).toBeGreaterThan(1);
-    await expect(answers.nth(0)).toBeVisible();
-    await page.locator('.ask-card .tabs label').nth(n - 1).click();
-    await expect(answers.nth(n - 1)).toBeVisible();
-    await expect(answers.nth(0)).toBeHidden();
-  });
-
-  const legal = new Set(legalPages.map((l) => '/' + l.path));
-  for (const path of pages.filter((p) => p !== '/' && p !== '/en/' && !legal.has(p))) {
+  for (const path of apps.flatMap((a) => Object.values(a.paths)).map((p) => '/' + p)) {
     test(`${path} hero tabs switch the phone screen`, async ({ page }) => {
       await page.goto(path);
       const screens = page.locator('.hero-demo .screen > img');
@@ -191,5 +178,19 @@ test.describe('demos', () => {
       await expect(screens.nth(0)).toBeHidden();
       await expect(page.locator(`.hero-demo .tabs input`).nth(n - 1)).toBeChecked();
     });
+  }
+});
+
+// The "skip to content" link stays out of sight until the keyboard reaches it.
+test('the skip link shows only with keyboard focus', async ({ page }) => {
+  for (const path of ['/', '/servicios/']) {
+    await page.goto(path);
+    const skip = page.locator('a.skip');
+    await page.locator('#brief').scrollIntoViewIfNeeded();
+    expect(await skip.evaluate((a) => getComputedStyle(a).clipPath)).toBe('inset(50%)');
+    await expect(skip).not.toBeInViewport();
+    await skip.focus();
+    await expect(skip).toBeInViewport({ ratio: 1 });
+    expect(await skip.evaluate((a) => getComputedStyle(a).clipPath)).toBe('none');
   }
 });

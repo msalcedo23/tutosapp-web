@@ -1,20 +1,21 @@
-// Draws the home page's social-share images (site/assets/img/og/home-es.jpg and home-en.jpg,
-// 1200 × 630) from the same data as the site: the home headline and one icon per app.
-// Run it after changing the home headline or the app list:  npm run og
+// Draws the social-share images of the home and the services page (site/assets/img/og/home-es.jpg,
+// home-en.jpg, services-es.jpg and services-en.jpg, 1200 × 630) from the same data as the site:
+// each page's eyebrow and headline, and one icon per app.
+// Run it after changing either headline or the app list:  npm run og
 // Needs the dev dependencies (npm ci) and Google Chrome.
 import { writeFileSync, rmSync, mkdtempSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { pathToFileURL, fileURLToPath } from 'node:url';
 import { chromium } from '@playwright/test';
-import { apps, home, DOMAIN } from './build.mjs';
+import { apps, home, services, DOMAIN } from './build.mjs';
 
 const SITE = fileURLToPath(new URL('../site/', import.meta.url));
 const file = (p) => pathToFileURL(join(SITE, p)).href;
 const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 const rich = (s) => esc(s).replace(/\*([^*]+)\*([.,!?]?)/g, '<em>$1$2</em>');
 
-const page = (lang) => `<!doctype html>
+const page = (lang, copy) => `<!doctype html>
 <html lang="${lang}">
 <meta charset="utf-8">
 <style>
@@ -41,7 +42,7 @@ const page = (lang) => `<!doctype html>
   <div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div><div class="grid"></div>
   <div class="wrap">
     <div class="brand"><img src="${file('favicon.svg')}" alt=""> Tutos App</div>
-    <div><p class="eyebrow">${esc(home[lang].eyebrow)}</p><h1>${rich(home[lang].headline)}</h1></div>
+    <div><p class="eyebrow">${esc(copy.eyebrow)}</p><h1>${rich(copy.headline)}</h1></div>
     <div class="foot">
       <div class="icons">${apps.map((a) => `<img src="${file(a.icon)}" alt="">`).join('')}</div>
       <div class="domain">${DOMAIN}</div>
@@ -55,12 +56,12 @@ const dir = mkdtempSync(join(tmpdir(), 'tutosapp-og-'));
 const browser = await chromium.launch({ channel: 'chrome' });
 try {
   const tab = await browser.newPage({ viewport: { width: 1200, height: 630 } });
-  for (const lang of ['es', 'en']) {
-    const html = join(dir, `home-${lang}.html`);
-    writeFileSync(html, page(lang));
+  for (const [name, source] of [['home', home], ['services', services]]) for (const lang of ['es', 'en']) {
+    const html = join(dir, `${name}-${lang}.html`);
+    writeFileSync(html, page(lang, source[lang]));
     await tab.goto(pathToFileURL(html).href);
     await tab.evaluate(() => document.fonts.ready);
-    const out = join(SITE, `assets/img/og/home-${lang}.jpg`);
+    const out = join(SITE, `assets/img/og/${name}-${lang}.jpg`);
     await tab.screenshot({ path: out, type: 'jpeg', quality: 86 });
     console.log(`Wrote ${out}`);
   }

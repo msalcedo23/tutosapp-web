@@ -348,20 +348,158 @@ h2 em {
   border-radius: 8px;
 }
 
-.home-link {
+/* The app switcher: the Tutos App logo and a chevron. It opens a small list of the apps, a native
+   popover in the top layer, solid white so the page under it never shows through, and tinted
+   with the page's own accent. */
+.apps-toggle {
+  display: inline-flex;
   flex: none;
-  padding: 4px;
+  gap: 4px;
+  align-items: center;
+  min-height: 40px;
+  padding: 4px 6px 4px 4px;
   margin-left: -6px;
-  border-radius: 10px;
+  font: inherit;
+  font-size: 1.02rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: inherit;
+  cursor: pointer;
+  background: none;
+  border: 0;
+  border-radius: 12px;
   transition: background 0.2s;
+  anchor-name: --apps-toggle;
+  -webkit-tap-highlight-color: transparent;
 }
 
-.home-link:hover {
+.apps-toggle > span {
+  margin-left: 5px;
+}
+
+.apps-toggle:hover,
+.apps-toggle:has(+ .apps-menu:popover-open) {
   background: rgb(12 11 18 / 6%);
 }
 
-.home-link img {
+.apps-toggle img {
   border-radius: 7px;
+}
+
+.apps-toggle svg {
+  color: #6b6977;
+  transition: rotate 0.2s var(--ease);
+}
+
+.apps-toggle:has(+ .apps-menu:popover-open) svg {
+  rotate: 180deg;
+}
+
+.apps-menu {
+  position: fixed;
+  inset: 76px auto auto 50%;
+  width: min(340px, calc(100vw - 16px));
+  max-height: calc(100dvh - 92px);
+  padding: 6px;
+  margin: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
+  color: #0c0b12;
+  background: #fff;
+  border: 1px solid rgb(12 11 18 / 8%);
+  border-radius: 22px;
+  box-shadow: 0 24px 56px -20px rgb(12 11 18 / 45%), 0 2px 8px -2px rgb(12 11 18 / 12%);
+  translate: -50% 0;
+
+  --focus: var(--accent-text);
+}
+
+/* Under the button where the browser can anchor it; centered under the menu bar otherwise. */
+@supports (anchor-name: --a) {
+  @media (min-width: 521px) {
+    .apps-menu {
+      inset: calc(anchor(--apps-toggle bottom) + 14px) auto auto calc(anchor(--apps-toggle left) - 8px);
+      translate: none;
+    }
+  }
+}
+
+@supports not selector(:popover-open) {
+  .apps-toggle,
+  .apps-menu,
+  .apps-toggle + .apps-menu + .nav-sep {
+    display: none;
+  }
+}
+
+.apps-menu ul {
+  display: grid;
+  gap: 2px;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.apps-menu .apps-home {
+  padding-top: 6px;
+  margin-top: 6px;
+  border-top: 1px solid rgb(12 11 18 / 8%);
+}
+
+.apps-menu a {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 8px 10px 8px 8px;
+  border-radius: 16px;
+  transition: background 0.2s;
+}
+
+.apps-menu a:hover {
+  background: rgb(12 11 18 / 5%);
+}
+
+.apps-menu a[aria-current="page"] {
+  background: color-mix(in srgb, var(--accent) 10%, #fff);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 35%, transparent);
+}
+
+.apps-menu img {
+  flex: none;
+  border-radius: 10px;
+}
+
+.apps-home img {
+  width: 28px;
+  height: 28px;
+  margin: 4px;
+  border-radius: 8px;
+}
+
+.apps-name {
+  display: grid;
+  flex: 1;
+  min-width: 0;
+  line-height: 1.3;
+}
+
+.apps-name b {
+  font-size: 0.95rem;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+}
+
+.apps-name span {
+  overflow: hidden;
+  font-size: 0.82rem;
+  color: #55535f;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.apps-menu a > svg {
+  flex: none;
+  color: var(--accent-text);
 }
 
 .nav-sep {
@@ -2471,8 +2609,8 @@ h2 em {
     font-size: 0.95rem;
   }
 
-  .home-link {
-    padding: 2px;
+  .apps-toggle {
+    padding: 2px 4px 2px 2px;
     margin-left: -4px;
   }
 
@@ -2826,6 +2964,26 @@ h2 em {
 @keyframes lift {
   to {
     translate: 0 -48px;
+  }
+}
+
+/* The switcher fades and grows in from its button, and fades out when it closes. */
+@media (prefers-reduced-motion: no-preference) {
+  .apps-menu {
+    transition: opacity 0.18s var(--ease), scale 0.18s var(--ease), display 0.18s allow-discrete, overlay 0.18s allow-discrete;
+    transform-origin: top left;
+  }
+
+  .apps-menu:not(:popover-open) {
+    opacity: 0;
+    scale: 0.96;
+  }
+
+  @starting-style {
+    .apps-menu:popover-open {
+      opacity: 0;
+      scale: 0.96;
+    }
   }
 }
 

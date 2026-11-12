@@ -470,6 +470,9 @@ const ui = {
     see: 'Ver',
     menu: 'Menú principal',
     allApps: 'Todas las apps de Tutos App',
+    switcher: 'ver todas las apps',
+    switcherMenu: 'Ir a otra app',
+    homeOf: 'Inicio de Tutos App',
     status: { live: 'Disponible', test: 'En pruebas', soon: 'Próximamente' },
     pause: 'Pausar animación',
     resume: 'Reanudar animación',
@@ -516,6 +519,9 @@ const ui = {
     see: 'See',
     menu: 'Main menu',
     allApps: 'All Tutos App apps',
+    switcher: 'see all apps',
+    switcherMenu: 'Go to another app',
+    homeOf: 'Tutos App home',
     status: { live: 'Available', test: 'In testing', soon: 'Coming soon' },
     pause: 'Pause animation',
     resume: 'Resume animation',
@@ -681,6 +687,7 @@ const icons = {
   pause: svg('<path d="M9 5v14M15 5v14"/>', 14, 2.4),
   playSmall: svg('<path d="M7 4.5v15l12-7.5z"/>', 14),
   plus: svg('<path d="M12 5v14M5 12h14"/>', 18, 2),
+  chevron: svg('<path d="m6 9 6 6 6-6"/>', 14, 2.4),
 };
 
 const wave = '<span class="wave" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>';
@@ -739,16 +746,34 @@ function head({ lang, title, description, path, alternates, og, bg, ld, fonts = 
   </head>`;
 }
 
-// The floating pill navigation: brand, page links, language switch and the page's main action.
-// An app page stands on its own: its brand and its own sections, with only a small Tutos App
-// logo that leads back to the home page.
+// The app switcher: one small button (the Tutos App logo and a chevron) that opens a short list
+// of every app, with its icon, name and one line, and a link to the Tutos App home. The names stay
+// out of the menu bar until it is opened, so each app page keeps its own space. It is a native
+// popover, so it needs no JavaScript: the browser opens and closes it, closes it on Esc or a tap
+// outside, returns the focus to the button and tells screen readers whether it is open. Its icons
+// load lazily, so a closed list costs no downloads.
+function switcher(lang, path, app) {
+  const t = ui[lang];
+  const item = (href, img, name, line, current) =>
+    `<li><a href="${href}"${current ? ' aria-current="page"' : ''}><img src="${img}" alt="" width="36" height="36" loading="lazy"><span class="apps-name"><b>${esc(name)}</b>${line ? `<span>${esc(line)}</span>` : ''}</span>${current ? icons.check : ''}</a></li>`;
+  const logo = rel(path, 'favicon.svg');
+  return `<button class="apps-toggle" type="button" popovertarget="apps-menu" aria-controls="apps-menu" aria-label="Tutos App: ${t.switcher}"><img src="${logo}" alt="" width="${app ? 24 : 28}" height="${app ? 24 : 28}">${app ? '' : '<span>Tutos App</span>'}${icons.chevron}</button>
+        <nav class="apps-menu" id="apps-menu" popover aria-label="${t.switcherMenu}">
+          <ul>${apps.map((a) => item(rel(path, a.paths[lang]), rel(path, a.icon), a.name, a[lang].category, a === app)).join('')}</ul>
+          <ul class="apps-home">${item(rel(path, home.paths[lang]), logo, t.homeOf, '', !app)}</ul>
+        </nav>`;
+}
+
+// The floating pill navigation: the app switcher, page links, language switch and the page's main
+// action. An app page stands on its own: its brand and its own sections; the other apps and the
+// Tutos App home are one tap away in the switcher, behind the small Tutos App logo.
 function nav({ lang, path, theme, items, other, cta, app }) {
   const t = ui[lang];
   const brand = app
-    ? `<a class="home-link" href="${rel(path, home.paths[lang])}"><img src="${rel(path, 'favicon.svg')}" alt="Tutos App" width="24" height="24"></a>
+    ? `${switcher(lang, path, app)}
         <span class="nav-sep" aria-hidden="true"></span>
         <a class="brand" href="${rel(path, app.paths[lang])}" aria-current="page"><img src="${rel(path, app.icon)}" alt="" width="28" height="28"><span>${esc(app.name)}</span></a>`
-    : `<a class="brand" href="${rel(path, home.paths[lang])}"><img src="${rel(path, 'favicon.svg')}" alt="" width="28" height="28"><span>Tutos App</span></a>`;
+    : switcher(lang, path);
   return `
   <body class="${theme}">
     <a class="skip" href="#main">${t.skip}</a>

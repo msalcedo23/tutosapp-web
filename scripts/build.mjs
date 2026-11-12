@@ -1123,10 +1123,28 @@ const slugify = (s) =>
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-|-$/g, '');
 
-// The text of a legal document: its <h1> title and the rest, exactly as written in legal/.
+// Where the app can be installed, as one sentence from app.stores, so a legal page that writes
+// {{stores}} says the same as the app's page and follows it when a store goes live.
+function storesSentence(app, lang) {
+  const where = {
+    appStore: { en: 'for iPhone on the App Store', es: 'para iPhone en el App Store' },
+    play: { en: 'for Android on Google Play', es: 'para Android en Google Play' },
+  };
+  const list = (status) => new Intl.ListFormat(lang, { type: 'conjunction' }).format(
+    Object.keys(where).filter((s) => (app.stores[s].status === 'live') === status).map((s) => where[s][lang])
+  );
+  const live = list(true);
+  const soon = list(false);
+  const words = lang === 'es' ? ['Disponible', 'Próximamente', 'y próximamente'] : ['Available', 'Coming soon', 'and coming soon'];
+  if (live && soon) return `${words[0]} ${live} ${words[2]} ${soon}.`;
+  return live ? `${words[0]} ${live}.` : `${words[1]} ${soon}.`;
+}
+
+// The text of a legal document: its <h1> title and the rest, exactly as written in legal/, with
+// {{stores}} filled in from the app's stores.
 function legalSource(app, lang, doc) {
   const file = join(LEGAL_DIR, app.id, `${lang}-${doc}.html`);
-  const raw = readFileSync(file, 'utf8');
+  const raw = readFileSync(file, 'utf8').replaceAll('{{stores}}', storesSentence(app, lang));
   const m = raw.match(/^<h1>([\s\S]*?)<\/h1>\n/);
   if (!m) throw new Error(`${relative(process.cwd(), file)} must start with its <h1> title`);
   return { title: m[1], body: raw.slice(m[0].length) };

@@ -6,9 +6,9 @@ import { test, expect } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 import { home, services, CONTACT_ENDPOINT, EMAIL, WHATSAPP } from '../scripts/build.mjs';
 
-// The real endpoint once it is set in scripts/build.mjs; until then the tests point the chat at a
-// stand-in address, the same way the build would.
-const ENDPOINT = CONTACT_ENDPOINT || 'https://example.supabase.co/functions/v1/contacto-tutosapp';
+// The real endpoint, from scripts/build.mjs. Every request to it is stubbed: no test sends a real
+// submission.
+const ENDPOINT = CONTACT_ENDPOINT;
 
 const IDEA = 'Una app para que los clientes de mi tienda pidan a domicilio y paguen en línea.';
 
@@ -20,7 +20,7 @@ async function open(page, path, status) {
     return route.fulfill({ status, contentType: 'application/json', body: JSON.stringify(status === 200 ? { ok: true } : { ok: false, error: 'datos' }) });
   });
   await page.goto(path);
-  await page.locator('#brief form').evaluate((f, url) => (f.dataset.endpoint = url), ENDPOINT);
+  await expect(page.locator('#brief form')).toHaveAttribute('data-endpoint', ENDPOINT);
   await page.locator('#brief').scrollIntoViewIfNeeded();
   return sent;
 }

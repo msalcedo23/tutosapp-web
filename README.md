@@ -42,9 +42,9 @@ El sitio es claro, con paneles oscuros, y no cambia con el modo oscuro del telé
 
 ## El chat "Cuéntanos tu idea"
 
-Está en el contacto del inicio y de la página de servicios. Hace una pregunta a la vez y muestra las respuestas como en un chat: nombre, correo o WhatsApp, empresa (opcional), la idea, el tipo de proyecto, cuándo empezar, el presupuesto en dólares, si quiere un NDA y la autorización, que enlaza a la política de privacidad de la empresa. Al final envía las respuestas a la función `contacto-tutosapp` del backend y muestra "Te escribimos en menos de 2 días hábiles". Si la función responde 400 o 429, si no hay red o si `CONTACT_ENDPOINT` está vacío, ofrece el mismo mensaje ya escrito por correo a hola@tutosapp.co y por WhatsApp (+57 350 495 8312). Sin JavaScript es un formulario con todas las preguntas que abre el correo con las respuestas.
+Está en el contacto del inicio y de la página de servicios. Hace una pregunta a la vez y muestra las respuestas como en un chat: nombre, correo o WhatsApp, empresa (opcional), la idea, el tipo de proyecto, cuándo empezar, el presupuesto en dólares, si quiere un NDA y la autorización, que enlaza a la política de privacidad de la empresa. Al final envía las respuestas a la función `contacto-tutosapp` del backend y muestra "Te escribimos en menos de 2 días hábiles". Si la función responde 400 o 429 o si no hay red, ofrece el mismo mensaje ya escrito por correo a hola@tutosapp.co y por WhatsApp (+57 350 495 8312). Sin JavaScript es un formulario con todas las preguntas que abre el correo con las respuestas.
 
-La dirección de la función es `CONTACT_ENDPOINT` en `scripts/build.mjs`; el build la pone en el formulario (`data-endpoint`). El contrato, que el backend también cumple:
+La dirección de la función es `CONTACT_ENDPOINT` en `scripts/build.mjs` (`https://teyhhauvvqxmwgzxpcey.supabase.co/functions/v1/contacto-tutosapp`); el build la pone en el formulario (`data-endpoint`). El contrato, que el backend también cumple:
 
 - `POST` con JSON, sin JWT. CORS permite `https://tutosapp.co` y `http://localhost`.
 - Cuerpo:

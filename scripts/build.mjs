@@ -28,8 +28,8 @@ const whatsapp = (text) => `https://wa.me/?text=${encodeURIComponent(text)}`;
 const WHATSAPP = '573504958312';
 const whatsappUs = (text) => `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(text)}`;
 // Where the "Tell us your idea" chat sends its answers (a Supabase edge function; JSON contract in
-// README.md). Empty: the chat ends by opening the same message in the visitor's email instead.
-const CONTACT_ENDPOINT = '';
+// README.md). On a 400, a 429 or a network error the chat offers the same message by email and WhatsApp.
+const CONTACT_ENDPOINT = 'https://teyhhauvvqxmwgzxpcey.supabase.co/functions/v1/contacto-tutosapp';
 
 const esc = (s) =>
   String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');

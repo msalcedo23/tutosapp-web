@@ -1,7 +1,7 @@
 // "Tell us your idea": turns the form in #brief into a chat, one question at a time, and sends the
 // answers as JSON to the address in its data-endpoint (a Supabase edge function; the contract is
 // in README.md). It is the site's only script. Without it the same form shows every question at
-// once and sends them as an email. If sending fails, or no endpoint is set, it offers that email
+// once and sends them as an email. If sending fails, it offers that email
 // and WhatsApp, already filled in with the answers. The markup comes from briefForm() in
 // scripts/build.mjs; the strings in the page's language, from #brief-strings.
 (() => {
@@ -180,8 +180,6 @@
       consentimiento: data.consentimiento === true,
       sitio: form.elements.sitio.value,
     };
-    const endpoint = form.dataset.endpoint;
-    if (!endpoint) return fallback('');
 
     next.disabled = true;
     back.disabled = true;
@@ -190,7 +188,7 @@
     const timer = setTimeout(() => timeout.abort(), 15000);
     let status = 0;
     try {
-      const res = await fetch(endpoint, {
+      const res = await fetch(form.dataset.endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body),

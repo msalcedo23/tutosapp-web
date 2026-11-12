@@ -286,6 +286,8 @@ h2 em {
   border: 0;
 }
 
+/* Hidden until it has keyboard focus: clipped away and moved off the top, so no screenshot,
+   tall page capture or zoom ever shows it over the content. */
 .skip {
   position: fixed;
   top: 12px;
@@ -296,10 +298,12 @@ h2 em {
   color: #fff;
   background: #0c0b12;
   border-radius: 12px;
+  clip-path: inset(50%);
   translate: 0 -200%;
 }
 
 .skip:focus {
+  clip-path: none;
   translate: 0 0;
 }
 

@@ -180,3 +180,17 @@ test.describe('demos', () => {
     });
   }
 });
+
+// The "skip to content" link stays out of sight until the keyboard reaches it.
+test('the skip link shows only with keyboard focus', async ({ page }) => {
+  for (const path of ['/', '/servicios/']) {
+    await page.goto(path);
+    const skip = page.locator('a.skip');
+    await page.locator('#brief').scrollIntoViewIfNeeded();
+    expect(await skip.evaluate((a) => getComputedStyle(a).clipPath)).toBe('inset(50%)');
+    await expect(skip).not.toBeInViewport();
+    await skip.focus();
+    await expect(skip).toBeInViewport({ ratio: 1 });
+    expect(await skip.evaluate((a) => getComputedStyle(a).clipPath)).toBe('none');
+  }
+});

@@ -1,28 +1,74 @@
 # tutosapp-web
 
-Sitio de Tutos App (TUTOS APP S.A.S.): el inicio de la empresa y una página para cada app (Ojito, Resume Roast y Roast Interview), en español y en inglés.
+Sitio de Tutos App (TUTOS APP S.A.S.): el inicio de la empresa, que vende el estudio a quien quiere que le hagamos una app, la página de servicios ("Hacemos tu app"), la política de privacidad de la empresa y una página para cada app (Ojito, Resume Roast y Roast Interview), en español y en inglés.
 
-Se publica en **https://tutosapp.co** con GitHub Pages, cada vez que algo entra a `main`. Es HTML y CSS, sin JavaScript, sin analítica y sin cookies.
+Se publica en **https://tutosapp.co** con GitHub Pages, cada vez que algo entra a `main`. Es HTML y CSS, sin analítica y sin cookies. El único JavaScript es el chat "Cuéntanos tu idea" (`site/assets/brief.js`), y sin él el formulario sigue funcionando por correo.
 
 ## Páginas
 
 | Página | Idioma principal | Otro idioma |
 |---|---|---|
 | Inicio | `/` español | `/en/` |
+| Hacemos tu app (servicios) | `/servicios/` español | `/en/services/` |
+| Política de privacidad de la empresa | `/privacidad/` español | `/en/privacy/` |
 | Ojito | `/ojito/` español | `/ojito/en/` |
 | Resume Roast | `/resume-roast/` inglés | `/resume-roast/es/` |
 | Roast Interview | `/roast-interview/` inglés | `/roast-interview/es/` |
 | Páginas legales de cada app | dentro de la carpeta de la app, en cada idioma | ver [Páginas legales](#páginas-legales) |
 
-El inicio presenta a Tutos App como estudio de apps: un titular con la misión y, al lado, una tarjeta oscura con un orbe hecho con los colores de las apps, donde cada app responde una pregunta real con lo que de verdad muestra (se elige la pregunta tocando un botón). Debajo, una fila de íconos que se mueve sola, en gris hasta pasar el mouse o el foco para no competir con el titular (se puede pausar, se queda quieta si el teléfono pide reducir el movimiento y, con el teclado, se vuelve una fila quieta para que el ícono enfocado siempre se vea). Luego una tarjeta grande por app, que se apilan al bajar en pantallas grandes, con su pantalla real en un teléfono y su estado en tiendas; cómo trabajamos en una cuadrícula con ejemplos de las apps; y contacto. Las secciones van numeradas (01, 02, 03).
+El inicio está pensado para conseguir clientes: empresas, pymes y fundadores en Colombia y Latinoamérica, y empresas de Estados Unidos que buscan un equipo nearshore, que quieren una app nueva, nuevas funciones o IA para un producto que ya tienen, o acompañamiento mes a mes. Nuestras apps son la prueba. De arriba a abajo:
+
+- **Titular y acciones.** "Hacemos tu app con IA, de la idea a las tiendas", con dos botones: "Cuéntanos tu idea", que lleva al chat, y "Ver nuestro trabajo".
+- **Datos verificables.** Salen de la lista de apps: cuántas apps propias hay, cuántas están ya en tiendas, que respondemos en 2 días hábiles y que firmamos un NDA si lo piden.
+- **Al lado del titular,** las pantallas reales de tres apps.
+- **La fila de íconos** de las apps.
+- **01 Nuestro trabajo:** una tarjeta por app con el problema, lo que construimos, la IA que usa, las plataformas, dos pantallas y el enlace a su página.
+- **02 Qué hacemos:** las formas de trabajar, sin precios, y el enlace a la página de servicios.
+- **03 Cómo trabajamos:** las seis etapas, y quién hace cada una, IA o personas.
+- **04 Para quién.**
+- **05 Contacto:** el chat, qué pasa después de escribirnos, la promesa de confidencialidad, WhatsApp y correo.
+
+No hay logos de clientes, testimonios ni cifras que no podamos probar: solo lo que es verdad (TUTOS APP S.A.S., Medellín, las apps y su estado en tiendas, IA con revisión humana, NDA).
+
+La página de servicios (`/servicios/`, `/en/services/`) cuenta lo mismo en detalle. Tiene el titular con su tarjeta del proceso, Nuestro trabajo, qué construimos (cada cosa con la app donde ya la usamos), el proceso, las formas de trabajar, las preguntas frecuentes (tiempos, propiedad del código, publicación en tiendas, privacidad y Ley 1581, idiomas, empresas de Estados Unidos, qué hace la IA y qué hacen las personas) y el contacto con el chat. El menú del inicio la enlaza ("Hacemos tu app"), y también el pie de las páginas de la empresa.
 
 Cada app tiene su propia página, con su color, su tipografía y su estilo, y se sostiene sola: el menú lleva el ícono y el nombre de la app y sus propias secciones, y solo un logo pequeño de Tutos App con una flechita abre la lista de apps. Ojito es clara y amable (acentos en serif y un lector de código de barras), Resume Roast es oscura y contundente (letra condensada en mayúsculas, chispas y una franja de palabras que se mueve) y Roast Interview es oscura y segura (azul eléctrico y ondas de voz). Arriba están la propuesta de valor, los botones de tienda (o "Próximamente") y un teléfono con pantallas reales de la app que se cambian con botones. Siguen lo que hace por ti, cómo funciona, capturas, preguntas frecuentes, un cierre y un pie con los enlaces a **su** política de privacidad, **sus** términos y su soporte, que también están en este sitio (ver [Páginas legales](#páginas-legales)).
 
 Para ir de una app a otra, en el menú de todas las páginas (el inicio y cada app) está el logo de Tutos App con una flechita. Al tocarlo se abre una lista pequeña con cada app (ícono, nombre y una línea), la app en la que estás marcada con su color, y abajo el inicio de Tutos App. Cerrada, en el menú no aparecen los nombres de las otras apps. Es un `popover` del navegador, sin JavaScript: se cierra con Esc o tocando afuera, se recorre con Tab y el lector de pantalla sabe si está abierta. En los navegadores que no tienen `popover` (por ejemplo Safari antes de iOS 17), el logo y la lista no se muestran, para que no aparezcan los nombres ni quede un botón que no hace nada; el resto del menú sigue igual.
 
-Los botones que cambian la respuesta o la pantalla son radios con CSS, sin JavaScript. Las animaciones (el orbe, las etiquetas que flotan, las apariciones al bajar) se apagan si el teléfono pide reducir el movimiento.
+Los botones que cambian la pantalla del teléfono de cada app son radios con CSS, sin JavaScript. Las animaciones (el orbe, las etiquetas que flotan, las apariciones al bajar) se apagan si el teléfono pide reducir el movimiento.
 
 El sitio es claro, con paneles oscuros, y no cambia con el modo oscuro del teléfono. Todas las páginas tienen título, descripción, imagen para redes (Open Graph), datos estructurados (JSON-LD) y el pie con TUTOS APP S.A.S., NIT 902.125.524-7, Medellín. También están `sitemap.xml`, `robots.txt`, `404.html`, `CNAME` y los íconos.
+
+## El chat "Cuéntanos tu idea"
+
+Está en el contacto del inicio y de la página de servicios. Hace una pregunta a la vez y muestra las respuestas como en un chat: nombre, correo o WhatsApp, empresa (opcional), la idea, el tipo de proyecto, cuándo empezar, el presupuesto en dólares, si quiere un NDA y la autorización, que enlaza a la política de privacidad de la empresa. Al final envía las respuestas a la función `contacto-tutosapp` del backend y muestra "Te escribimos en menos de 2 días hábiles". Si la función responde 400 o 429, si no hay red o si `CONTACT_ENDPOINT` está vacío, ofrece el mismo mensaje ya escrito por correo a hola@tutosapp.co y por WhatsApp (+57 350 495 8312). Sin JavaScript es un formulario con todas las preguntas que abre el correo con las respuestas.
+
+La dirección de la función es `CONTACT_ENDPOINT` en `scripts/build.mjs`; el build la pone en el formulario (`data-endpoint`). El contrato, que el backend también cumple:
+
+- `POST` con JSON, sin JWT. CORS permite `https://tutosapp.co` y `http://localhost`.
+- Cuerpo:
+  - `nombre`: 1 a 120 caracteres.
+  - `contacto`: correo o teléfono, de 3 a 160 caracteres.
+  - `empresa`: de 0 a 160 caracteres.
+  - `idea`: de 20 a 4000 caracteres.
+  - `tipo`: `app_movil`, `app_con_ia`, `web`, `sumar_ia`, `feature` u `otro`.
+  - `plazo`: `ya`, `1_3_meses`, `3_6_meses` o `explorando`.
+  - `presupuesto`, en dólares: `no_se`, `menos_5k`, `5k_15k`, `15k_50k` o `mas_50k`.
+  - `idioma`: `es` o `en`.
+  - `nda`: booleano.
+  - `consentimiento`: siempre `true`.
+  - `sitio`: campo trampa para bots, siempre vacío.
+- Respuestas:
+  - 200 `{"ok":true}`, también, en silencio, cuando un bot llena `sitio`.
+  - 400 `{"ok":false,"error":"datos"}`.
+  - 429 si llegan más de 5 por IP en una hora.
+
+Las preguntas y sus opciones están en `services.<idioma>.chat` de `scripts/build.mjs`; los valores de las opciones son los del contrato. `tests/brief.spec.mjs` simula la función y revisa el JSON exacto, el agradecimiento, los casos 400, 429 y sin red, y el formulario sin JavaScript.
+
+## Nuestro trabajo: apps propias y proyectos de clientes
+
+Las tarjetas de "Nuestro trabajo" salen de `workItems()` en `scripts/build.mjs`. Primero van las apps de la lista `apps`, cada una con su `work` en cada idioma (`shows`, `problem`, `built` y `ai`), y después los proyectos de clientes de la lista `projects`, que hoy está vacía; un comentario en el código muestra cómo es una entrada. Cada tarjeta dice si es "Producto propio" o "Proyecto para cliente". Un proyecto de cliente se publica solo con su permiso.
 
 ## Cómo cambiar algo
 
@@ -37,7 +83,7 @@ node scripts/build.mjs --check  # falla si site/ no está al día, si hay un enl
 
 Después se hace commit de `scripts/build.mjs` y de `site/` juntos. El flujo `.github/workflows/pages.yml` corre `--check` en cada PR y publica `site/` cuando entra a `main`.
 
-Las páginas cargan `style.css` con un hash de su contenido en la dirección (`style.css?v=…`). Así un navegador que todavía tenga guardada una versión vieja de la hoja de estilos no la mezcla con páginas nuevas (eso dejó el sitio publicado sin estilos por un rato). Por eso, después de cambiar `style.css` también hay que correr `node scripts/build.mjs`; `--check` falla si no.
+Las páginas cargan `style.css` con un hash de su contenido en la dirección (`style.css?v=…`). Así un navegador que todavía tenga guardada una versión vieja de la hoja de estilos no la mezcla con páginas nuevas (eso dejó el sitio publicado sin estilos por un rato). Por eso, después de cambiar `style.css` también hay que correr `node scripts/build.mjs`; `--check` falla si no. Lo mismo vale para `brief.js`, que se carga como `brief.js?v=…`.
 
 Para verlo en el computador:
 
@@ -52,8 +98,8 @@ Las herramientas son solo para revisar; el sitio publicado sigue sin dependencia
 | Comando | Qué revisa |
 |---|---|
 | `npm run lint` | HTML válido ([html-validate](https://html-validate.org)) y CSS ([stylelint](https://stylelint.io) con `stylelint-config-standard`) |
-| `npm run test:ui` | Con [Playwright](https://playwright.dev) abre cada página del sitemap en un teléfono y en un computador, con el sistema en tema claro y oscuro: cero problemas de accesibilidad de [axe-core](https://github.com/dequelabs/axe-core) (WCAG 2.2 A y AA y buenas prácticas), sin scroll de lado, sin imágenes rotas, sin errores en consola, un solo `h1`, canonical y `og:url` en `https://tutosapp.co`. Revisa que Chrome lea completa la hoja de estilos (cuenta sus reglas y falla si lee bastante menos de las que tiene el archivo) y que cada página la cargue con el hash de su contenido; que la fila de íconos tenga un enlace con nombre por app, se pueda pausar y quede quieta con "reducir movimiento"; y que los botones de la tarjeta de preguntas y del teléfono de cada app cambien lo que se ve. En cada página revisa la lista de apps del menú: cerrada no muestra nombres; abierta tiene todas las apps y el inicio, marca la página actual, cabe en la pantalla, se cierra tocando afuera o con Esc, se maneja con el teclado y lleva a cada app (también en el iPhone). Deja capturas de página completa en `test-results/screens/`. En cada página legal revisa que tenga su título y su fecha, que la tabla de contenido lleve a cada sección, que el cambio de idioma lleve al mismo documento en el otro idioma, que el pie enlace los documentos de la app y que ningún enlace vaya a `github.io`; y que cada app enlace su privacidad y sus términos en este sitio. En un iPhone (WebKit, el motor de Safari) y en un Android (Chrome), revisa que cada página muestre su título y su botón principal en la primera pantalla, sin hacer scroll |
-| `npm run lighthouse` | [Lighthouse CI](https://github.com/GoogleChrome/lighthouse-ci) en las 8 páginas de inicio y de las apps y en tres páginas legales (una por app): accesibilidad y SEO en 100, buenas prácticas en 95 o más, y aviso si el rendimiento baja de 90. Los informes quedan en `.lighthouseci/` |
+| `npm run test:ui` | Con [Playwright](https://playwright.dev) abre cada página del sitemap en un teléfono y en un computador, con el sistema en tema claro y oscuro: cero problemas de accesibilidad de [axe-core](https://github.com/dequelabs/axe-core) (WCAG 2.2 A y AA y buenas prácticas), sin scroll de lado, sin imágenes rotas, sin errores en consola, un solo `h1`, canonical y `og:url` en `https://tutosapp.co`. Revisa que Chrome lea completa la hoja de estilos (cuenta sus reglas y falla si lee bastante menos de las que tiene el archivo) y que cada página la cargue con el hash de su contenido; que la fila de íconos tenga un enlace con nombre por app, se pueda pausar y quede quieta con "reducir movimiento"; y que los botones del teléfono de cada app cambien lo que se ve. Revisa el chat "Cuéntanos tu idea" con la función simulada: el JSON exacto del contrato, el agradecimiento, el correo y WhatsApp de respaldo ante un 400, un 429 o sin red, la validación de cada respuesta, que no envía nada sin autorización y el formulario sin JavaScript. En cada página revisa la lista de apps del menú: cerrada no muestra nombres; abierta tiene todas las apps y el inicio, marca la página actual, cabe en la pantalla, se cierra tocando afuera o con Esc, se maneja con el teclado y lleva a cada app (también en el iPhone). Deja capturas de página completa en `test-results/screens/`. En cada página legal revisa que tenga su título y su fecha, que la tabla de contenido lleve a cada sección, que el cambio de idioma lleve al mismo documento en el otro idioma, que el pie enlace los documentos de la app y que ningún enlace vaya a `github.io`; y que cada app enlace su privacidad y sus términos en este sitio. En un iPhone (WebKit, el motor de Safari) y en un Android (Chrome), revisa que cada página muestre su título y su botón principal en la primera pantalla, sin hacer scroll |
+| `npm run lighthouse` | [Lighthouse CI](https://github.com/GoogleChrome/lighthouse-ci) en el inicio, la página de servicios y las páginas de las apps, en los dos idiomas, y en cuatro páginas legales (una por app y la de la empresa): accesibilidad y SEO en 100, buenas prácticas en 95 o más, y aviso si el rendimiento baja de 90. Los informes quedan en `.lighthouseci/` |
 | `npm run quality` | Todo lo anterior, más `node scripts/build.mjs --check` |
 
 En GitHub, los informes y las capturas quedan como artefacto `quality-reports` de cada ejecución.
@@ -62,9 +108,9 @@ Las herramientas automáticas encuentran solo una parte de los problemas de acce
 
 ### Agregar una app
 
-Se agrega una entrada a la lista `apps` de `scripts/build.mjs` (copiando una de las que hay) y sus imágenes en `site/assets/img/<id>/`: ícono de 256 × 256, cuatro capturas de tienda por idioma, las pantallas reales para el teléfono (`screens/`, WebP de 600 px de ancho, sin marco: el marco lo pone el CSS) y dos imágenes para redes de 1200 × 630 (`site/assets/img/og/<id>-es.jpg` y `-en.jpg`). En cada idioma lleva `tabs` (nombre, color y descripción de cada pantalla del teléfono), `featureAlt`, `navCta` y `ask` (su pregunta y respuesta en la tarjeta del inicio). Con eso aparece sola en la tarjeta de preguntas y en el orbe, en la fila de íconos, en la lista de apps del menú, en las tarjetas del inicio, en el pie del inicio, en el sitemap y con su propia página. `--check` exige que tenga enlace a su política de privacidad y a sus términos en los dos idiomas, y una descripción por cada pantalla. La tarjeta de preguntas y el teléfono de cada app manejan hasta 8 opciones.
+Se agrega una entrada a la lista `apps` de `scripts/build.mjs` (copiando una de las que hay) y sus imágenes en `site/assets/img/<id>/`: ícono de 256 × 256, cuatro capturas de tienda por idioma, las pantallas reales para el teléfono (`screens/`, WebP de 600 px de ancho, sin marco: el marco lo pone el CSS) y dos imágenes para redes de 1200 × 630 (`site/assets/img/og/<id>-es.jpg` y `-en.jpg`). En cada idioma lleva `tabs` (nombre, color y descripción de cada pantalla del teléfono), `featureAlt`, `navCta` y `work` (su caso en "Nuestro trabajo": qué demuestra, el problema, lo que construimos y la IA que usa). Con eso aparece sola en el orbe, en la fila de íconos, en la lista de apps del menú, en "Nuestro trabajo" del inicio y de servicios, en el pie, en el sitemap y con su propia página. `--check` exige que tenga enlace a su política de privacidad y a sus términos en los dos idiomas, una descripción por cada pantalla y su `work`. El teléfono de cada app maneja hasta 8 pantallas.
 
-Después se corre `npm run og`, que vuelve a dibujar las imágenes para redes del inicio (`home-es.jpg` y `home-en.jpg`) con el titular del inicio y un ícono por app. También se corre si cambia el titular del inicio.
+Después se corre `npm run og`, que vuelve a dibujar las imágenes para redes del inicio y de servicios (`home-*.jpg` y `services-*.jpg`) con su titular y un ícono por app. También se corre si cambia uno de esos titulares.
 
 Si la app trae un estilo nuevo, se le pone un `theme` (por ejemplo `t-nueva`) y se definen sus colores en `style.css`, como `.t-ojito`. Si usa otra fuente, se agrega en `site/assets/fonts/` y en `fonts` de la app, para que su página la precargue.
 
@@ -81,6 +127,8 @@ Se cambia su `status` a `'live'` y el de la tienda (`stores.play` o `stores.appS
 ## Páginas legales
 
 **Este repositorio es la única fuente de los textos legales** de las apps: la política de privacidad, los términos y el soporte de cada una se publican aquí, en `tutosapp.co`, y en ningún otro lugar. Los repositorios viejos en GitHub Pages (`ojito-legal`, `daily-quest-privacy-policy`, `castores-legal` y `resumeroast-support`) ya no son la fuente: si un texto cambia, se cambia aquí.
+
+La política de privacidad de la empresa (`/privacidad/`, `/en/privacy/`), para lo que llega por el chat, el correo o WhatsApp, está en `legal/tutosapp/<idioma>-privacy.html` y usa el mismo diseño. Su fecha es `companyPrivacy.date` en `scripts/build.mjs`.
 
 | App | Español | Inglés |
 |---|---|---|

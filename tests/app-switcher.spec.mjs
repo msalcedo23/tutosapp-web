@@ -1,20 +1,21 @@
-// The app switcher in the menu bar: on the home page and on every app page, one small button opens
-// a short list of every app and the Tutos App home. Closed, no app name shows in the menu bar.
+// The app switcher in the menu bar: on the home page, the services page and every app page, one
+// small button opens a short list of every app and the Tutos App home. Closed, no app name shows in the menu bar.
 // Runs on a desktop and an Android phone in Chrome and on an iPhone in WebKit (Safari's engine),
 // with taps on the phones. The list comes from the same app data as the home marquee.
 import { test, expect } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
-import { apps, home } from '../scripts/build.mjs';
+import { apps, home, services } from '../scripts/build.mjs';
 
 const pages = [
-  ...Object.entries(home.paths).map(([lang, path]) => ({ path: '/' + path, lang, app: null })),
+  ...Object.entries(home.paths).map(([lang, path]) => ({ path: '/' + path, lang, app: null, onHome: true })),
+  ...Object.entries(services.paths).map(([lang, path]) => ({ path: '/' + path, lang, app: null, onHome: false })),
   ...apps.flatMap((app) => Object.entries(app.paths).map(([lang, path]) => ({ path: '/' + path, lang, app }))),
 ];
 const homeName = { es: 'Inicio de Tutos App', en: 'Tutos App home' };
 
 const press = async (locator, info) => (info.project.use.hasTouch ? locator.tap() : locator.click());
 
-for (const { path, lang, app } of pages) {
+for (const { path, lang, app, onHome } of pages) {
   test(`${path} switcher lists every app and marks this page`, async ({ page }, info) => {
     await page.goto(path);
     const toggle = page.locator('.apps-toggle');
@@ -44,8 +45,8 @@ for (const { path, lang, app } of pages) {
     const homeLink = links.last();
     await expect(homeLink).toHaveText(homeName[lang]);
     expect(new URL(await homeLink.evaluate((l) => l.href)).pathname).toBe('/' + home.paths[lang]);
-    if (app) await expect(homeLink).not.toHaveAttribute('aria-current');
-    else await expect(homeLink).toHaveAttribute('aria-current', 'page');
+    if (onHome) await expect(homeLink).toHaveAttribute('aria-current', 'page');
+    else await expect(homeLink).not.toHaveAttribute('aria-current');
 
     // Its icons load once it opens.
     await expect.poll(() => menu.locator('img').evaluateAll((imgs) => imgs.every((i) => i.complete && i.naturalWidth > 0))).toBe(true);

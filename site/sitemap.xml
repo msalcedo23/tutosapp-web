@@ -13,6 +13,30 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://tutosapp.co/"/>
   </url>
   <url>
+    <loc>https://tutosapp.co/servicios/</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://tutosapp.co/servicios/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://tutosapp.co/en/services/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://tutosapp.co/servicios/"/>
+  </url>
+  <url>
+    <loc>https://tutosapp.co/en/services/</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://tutosapp.co/servicios/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://tutosapp.co/en/services/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://tutosapp.co/servicios/"/>
+  </url>
+  <url>
+    <loc>https://tutosapp.co/privacidad/</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://tutosapp.co/privacidad/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://tutosapp.co/en/privacy/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://tutosapp.co/privacidad/"/>
+  </url>
+  <url>
+    <loc>https://tutosapp.co/en/privacy/</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://tutosapp.co/privacidad/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://tutosapp.co/en/privacy/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://tutosapp.co/privacidad/"/>
+  </url>
+  <url>
     <loc>https://tutosapp.co/ojito/</loc>
     <xhtml:link rel="alternate" hreflang="es" href="https://tutosapp.co/ojito/"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://tutosapp.co/ojito/en/"/>

@@ -24,6 +24,12 @@ const PLAY = (id) => `https://play.google.com/store/apps/details?id=${id}`;
 const mailto = (subject, body) =>
   `mailto:${EMAIL}?subject=${encodeURIComponent(subject)}${body ? `&body=${encodeURIComponent(body)}` : ''}`;
 const whatsapp = (text) => `https://wa.me/?text=${encodeURIComponent(text)}`;
+// The company WhatsApp, for the services page: a chat with Tutos App with the message ready.
+const WHATSAPP = '573504958312';
+const whatsappUs = (text) => `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(text)}`;
+// Where the "Tell us your idea" chat sends its answers (a Supabase edge function; JSON contract in
+// README.md). Empty: the chat ends by opening the same message in the visitor's email instead.
+const CONTACT_ENDPOINT = '';
 
 const esc = (s) =>
   String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -37,6 +43,9 @@ const rich = (s) => esc(s).replace(/\*([^*]+)\*([.,!?]?)/g, '<em>$1$2</em>');
 // A file starts with its <h1> title; the rest is the document as published. Links between
 // documents are written as legal:<app>/<doc>/<lang>[#id] and become relative links here.
 const LEGAL_DIR = join(dirname(fileURLToPath(import.meta.url)), '..', 'legal');
+// The company's own privacy policy, for what people send through the contact chat (Colombia's
+// Ley 1581 de 2012): legal/tutosapp/<lang>-privacy.html, published at these paths.
+const companyPrivacy = { paths: { es: 'privacidad/', en: 'en/privacy/' }, date: '2026-11-11' };
 const LEGAL_DOCS = ['privacy', 'terms', 'support'];
 const LEGAL_SLUGS = {
   es: { privacy: 'privacidad', terms: 'terminos', support: 'soporte' },
@@ -95,13 +104,6 @@ const apps = [
         ['Producto con maní', 'avoid', 'Ojito avisa "Cuidado: tiene maní", por lo que marcaste para ti.'],
       ],
       featureAlt: 'La pantalla Mi familia de Ojito: un bebé de 8 meses, sin nombres ni fotos de niños.',
-      ask: {
-        chip: '¿Se lo doy a mi bebé?',
-        q: '¿Estas galletas de avena se las puedo dar a mi bebé?',
-        verdict: 'Bueno para ti · 70 de 100',
-        note: 'Tu bebé: todavía no. Trae azúcar añadida.',
-        tone: 'good',
-      },
       navCta: 'Quiero probarla',
       shotAlt: ['Resultado Bueno para unas galletas, con la línea del bebé', 'Alerta de maní', 'Producto de cuidado personal', 'Otras opciones con mejor puntaje'],
       benefits: [
@@ -134,6 +136,12 @@ const apps = [
       disclaimer: 'Ojito no es un dispositivo médico y no diagnostica, trata, cura ni previene ninguna enfermedad.',
       closing: ['Haz el mercado *con calma*.', 'Súmate al grupo de prueba de Android, o escríbenos y te avisamos cuando Ojito llegue a tu tienda.'],
       share: 'Mira Ojito: escaneas un producto y te dice si es bueno para ti y para tu bebé.',
+      work: {
+        shows: 'Visión por computador y reglas de nutrición',
+        problem: 'Leer una etiqueta en el supermercado toma tiempo, y lo que le sirve a un adulto no siempre le sirve a un bebé.',
+        built: 'Una app que lee el código de barras y responde Bueno, Regular o Evítalo para cada persona de la casa, con el porqué, según los sellos de advertencia colombianos, los aditivos y las alergias.',
+        ai: ['Lectura de códigos de barras con la cámara', 'IA que lee la tabla nutricional y los ingredientes en una foto', 'Reglas de nutrición por edad y alergias'],
+      },
     },
     en: {
       category: 'Label scanner for families',
@@ -153,13 +161,6 @@ const apps = [
         ['A product with peanuts', 'avoid', 'Ojito warns "Careful: contains peanuts", based on what you marked for yourself.'],
       ],
       featureAlt: 'Ojito’s My family screen: a baby of 8 months, with no names or photos of children.',
-      ask: {
-        chip: 'OK for my baby?',
-        q: 'Can my baby have these oat cookies?',
-        verdict: 'Good for you · 70 out of 100',
-        note: 'Your baby: not yet. Contains added sugar.',
-        tone: 'good',
-      },
       navCta: 'Try it',
       shotAlt: ['A Good result for some cookies, with the line for the baby', 'A peanut alert', 'A personal-care product', 'Other options with a better score'],
       benefits: [
@@ -189,6 +190,12 @@ const apps = [
       disclaimer: 'Ojito is not a medical device and does not diagnose, treat, cure or prevent any disease.',
       closing: ['Shop *with peace of mind*.', 'Join the Android testing group, or email us to hear when Ojito reaches your store.'],
       share: 'Check out Ojito: scan a product and see if it is good for you and your baby.',
+      work: {
+        shows: 'Computer vision and nutrition rules',
+        problem: 'Reading a label at the supermarket takes time, and what works for an adult does not always work for a baby.',
+        built: 'An app that reads the barcode and answers Good, Fair or Avoid for each person at home, with the reason, based on Colombian warning labels, additives and allergies.',
+        ai: ['Barcode reading with the camera', 'AI that reads the nutrition table and ingredients from a photo', 'Nutrition rules by age and allergy'],
+      },
     },
   },
   {
@@ -231,13 +238,6 @@ const apps = [
         ['Rewrite', 'good', 'The resume rewritten for the job, ready to copy or export as a PDF.'],
       ],
       featureAlt: 'The red flags Resume Roast found in a resume, with the button to rewrite it.',
-      ask: {
-        chip: 'Will my resume pass?',
-        q: 'Will my resume get past the filters?',
-        verdict: '64 out of 100',
-        note: '“Real launch experience, hiding behind ‘responsible for’.”',
-        tone: 'fair',
-      },
       navCta: 'Get the app',
       ticker: ['Unfiltered', 'Score out of 100', 'Red flags', 'Job match', 'ATS-ready PDF', 'No subscription'],
       shotAlt: ['An honest score with the verdict', 'How well the resume matches a job posting', 'The resume rewritten for the job', 'A share card without personal details'],
@@ -264,6 +264,12 @@ const apps = [
       notify: mailto('Resume Roast for iPhone', 'Hi, please let me know when Resume Roast is on the App Store.'),
       closing: ['Stop guessing *what your resume is missing*.', 'Get Resume Roast on Google Play and see your first verdict in seconds.'],
       share: 'Resume Roast gives your resume an honest score and tells you how to fix it.',
+      work: {
+        shows: 'Document AI and scoring',
+        problem: 'Job seekers rarely know why their resume does not get past the filters, or what to change.',
+        built: 'An app that reads a resume as text, PDF, Word or a photo, scores it out of 100, matches it to a job posting and rewrites it without inventing anything, with a PDF that applicant tracking systems can read.',
+        ai: ['Document AI: reads PDF, Word and photos', 'AI scoring and red flags', 'Guided rewrite for a job posting'],
+      },
     },
     es: {
       category: 'Análisis de CV con IA',
@@ -284,13 +290,6 @@ const apps = [
         ['Reescritura', 'good', 'El CV reescrito para la vacante, listo para copiar o exportar en PDF.'],
       ],
       featureAlt: 'Las señales de alerta que Resume Roast encontró en un CV, con el botón para reescribirlo.',
-      ask: {
-        chip: '¿Mi CV pasa el filtro?',
-        q: '¿Mi CV sí pasa el filtro de la vacante?',
-        verdict: '64 de 100',
-        note: '“Experiencia real de lanzamiento, escondida tras un ‘encargada de’.”',
-        tone: 'fair',
-      },
       navCta: 'Descargar',
       ticker: ['Sin filtros', 'Puntaje sobre 100', 'Red flags', 'Match con la vacante', 'PDF para ATS', 'Sin suscripción'],
       shotAlt: ['Un puntaje honesto con el veredicto', 'Qué tanto encaja el CV con la vacante', 'El CV reescrito para la vacante', 'Una tarjeta para compartir sin datos personales'],
@@ -317,6 +316,12 @@ const apps = [
       notify: mailto('Resume Roast para iPhone', 'Hola, avísenme cuando Resume Roast esté en App Store.'),
       closing: ['Deja de adivinar *qué le falta a tu CV*.', 'Descarga Resume Roast en Google Play y recibe tu primer veredicto en segundos.'],
       share: 'Resume Roast le pone un puntaje honesto a tu CV y te dice cómo mejorarlo.',
+      work: {
+        shows: 'IA de documentos y puntaje',
+        problem: 'Quien busca trabajo casi nunca sabe por qué su CV no pasa los filtros ni qué cambiarle.',
+        built: 'Una app que lee un CV en texto, PDF, Word o foto, le pone un puntaje sobre 100, lo compara con una vacante y lo reescribe sin inventar nada, con un PDF que leen los filtros (ATS).',
+        ai: ['IA de documentos: lee PDF, Word y fotos', 'Puntaje y red flags con IA', 'Reescritura guiada para una vacante'],
+      },
     },
   },
   {
@@ -366,13 +371,6 @@ const apps = [
         ['In one line', 'good', 'The report sums up the interview in one line: “Knows more than they sell, and sells more than they measured.”'],
       ],
       featureAlt: 'The interviewer opens: “Hi, I’m Valeria and I’ll be your interviewer today. To start: walk me through your last two years as a backend engineer, in two minutes.”',
-      ask: {
-        chip: 'Am I interview-ready?',
-        q: 'Am I ready for my interview?',
-        verdict: 'First, a question',
-        note: '“Your CV says you cut p95 latency by 40%. Measured where, against what baseline?”',
-        tone: 'ask',
-      },
       navCta: 'Notify me',
       shotAlt: ['The report with the score and the verdict', 'The interviewer asks the first question'],
       benefits: [
@@ -397,6 +395,12 @@ const apps = [
       notify: mailto('Roast Interview: tell me when it launches', 'Hi, please let me know when Roast Interview launches.\n\nMy phone is Android / iPhone: '),
       closing: ['Walk into your next interview *already practiced*.', 'Roast Interview is coming soon. Email us and we’ll let you know when it launches.'],
       share: 'Roast Interview: practice job interviews with an AI that tells you the truth. Coming soon.',
+      work: {
+        shows: 'A voice AI interviewer',
+        problem: 'Rehearsing with generic questions does not prepare you for the ones you will really be asked.',
+        built: 'An AI interviewer that asks about your resume, adapts the pressure to your answers, listens to your voice and gives you a score and a verdict for the role.',
+        ai: ['Voice AI interviewer', 'Speech to text, without keeping the audio', 'A score and verdict calibrated to the role'],
+      },
     },
     es: {
       category: 'Entrevistas de práctica con IA',
@@ -416,13 +420,6 @@ const apps = [
         ['En una frase', 'good', 'El informe resume la entrevista en una frase: “Sabe más de lo que vende… y vende más de lo que midió.”'],
       ],
       featureAlt: 'La entrevistadora pregunta por un dato del CV: “Tu CV dice que bajaste la latencia p95 un 40 %. ¿Medida dónde, contra qué línea base, y cómo sabes que no fue el hardware nuevo?”',
-      ask: {
-        chip: '¿Me irá bien en la entrevista?',
-        q: '¿Me va a ir bien en la entrevista?',
-        verdict: 'Antes, una pregunta',
-        note: '“Dices que lideraste la migración a Kubernetes. ¿Qué se rompió exactamente la primera semana?”',
-        tone: 'ask',
-      },
       navCta: 'Avísame',
       shotAlt: ['El informe con el puntaje y el veredicto', 'La entrevistadora hace una pregunta sobre tu CV', 'El final del informe'],
       benefits: [
@@ -447,13 +444,18 @@ const apps = [
       notify: mailto('Roast Interview: avísame cuando salga', 'Hola, avísenme cuando salga Roast Interview.\n\nMi teléfono es Android / iPhone: '),
       closing: ['Llega a tu próxima entrevista *con práctica*.', 'Roast Interview sale muy pronto. Escríbenos y te avisamos cuando esté lista.'],
       share: 'Roast Interview: practica entrevistas de trabajo con una IA que te dice la verdad. Muy pronto.',
+      work: {
+        shows: 'Una entrevistadora de voz con IA',
+        problem: 'Ensayar con preguntas genéricas no te prepara para las que de verdad te van a hacer.',
+        built: 'Una entrevistadora con IA que pregunta desde tu CV, ajusta la presión según tus respuestas, escucha tu voz y te da un puntaje y un veredicto para el cargo.',
+        ai: ['Entrevistadora de voz con IA', 'Voz a texto, sin guardar el audio', 'Puntaje y veredicto medidos para el cargo'],
+      },
     },
   },
 ];
 
 const ui = {
   es: {
-    apps: 'Apps',
     ourApps: 'Nuestras apps',
     how: 'Cómo funciona',
     benefits: 'Lo que hace por ti',
@@ -489,6 +491,7 @@ const ui = {
     backHome: 'Volver al inicio',
     faqPrivacy: 'Lee la política de privacidad',
     updated: 'Última actualización',
+    companyPrivacyAbout: 'Política de privacidad de Tutos App: qué hacemos con los datos que nos envías al contarnos tu idea, para qué, por cuánto tiempo y cómo ejercer tus derechos.',
     toc: 'En esta página',
     legalAbout: {
       privacy: (name) => `Política de privacidad de ${name}: qué datos usa la app, para qué, con quién se comparten, cuánto tiempo se guardan y cómo ejercer tus derechos.`,
@@ -496,11 +499,6 @@ const ui = {
       support: (name) => `Soporte de ${name}: cómo escribirnos, ayuda con la app y cómo borrar tus datos.`,
     },
     seeExample: 'Mira un ejemplo',
-    askTitle: 'Pregúntale a nuestras apps',
-    askLegend: 'Elige una pregunta',
-    askNote: 'Respuestas de ejemplo, tomadas de las apps',
-    question: 'Pregunta',
-    example: 'Ejemplo real',
     swipe: 'Desliza para ver más pantallas',
     shotsKicker: 'Capturas de la app',
     faqKicker: 'Dudas',
@@ -509,7 +507,6 @@ const ui = {
     appBy: (name) => `${name} es una app de Tutos App, estudio de apps con IA de Medellín, Colombia.`,
   },
   en: {
-    apps: 'Apps',
     ourApps: 'Our apps',
     how: 'How it works',
     benefits: 'What it does for you',
@@ -545,6 +542,7 @@ const ui = {
     backHome: 'Back to home',
     faqPrivacy: 'Read the privacy policy',
     updated: 'Last updated',
+    companyPrivacyAbout: 'Tutos App privacy policy: what we do with the information you send us about your idea, what for, for how long and how to exercise your rights.',
     toc: 'On this page',
     legalAbout: {
       privacy: (name) => `${name} privacy policy: what data the app uses, what for, who it is shared with, how long it is kept and how to exercise your rights.`,
@@ -552,11 +550,6 @@ const ui = {
       support: (name) => `${name} support: how to reach us, help with the app and how to delete your data.`,
     },
     seeExample: 'See an example',
-    askTitle: 'Ask our apps',
-    askLegend: 'Pick a question',
-    askNote: 'Sample answers, taken from the apps',
-    question: 'Question',
-    example: 'Real example',
     swipe: 'Swipe to see more screens',
     shotsKicker: 'App screenshots',
     faqKicker: 'Questions',
@@ -566,100 +559,406 @@ const ui = {
 };
 
 // Copy that depends on the app list, so it stays true when an app is added.
-const countWords = {
-  es: ['ninguna', 'una', 'dos', 'tres', 'cuatro', 'cinco', 'seis', 'siete', 'ocho', 'nueve', 'diez', 'once', 'doce'],
-  en: ['no', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve'],
-};
-const appCount = (lang) => {
-  const word = countWords[lang][apps.length] ?? String(apps.length);
-  return `${word[0].toUpperCase()}${word.slice(1)} ${apps.length === 1 ? 'app' : 'apps'}`;
-};
 const appNames = (lang) => new Intl.ListFormat(lang, { type: 'conjunction' }).format(apps.map((a) => a.name));
+const liveCount = () => apps.filter((a) => Object.values(a.stores).some((s) => s.status === 'live')).length;
 
-// Home page copy. The hero states the studio's mission and lets each app answer one real
-// question in the demo card, so the hero never has to summarize every app.
+// Home page copy. The home sells the studio to companies and founders who want an app built, with
+// our own apps as the proof (the plan is in README.md). Sections reuse the services page's copy
+// (work, ways to work, process, contact), so both pages say the same thing.
 const home = {
   paths: { es: '', en: 'en/' },
   bg: '#f6f6f8',
   es: {
-    title: 'Tutos App: apps con IA para las decisiones de cada día',
-    description: `Tutos App es un estudio de Medellín que crea apps con inteligencia artificial para las decisiones de cada día: ${appNames('es')}.`,
+    title: 'Tutos App: hacemos tu app con IA, de la idea a las tiendas',
+    description: `Estudio de apps con IA en Medellín. Apps nuevas, nuevas funciones para tu producto, IA e integraciones, de la idea a App Store y Google Play. Nuestras apps: ${appNames('es')}.`,
     eyebrow: 'Estudio de apps con IA · Medellín, Colombia',
-    headline: 'Decisiones de todos los días, *más simples*.',
+    headline: 'Hacemos tu app con IA, *de la idea a las tiendas*.',
     lead:
-      'Tutos App crea apps con inteligencia artificial que te dan una respuesta clara, te explican el porqué y no te piden más de lo necesario.',
-    primary: 'Conoce las apps',
-    write: 'Escríbenos',
-    appsEyebrow: 'Nuestras apps',
-    appsTitle: 'Cada app resuelve *una cosa*, y la resuelve bien.',
-    appsLead: 'Apps pequeñas y honestas, en español y en inglés.',
-    nav: [['#apps', 'Apps'], ['#principios', 'Cómo trabajamos'], ['#contacto', 'Contacto']],
-    principlesId: 'principios',
-    principlesEyebrow: 'Cómo trabajamos',
-    principlesTitle: 'Tecnología útil, *sin letra pequeña*.',
-    principles: [
-      ['eye', 'La IA explica, no adivina', 'Cada resultado viene con el porqué, en palabras simples, para que la decisión sea tuya y no de la app.'],
-      ['shield', 'Honestas contigo', 'Te decimos lo que vemos, aunque no sea lo que quieres oír. Nadie paga por un mejor resultado y la IA no inventa datos.'],
-      ['lock', 'Sin registro para empezar', 'Abres la app y la usas, sin crear una cuenta. Lo que se paga se dice claro, antes de pagar.'],
-      ['pin', 'Hechas en Colombia', 'Diseñamos en Medellín pensando en cómo se compra, se busca trabajo y se habla aquí, en español y en inglés.'],
+      'Apps nuevas, nuevas funciones para el producto que ya tienes, IA e integraciones. Agentes de IA hacen el trabajo pesado y una persona revisa cada decisión.',
+    secondary: 'Ver nuestro trabajo',
+    facts: () => [
+      [String(apps.length), `${apps.length === 1 ? 'app propia' : 'apps propias'} con IA`],
+      [String(liveCount()), 'ya en las tiendas'],
+      ['2 días', 'hábiles para responderte'],
+      ['NDA', 'antes de hablar, si lo pides'],
     ],
-    // Small illustrations for the principles, taken from what the apps really show.
-    visuals: {
-      eye: {
-        label: 'Ejemplo de Ojito',
-        title: 'Por qué este puntaje',
-        rows: [['Azúcar, sal y grasas en exceso', 34, 55], ['Procesamiento: ultraprocesado', 0, 25], ['Aditivos: pocos', 17, 20]],
-        of: 'de',
-      },
-      shield: { label: 'Una red flag de Resume Roast', quote: '“Ningún resultado medible en cuatro años de trabajo.”' },
-      lock: { yes: ['Abres la app', 'La usas'], no: 'Crear una cuenta' },
-      pin: { place: 'Medellín, Colombia', coords: '6.24° N · 75.58° W', langs: ['Español', 'English'] },
-    },
-    contactEyebrow: 'Hablemos',
-    nextTitle: `${appCount('es')} hoy. *Vienen más.*`,
-    nextLead:
-      'Cada app nace de una pregunta real del día a día. ¿Tienes una idea, quieres probar nuestras apps antes que nadie o trabajar con nosotros? Escríbenos.',
-    share: 'Mira las apps de Tutos App:',
-    about: 'Estudio de apps con IA de Medellín, Colombia. Decisiones de todos los días, más simples.',
+    showcaseTag: 'IA + revisión humana en cada cambio',
+    nav: [['#trabajo', 'Trabajo'], ['#proceso', 'Proceso'], ['#contacto', 'Contacto']],
+    workId: 'trabajo',
+    offersId: 'que-hacemos',
+    offersEyebrow: 'Qué hacemos',
+    offersTitle: 'Una app nueva, o *lo que le falta a la tuya*.',
+    offersLead: 'Sin precios de catálogo: después de la primera llamada te mandamos una propuesta escrita con alcance, fechas y precio.',
+    offersMore: 'Conoce cómo trabajamos',
+    processId: 'proceso',
+    whoId: 'para-quien',
+    whoEyebrow: 'Para quién',
+    whoTitle: 'Trabajamos con quien tiene *algo que construir*.',
+    who: [
+      ['spark', 'Fundadores y startups', 'Tienes una idea y quieres probarla con usuarios reales pronto, sin armar un equipo desde cero.'],
+      ['pin', 'Pymes y empresas en Colombia y Latinoamérica', 'Quieres una app para tus clientes o tu equipo, o sumarle funciones e IA a la que ya tienes.'],
+      ['globe', 'Empresas de Estados Unidos', 'Buscas un equipo nearshore en tu horario (UTC−5), que trabaje en inglés y entregue rápido.'],
+    ],
+    contactId: 'contacto',
+    about: 'Estudio de apps con IA de Medellín, Colombia. Hacemos tu app, de la idea a las tiendas.',
   },
   en: {
-    title: 'Tutos App: AI apps for everyday decisions',
-    description: `Tutos App is a studio from Medellín, Colombia, that builds AI apps for everyday decisions: ${appNames('en')}.`,
+    title: 'Tutos App: we build your app with AI, from idea to the stores',
+    description: `AI app studio in Medellín, Colombia. New apps, new features for your product, AI and integrations, from idea to the App Store and Google Play. Our apps: ${appNames('en')}.`,
     eyebrow: 'AI app studio · Medellín, Colombia',
-    headline: 'Everyday decisions, *made simpler*.',
-    lead: 'Tutos App builds AI apps that give you a clear answer, explain the reason behind it and ask for nothing more than they need.',
-    primary: 'Meet the apps',
-    write: 'Email us',
-    appsEyebrow: 'Our apps',
-    appsTitle: 'Each app does *one thing*, and does it well.',
-    appsLead: 'Small, honest apps in Spanish and English.',
-    nav: [['#apps', 'Apps'], ['#principles', 'How we work'], ['#contact', 'Contact']],
-    principlesId: 'principles',
-    principlesEyebrow: 'How we work',
-    principlesTitle: 'Useful technology, *no fine print*.',
-    principles: [
-      ['eye', 'AI that explains', 'Every result comes with the reason, in plain words, so the decision stays yours and not the app’s.'],
-      ['shield', 'Honest with you', 'We tell you what we see, even when it is not what you want to hear. Nobody pays for a better result, and the AI does not make things up.'],
-      ['lock', 'No sign-up to start', 'Open the app and use it, no account needed. What costs money is said clearly, before you pay.'],
-      ['pin', 'Made in Colombia', 'We design in Medellín around how people here shop, look for work and talk, in Spanish and English.'],
+    headline: 'We build your app with AI, *from idea to the stores*.',
+    lead:
+      'New apps, new features for the product you already have, AI and integrations. AI agents do the heavy lifting and a person reviews every decision.',
+    secondary: 'See our work',
+    facts: () => [
+      [String(apps.length), `${apps.length === 1 ? 'app' : 'apps'} of our own, with AI`],
+      [String(liveCount()), 'already in the stores'],
+      ['2 days', 'to reply (business days)'],
+      ['NDA', 'before we talk, if you ask'],
     ],
-    visuals: {
-      eye: {
-        label: 'Example from Ojito',
-        title: 'Why this score',
-        rows: [['Sugar, salt and fats in excess', 34, 55], ['Processing: ultra-processed', 0, 25], ['Additives: few', 17, 20]],
-        of: 'of',
-      },
-      shield: { label: 'A Resume Roast red flag', quote: '“No measurable results anywhere in four years of work.”' },
-      lock: { yes: ['Open the app', 'Use it'], no: 'Create an account' },
-      pin: { place: 'Medellín, Colombia', coords: '6.24° N · 75.58° W', langs: ['Español', 'English'] },
+    showcaseTag: 'AI + human review on every change',
+    nav: [['#work', 'Work'], ['#process', 'Process'], ['#contact', 'Contact']],
+    workId: 'work',
+    offersId: 'what-we-do',
+    offersEyebrow: 'What we do',
+    offersTitle: 'A new app, or *what yours is missing*.',
+    offersLead: 'No price list: after the first call we send you a written proposal with scope, dates and price.',
+    offersMore: 'See how we work',
+    processId: 'process',
+    whoId: 'who-we-work-with',
+    whoEyebrow: 'Who we work with',
+    whoTitle: 'We work with people who have *something to build*.',
+    who: [
+      ['spark', 'Founders and startups', 'You have an idea and want to test it with real users soon, without building a team from scratch.'],
+      ['pin', 'SMEs and companies in Colombia and Latin America', 'You want an app for your customers or your team, or to add features and AI to the one you have.'],
+      ['globe', 'US companies', 'You are looking for a nearshore team in your hours (UTC−5) that works in English and ships fast.'],
+    ],
+    contactId: 'contact',
+    about: 'AI app studio from Medellín, Colombia. We build your app, from idea to the stores.',
+  },
+};
+
+// Projects built for clients, shown with our own apps under "Our work" on the services page.
+// Empty for now: add one entry per published project, with the client's permission. Each entry has
+// the same copy as an app's `work` (shows, problem, built, ai) plus its name, category and
+// platforms in each language, its icon and up to two real screens (WebP, same size each), and
+// the page it links to (url, optional). Our own apps join the list on their own, from `apps`.
+//   {
+//     id: 'acme-delivery', kind: 'client', name: 'Acme Delivery', client: 'Acme S.A.S.',
+//     icon: 'assets/img/work/acme-delivery/icon.png', color: '#0a7cff', screenSize: [600, 1300],
+//     screens: (lang) => [`assets/img/work/acme-delivery/${lang}-01.webp`], url: 'https://acme.example',
+//     es: { category, platforms, shows, problem, built, ai: [...], screenAlt: [...] }, en: { ... },
+//   }
+const projects = [];
+
+// Everything under "Our work": our own apps first, then client projects, in one shape.
+// kind: 'own' (a Tutos App product) or 'client' (built for a client).
+const workItems = (lang) => [
+  ...apps.map((a) => ({
+    id: a.id,
+    kind: 'own',
+    name: a.name,
+    app: a,
+    theme: a.theme,
+    icon: a.icon,
+    href: a.paths[lang],
+    screenSize: a.screenSize,
+    screens: a.screens(lang).slice(0, 2).map((src, i) => ({ src, alt: `${ui[lang].screenshotOf} ${a.name}: ${a[lang].tabs[i][2]}` })),
+    category: a[lang].category,
+    platforms: lang === 'es' ? 'iOS y Android · Español e inglés' : 'iOS and Android · Spanish and English',
+    ...a[lang].work,
+  })),
+  ...projects.map((p) => ({
+    id: p.id,
+    kind: 'client',
+    name: p.name,
+    client: p.client,
+    theme: 't-client',
+    color: p.color,
+    icon: p.icon,
+    href: p.url,
+    screenSize: p.screenSize,
+    screens: p.screens(lang).slice(0, 2).map((src, i) => ({ src, alt: `${ui[lang].screenshotOf} ${p.name}: ${p[lang].screenAlt[i]}` })),
+    ...p[lang],
+  })),
+];
+
+// The services page ("We build your app"): the studio's offer to companies and founders. The
+// proof is our own work (workItems above), so it grows with every app and client project.
+const services = {
+  paths: { es: 'servicios/', en: 'en/services/' },
+  bg: '#f6f6f8',
+  es: {
+    title: 'Hacemos tu app con IA: de la idea a App Store y Google Play',
+    description:
+      'Tutos App es un estudio de apps con IA en Medellín. Llevamos tu idea a una app en App Store y Google Play: agentes de IA hacen el trabajo pesado y una persona revisa cada decisión.',
+    navLabel: 'Hacemos tu app',
+    eyebrow: 'Hacemos tu app · Estudio de apps con IA en Medellín',
+    headline: 'Apps, funciones e IA *para tu negocio*.',
+    lead:
+      'Apps nuevas, nuevas funciones para el producto que ya tienes, IA e integraciones. Agentes de IA hacen el trabajo pesado y una persona revisa cada decisión: rápido, con calidad y sin sorpresas.',
+    primary: 'Cuéntanos tu idea',
+    whatsapp: 'Escríbenos por WhatsApp',
+    whatsappText: 'Hola, quiero hablar con Tutos App sobre una app.',
+    facts: [
+      [String(apps.length), `${apps.length === 1 ? 'app propia' : 'apps propias'} con IA`],
+      ['iOS · Android', 'para App Store y Google Play'],
+      ['ES · EN', 'todas en español e inglés'],
+      ['UTC−5', 'desde Medellín, en tu horario'],
+    ],
+    studio: {
+      title: 'Tu app, de la idea a las tiendas',
+      note: 'Quién hace cada parte',
+      ai: 'IA',
+      human: 'Persona',
+      proof: 'El mismo proceso con el que hicimos',
     },
+    nav: [['#trabajo', 'Trabajo'], ['#que-hacemos', 'Qué hacemos'], ['#proceso', 'Proceso'], ['#preguntas', 'Preguntas']],
+    navCta: 'Cuéntanos tu idea',
+    workId: 'trabajo',
+    workEyebrow: 'Nuestro trabajo',
+    workTitle: 'Nuestras apps son *nuestra prueba*.',
+    workLead:
+      'Antes de construir la tuya, construimos las nuestras, con IA de verdad adentro. Esto es lo que cada una demuestra y dónde está hoy.',
+    kinds: { own: 'Producto propio', client: 'Proyecto para cliente' },
+    facts_: { problem: 'El problema', built: 'Lo que construimos', ai: 'La IA que usa', platforms: 'Plataformas' },
+    seeWork: (name) => `Ver ${name}`,
+    buildId: 'que-hacemos',
+    buildEyebrow: 'Qué construimos',
+    buildTitle: 'Apps que *resuelven algo*, con la IA donde suma.',
+    build: [
+      ['phone', 'Apps móviles para iOS y Android', 'Diseño, desarrollo y publicación de la app completa, con cuentas, pagos, notificaciones y lo que tu negocio necesite.'],
+      ['eye', 'Visión e IA sobre fotos', 'Leer códigos de barras, etiquetas, documentos y fotos: OCR y visión por computador que convierten una imagen en datos útiles.', 'ojito'],
+      ['wave', 'Voz y chat con IA', 'Asistentes que conversan por voz o por texto, entrevistan, explican y responden con el contexto de tu negocio.', 'roast-interview'],
+      ['gauge', 'Puntajes y recomendaciones', 'Modelos que califican, comparan y recomiendan, con reglas claras y el porqué de cada resultado.', 'resume-roast'],
+      ['spark', 'Funciones para el producto que ya tienes', 'Nuevas funciones, integraciones con tus sistemas e IA para tu app o tu web, sobre tu código y sin rehacerlo. Y mantenimiento para que siga al día.'],
+      ['globe', 'Landings y sitios web', 'La página de tu app o de tu empresa, rápida, accesible y lista para buscadores, como este sitio.'],
+    ],
+    seenIn: 'Lo usamos en',
+    processId: 'proceso',
+    processEyebrow: 'Cómo trabajamos',
+    processTitle: 'Agentes de IA hacen el trabajo pesado. *Una persona revisa cada decisión.*',
+    process: [
+      ['Descubrimiento', 'Entendemos tu idea, a tus usuarios y el problema. Salimos con un alcance claro, lo que entra en la primera versión y fechas.', 'human'],
+      ['Diseño', 'Pantallas y flujos que puedes tocar en tu celular antes de escribir el código. La IA explora opciones; tú y nosotros decidimos.', 'both'],
+      ['Construcción con IA y revisión humana', 'Agentes de IA escriben y prueban el código en paralelo, y una persona del equipo revisa y aprueba cada cambio antes de que entre.', 'both'],
+      ['Calidad', 'Pruebas automáticas, revisión de accesibilidad y pruebas en teléfonos reales, en iPhone y en Android.', 'both'],
+      ['Lanzamiento en App Store y Google Play', 'Fichas, capturas, política de privacidad y términos, y el paso por la revisión de Apple y de Google.', 'human'],
+      ['Operación', 'Después del lanzamiento: métricas, errores, actualizaciones de las tiendas y nuevas funciones.', 'both'],
+    ],
+    who: { human: 'Personas', both: 'IA + revisión humana' },
+    offersId: 'formas-de-trabajar',
+    offersEyebrow: 'Formas de trabajar',
+    offersTitle: 'Empieza por *lo que necesitas hoy*.',
+    offersLead: 'Sin precios de catálogo: después de la primera llamada te mandamos una propuesta escrita con alcance, fechas y precio.',
+    offers: [
+      ['MVP en semanas', 'Para validar una idea con usuarios reales.', ['Lo esencial para probar tu idea', 'Una app en iOS y Android', 'Lista para las tiendas o para un grupo de prueba']],
+      ['App completa', 'Para lanzar un producto que va a crecer.', ['Diseño, desarrollo y publicación', 'Cuentas, pagos y notificaciones', 'Pruebas en teléfonos reales']],
+      ['Funciones e IA para tu producto', 'Para la app o la web que ya tienes.', ['Nuevas funciones e integraciones', 'IA: visión, documentos, voz o chat', 'Sobre tu código y tus datos, sin rehacerlo']],
+      ['Acompañamiento mensual', 'Para mantener y mejorar tu producto mes a mes.', ['Mantenimiento, errores y actualizaciones', 'Nuevas funciones cada mes', 'Métricas y prioridades contigo']],
+    ],
+    offerCta: 'Hablemos de esto',
+    offerMail: (name) => [`Tutos App: ${name}`, `Hola, me interesa "${name}".\n\nMi nombre: \nMi empresa o proyecto: \nMi idea: \n`],
+    faqId: 'preguntas',
+    faqEyebrow: 'Dudas',
+    faq: [
+      ['¿Mi idea queda protegida?', 'Sí. Tu idea es tuya: la tratamos con confidencialidad, no la compartimos ni la usamos para nada distinto a responderte, y si quieres firmamos un acuerdo de confidencialidad (NDA) antes de la primera llamada.'],
+      ['¿Cuánto tiempo toma?', 'Depende del alcance. Un MVP enfocado se mide en semanas, no en meses. En la primera llamada te damos un estimado, y la propuesta lleva fechas y lo que entra en cada entrega.'],
+      ['¿De quién es el código?', 'Tuyo. El código, los diseños y las cuentas de las tiendas quedan a nombre de tu empresa, y así queda por escrito en el contrato.'],
+      ['¿Ustedes publican la app en las tiendas?', 'Sí. Preparamos las fichas, las capturas, la política de privacidad y los términos, y llevamos la app por la revisión de Apple y de Google, como hacemos con nuestras propias apps. La app sale con la cuenta de desarrollador de tu empresa.'],
+      ['¿Cómo cuidan la privacidad de los datos?', 'Diseñamos desde el inicio con la Ley 1581 de 2012 de protección de datos personales de Colombia: pedimos solo los datos necesarios, decimos para qué se usan y te ayudamos a preparar la política de privacidad. Si tu app es para otros países, tenemos en cuenta sus reglas y las de las tiendas.'],
+      ['¿En qué idiomas trabajan?', 'En español y en inglés, y tu app puede salir en los dos, como todas las nuestras. Trabajamos con empresas de Colombia, de Latinoamérica y de Estados Unidos.'],
+      ['¿Trabajan con empresas de Estados Unidos?', 'Sí. Medellín está en UTC−5: la misma hora de la costa este de Estados Unidos en invierno, y una hora menos en verano. Las reuniones caben en tu jornada.'],
+      ['¿Qué hace la IA y qué hacen las personas?', 'Los agentes de IA escriben código, pruebas y borradores en paralelo, y por eso avanzamos rápido. Las decisiones de producto, de diseño y cada cambio que entra al código las revisa y aprueba una persona del equipo.'],
+    ],
+    contactId: 'contacto',
+    contactEyebrow: 'Hablemos',
+    contactTitle: '¿Tienes una idea? *Cuéntanosla.*',
+    contactLead: 'Escríbenos qué quieres construir y agendamos una llamada para conocer tu idea, sin compromiso.',
+    confidential: 'Tu idea es tuya: la tratamos con confidencialidad, no la compartimos ni la usamos, y si quieres firmamos un acuerdo de confidencialidad (NDA) antes de la primera llamada.',
+    nextTitle: 'Qué pasa después',
+    nextSteps: ['Una persona del equipo lee tu mensaje y te escribe en menos de 2 días hábiles.', 'Una llamada para conocer tu idea, sin compromiso y con NDA si lo quieres.', 'Una propuesta escrita con alcance, fechas y precio.'],
+    or: 'O escríbenos directo',
+    chat: {
+      title: 'Cuéntanos tu idea',
+      status: 'Te respondemos en menos de 2 días hábiles',
+      hello: 'Hola, somos Tutos App. Son 9 preguntas cortas y te escribimos en menos de 2 días hábiles.',
+      mailSubject: 'Nueva idea de app desde tutosapp.co',
+      steps: [
+        { key: 'nombre', label: 'Nombre', q: '¿Cómo te llamas?', input: 'text', autocomplete: 'name', placeholder: 'Tu nombre', min: 1, max: 120 },
+        { key: 'contacto', label: 'Contacto', q: '¿Dónde te escribimos? Tu correo o tu WhatsApp.', input: 'text', autocomplete: 'email', placeholder: 'tu@correo.com o +57 300 000 0000', min: 3, max: 160 },
+        { key: 'empresa', label: 'Empresa', q: '¿Para qué empresa o proyecto es? Si no aplica, sáltala.', input: 'text', autocomplete: 'organization', placeholder: 'Opcional', optional: true, max: 160 },
+        { key: 'idea', label: 'Idea', q: 'Cuéntanos tu idea: qué quieres construir, para quién y qué problema resuelve.', input: 'textarea', placeholder: 'Por ejemplo: una app para que los clientes de mi tienda…', min: 20, max: 4000 },
+        { key: 'tipo', label: 'Tipo de proyecto', q: '¿Qué tipo de proyecto es?', options: [['app_movil', 'App móvil'], ['app_con_ia', 'App con IA'], ['web', 'Web o landing'], ['sumar_ia', 'Sumar IA a mi app'], ['feature', 'Nuevas funciones para un producto que ya existe'], ['otro', 'Otra cosa']] },
+        { key: 'plazo', label: 'Cuándo empezar', q: '¿Cuándo te gustaría empezar?', options: [['ya', 'Lo antes posible'], ['1_3_meses', 'En 1 a 3 meses'], ['3_6_meses', 'En 3 a 6 meses'], ['explorando', 'Estoy explorando']] },
+        { key: 'presupuesto', label: 'Presupuesto', q: '¿Qué presupuesto tienes en mente, en dólares?', options: [['no_se', 'Aún no lo sé'], ['menos_5k', 'Menos de USD 5.000'], ['5k_15k', 'USD 5.000 a 15.000'], ['15k_50k', 'USD 15.000 a 50.000'], ['mas_50k', 'Más de USD 50.000']] },
+        { key: 'nda', label: 'NDA', q: '¿Quieres que firmemos un acuerdo de confidencialidad (NDA) antes de la primera llamada?', options: [['si', 'Sí, quiero un NDA'], ['no', 'No hace falta']] },
+        { key: 'consentimiento', label: 'Autorización', q: 'Último paso: para escribirte necesitamos tu autorización.', consent: ['Autorizo a TUTOS APP S.A.S. a usar estos datos para responderme, según su', 'política de privacidad'] },
+      ],
+      next: 'Siguiente',
+      back: 'Atrás',
+      skip: 'Saltar',
+      send: 'Enviar mi idea',
+      sending: 'Enviando…',
+      noscript: 'Al enviar se abre tu correo con el mensaje listo para hola@tutosapp.co.',
+      noscriptSend: 'Enviar por correo',
+      errors: {
+        required: 'Este dato nos hace falta para seguir.',
+        contacto: 'Escribe un correo o un número de WhatsApp.',
+        short: 'Cuéntanos un poco más: al menos 20 caracteres.',
+        long: 'Es un poco largo; resúmelo un poco, por favor.',
+        choose: 'Elige una opción.',
+        consent: 'Necesitamos tu autorización para poder escribirte.',
+      },
+      thanks: ['¡Gracias, {nombre}!', 'Recibimos tu idea. Te escribimos en menos de 2 días hábiles.', 'Mientras tanto, si quieres adelantar algo, escríbenos por WhatsApp.'],
+      fail: {
+        datos: 'Algo en los datos no se pudo leer.',
+        limite: 'Recibimos muchos mensajes desde tu conexión en la última hora.',
+        red: 'No pudimos enviar tu mensaje.',
+        fallback: 'Envíalo por correo o por WhatsApp: ya va con lo que escribiste.',
+        mail: 'Enviar por correo',
+      },
+    },
+    homeTitle: '¿Tienes una idea? *Hacemos tu app.*',
+    homeLead: 'Lo que aprendimos haciendo nuestras apps lo ponemos al servicio de tu idea: agentes de IA hacen el trabajo pesado, una persona revisa cada decisión y tu app llega a App Store y Google Play.',
+    homeTicks: ['Apps nuevas para iOS, Android y web', 'Nuevas funciones, IA e integraciones para tu producto', 'Del primer boceto a las tiendas, y después'],
+    homeCta: 'Conoce cómo trabajamos',
+  },
+  en: {
+    title: 'We build your AI app: from idea to the App Store and Google Play',
+    description:
+      'Tutos App is an AI app studio in Medellín, Colombia. We take your idea to an app on the App Store and Google Play: AI agents do the heavy lifting and a person reviews every decision.',
+    navLabel: 'We build your app',
+    eyebrow: 'We build your app · AI app studio in Medellín',
+    headline: 'Apps, features and AI *for your business*.',
+    lead:
+      'New apps, new features for the product you already have, AI and integrations. AI agents do the heavy lifting and a person reviews every decision: fast, with quality and no surprises.',
+    primary: 'Tell us your idea',
+    whatsapp: 'Message us on WhatsApp',
+    whatsappText: 'Hi, I would like to talk with Tutos App about an app.',
+    facts: [
+      [String(apps.length), `${apps.length === 1 ? 'app' : 'apps'} of our own, with AI inside`],
+      ['iOS · Android', 'for the App Store and Google Play'],
+      ['EN · ES', 'all in English and Spanish'],
+      ['UTC−5', 'from Medellín, in your hours'],
+    ],
+    studio: {
+      title: 'Your app, from idea to the stores',
+      note: 'Who does each part',
+      ai: 'AI',
+      human: 'Person',
+      proof: 'The same process we used to build',
+    },
+    nav: [['#work', 'Work'], ['#what-we-build', 'What we build'], ['#process', 'Process'], ['#faq', 'FAQ']],
+    navCta: 'Tell us your idea',
+    workId: 'work',
+    workEyebrow: 'Our work',
+    workTitle: 'Our apps are *our proof*.',
+    workLead:
+      'Before building yours, we built our own, with real AI inside. Here is what each one shows and where it is today.',
+    kinds: { own: 'Our product', client: 'Client project' },
+    facts_: { problem: 'The problem', built: 'What we built', ai: 'The AI inside', platforms: 'Platforms' },
+    seeWork: (name) => `See ${name}`,
+    buildId: 'what-we-build',
+    buildEyebrow: 'What we build',
+    buildTitle: 'Apps that *solve something*, with AI where it helps.',
+    build: [
+      ['phone', 'Mobile apps for iOS and Android', 'Design, development and launch of the whole app, with accounts, payments, notifications and whatever your business needs.'],
+      ['eye', 'Vision and AI on photos', 'Reading barcodes, labels, documents and photos: OCR and computer vision that turn an image into useful data.', 'ojito'],
+      ['wave', 'Voice and chat AI', 'Assistants that talk by voice or text, interview, explain and answer with your business context.', 'roast-interview'],
+      ['gauge', 'Scores and recommendations', 'Models that rate, compare and recommend, with clear rules and the reason behind every result.', 'resume-roast'],
+      ['spark', 'Features for the product you already have', 'New features, integrations with your systems and AI for your app or website, on your code and without a rebuild. Plus maintenance to keep it up to date.'],
+      ['globe', 'Landing pages and websites', 'The page for your app or your company, fast, accessible and ready for search engines, like this site.'],
+    ],
+    seenIn: 'We use it in',
+    processId: 'process',
+    processEyebrow: 'How we work',
+    processTitle: 'AI agents do the heavy lifting. *A person reviews every decision.*',
+    process: [
+      ['Discovery', 'We get to know your idea, your users and the problem. We come out with a clear scope, what goes into the first version, and dates.', 'human'],
+      ['Design', 'Screens and flows you can tap through on your phone before any code is written. AI explores options; you and we decide.', 'both'],
+      ['AI-built, human-reviewed', 'AI agents write and test the code in parallel, and a person on the team reviews and approves every change before it goes in.', 'both'],
+      ['Quality', 'Automated tests, accessibility review and testing on real phones, on iPhone and Android.', 'both'],
+      ['Launch on the App Store and Google Play', 'Store listings, screenshots, privacy policy and terms, and getting through Apple’s and Google’s review.', 'human'],
+      ['Operation', 'After launch: metrics, bugs, store updates and new features.', 'both'],
+    ],
+    who: { human: 'People', both: 'AI + human review' },
+    offersId: 'ways-to-work',
+    offersEyebrow: 'Ways to work together',
+    offersTitle: 'Start with *what you need today*.',
+    offersLead: 'No price list: after the first call we send you a written proposal with scope, dates and price.',
+    offers: [
+      ['An MVP in weeks', 'To validate an idea with real users.', ['The essentials to test your idea', 'One app on iOS and Android', 'Ready for the stores or a testing group']],
+      ['A complete app', 'To launch a product that is going to grow.', ['Design, development and launch', 'Accounts, payments and notifications', 'Testing on real phones']],
+      ['Features and AI for your product', 'For the app or website you already have.', ['New features and integrations', 'AI: vision, documents, voice or chat', 'On your code and your data, without a rebuild']],
+      ['Monthly partnership', 'To keep your product running and improving month after month.', ['Maintenance, bugs and updates', 'New features every month', 'Metrics and priorities, together']],
+    ],
+    offerCta: 'Let’s talk about this',
+    offerMail: (name) => [`Tutos App: ${name}`, `Hi, I am interested in "${name}".\n\nMy name: \nMy company or project: \nMy idea: \n`],
+    faqId: 'faq',
+    faqEyebrow: 'Questions',
+    faq: [
+      ['Is my idea protected?', 'Yes. Your idea is yours: we treat it as confidential, we do not share it or use it for anything other than replying to you, and if you want, we sign a non-disclosure agreement (NDA) before the first call.'],
+      ['How long does it take?', 'It depends on the scope. A focused MVP is measured in weeks, not months. On the first call we give you an estimate, and the proposal includes dates and what goes into each delivery.'],
+      ['Who owns the code?', 'You do. The code, the designs and the store accounts are in your company’s name, and the contract says so in writing.'],
+      ['Do you publish the app in the stores?', 'Yes. We prepare the listings, screenshots, privacy policy and terms, and take the app through Apple’s and Google’s review, as we do with our own apps. The app ships under your company’s developer account.'],
+      ['How do you handle data privacy?', 'We design for Colombia’s personal data protection law (Ley 1581 of 2012) from the start: we ask only for the data needed, say what it is used for and help you prepare the privacy policy. If your app is for other countries, we take their rules and the stores’ rules into account.'],
+      ['Which languages do you work in?', 'English and Spanish, and your app can ship in both, like all of ours. We work with companies in Colombia, Latin America and the United States.'],
+      ['Do you work with US companies?', 'Yes. Medellín is on UTC−5: the same time as the US East Coast in winter, and one hour behind in summer. Meetings fit in your workday.'],
+      ['What does AI do, and what do people do?', 'AI agents write code, tests and drafts in parallel, which is why we move fast. Product and design decisions, and every change that goes into the code, are reviewed and approved by a person on the team.'],
+    ],
+    contactId: 'contact',
     contactEyebrow: 'Let’s talk',
-    nextTitle: `${appCount('en')} today. *More on the way.*`,
-    nextLead:
-      'Each app starts from a real everyday question. Have an idea, want to try our apps before anyone else, or want to work with us? Email us.',
-    share: 'Check out the Tutos App apps:',
-    about: 'AI app studio from Medellín, Colombia. Everyday decisions, made simpler.',
+    contactTitle: 'Have an idea? *Tell us about it.*',
+    contactLead: 'Write to us about what you want to build and we will schedule a call to hear your idea, with no commitment.',
+    confidential: 'Your idea is yours: we treat it as confidential, we do not share it or use it, and if you want, we sign a non-disclosure agreement (NDA) before the first call.',
+    nextTitle: 'What happens next',
+    nextSteps: ['A person on the team reads your message and writes back within 2 business days.', 'A call to hear your idea, with no commitment and under an NDA if you want.', 'A written proposal with scope, dates and price.'],
+    or: 'Or reach us directly',
+    chat: {
+      title: 'Tell us your idea',
+      status: 'We reply within 2 business days',
+      hello: 'Hi, we are Tutos App. Nine short questions, and we write back within 2 business days.',
+      mailSubject: 'New app idea from tutosapp.co',
+      steps: [
+        { key: 'nombre', label: 'Name', q: 'What is your name?', input: 'text', autocomplete: 'name', placeholder: 'Your name', min: 1, max: 120 },
+        { key: 'contacto', label: 'Contact', q: 'Where should we write to you? Your email or WhatsApp.', input: 'text', autocomplete: 'email', placeholder: 'you@company.com or +1 555 000 0000', min: 3, max: 160 },
+        { key: 'empresa', label: 'Company', q: 'Which company or project is it for? Skip it if it does not apply.', input: 'text', autocomplete: 'organization', placeholder: 'Optional', optional: true, max: 160 },
+        { key: 'idea', label: 'Idea', q: 'Tell us your idea: what you want to build, who it is for and what problem it solves.', input: 'textarea', placeholder: 'For example: an app that lets my store’s customers…', min: 20, max: 4000 },
+        { key: 'tipo', label: 'Project type', q: 'What kind of project is it?', options: [['app_movil', 'Mobile app'], ['app_con_ia', 'App with AI'], ['web', 'Website or landing page'], ['sumar_ia', 'Add AI to my app'], ['feature', 'New features for an existing product'], ['otro', 'Something else']] },
+        { key: 'plazo', label: 'When to start', q: 'When would you like to start?', options: [['ya', 'As soon as possible'], ['1_3_meses', 'In 1 to 3 months'], ['3_6_meses', 'In 3 to 6 months'], ['explorando', 'Just exploring']] },
+        { key: 'presupuesto', label: 'Budget', q: 'What budget do you have in mind, in US dollars?', options: [['no_se', 'Not sure yet'], ['menos_5k', 'Under USD 5,000'], ['5k_15k', 'USD 5,000 to 15,000'], ['15k_50k', 'USD 15,000 to 50,000'], ['mas_50k', 'Over USD 50,000']] },
+        { key: 'nda', label: 'NDA', q: 'Would you like us to sign a non-disclosure agreement (NDA) before the first call?', options: [['si', 'Yes, I want an NDA'], ['no', 'Not needed']] },
+        { key: 'consentimiento', label: 'Consent', q: 'Last step: we need your permission to write to you.', consent: ['I allow TUTOS APP S.A.S. to use this information to reply to me, under its', 'privacy policy'] },
+      ],
+      next: 'Next',
+      back: 'Back',
+      skip: 'Skip',
+      send: 'Send my idea',
+      sending: 'Sending…',
+      noscript: 'Sending opens your email with the message ready for hola@tutosapp.co.',
+      noscriptSend: 'Send by email',
+      errors: {
+        required: 'We need this to continue.',
+        contacto: 'Enter an email address or a WhatsApp number.',
+        short: 'Tell us a bit more: at least 20 characters.',
+        long: 'That is a bit long; please shorten it.',
+        choose: 'Pick one option.',
+        consent: 'We need your permission to write to you.',
+      },
+      thanks: ['Thank you, {nombre}!', 'We got your idea. We will write back within 2 business days.', 'In the meantime, if you want to get ahead, message us on WhatsApp.'],
+      fail: {
+        datos: 'Something in the information could not be read.',
+        limite: 'We received many messages from your connection in the last hour.',
+        red: 'We could not send your message.',
+        fallback: 'Send it by email or WhatsApp instead: it already includes what you wrote.',
+        mail: 'Send by email',
+      },
+    },
+    homeTitle: 'Have an idea? *We build your app.*',
+    homeLead: 'What we learned building our own apps, we put to work on your idea: AI agents do the heavy lifting, a person reviews every decision and your app reaches the App Store and Google Play.',
+    homeTicks: ['New apps for iOS, Android and the web', 'New features, AI and integrations for your product', 'From the first sketch to the stores, and beyond'],
+    homeCta: 'See how we work',
   },
 };
 
@@ -677,6 +976,10 @@ const legalAlternates = (app, doc) => Object.fromEntries(Object.keys(app.paths).
 const CSS_PATH = 'assets/style.css';
 const CSS_VERSION = createHash('sha256').update(readFileSync(join(ROOT, CSS_PATH))).digest('hex').slice(0, 10);
 const stylesheet = (path) => `${rel(path, CSS_PATH)}?v=${CSS_VERSION}`;
+// The "Tell us your idea" chat is the site's only script, versioned the same way.
+const BRIEF_JS = 'assets/brief.js';
+const BRIEF_VERSION = createHash('sha256').update(readFileSync(join(ROOT, BRIEF_JS))).digest('hex').slice(0, 10);
+const briefScript = (path) => `<script src="${rel(path, BRIEF_JS)}?v=${BRIEF_VERSION}" defer></script>`;
 
 // The interactive demos (the home question card and each app's hero) switch panes with CSS only,
 // one radio per pane. style.css handles up to this many panes per demo.
@@ -699,6 +1002,9 @@ const glyphs = {
   repeat: '<path d="M17 3l3.5 3.5L17 10"/><path d="M4 11.5V10a3.5 3.5 0 0 1 3.5-3.5h13M7 21l-3.5-3.5L7 14"/><path d="M20 12.5V14a3.5 3.5 0 0 1-3.5 3.5h-13"/>',
   eye: '<path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>',
   lock: '<rect x="4.5" y="10.5" width="15" height="10.5" rx="2.5"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/>',
+  phone: '<rect x="6.5" y="2.5" width="11" height="19" rx="2.5"/><path d="M10.5 18.5h3"/>',
+  wave: '<path d="M4 10v4M8 7v10M12 4v16M16 7v10M20 10v4"/>',
+  globe: '<circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17M12 3.5c2.4 2.6 3.6 5.4 3.6 8.5s-1.2 5.9-3.6 8.5c-2.4-2.6-3.6-5.4-3.6-8.5s1.2-5.9 3.6-8.5z"/>',
 };
 
 const icons = {
@@ -712,6 +1018,7 @@ const icons = {
   playSmall: svg('<path d="M7 4.5v15l12-7.5z"/>', 14),
   plus: svg('<path d="M12 5v14M5 12h14"/>', 18, 2),
   chevron: svg('<path d="m6 9 6 6 6-6"/>', 14, 2.4),
+  calendar: svg('<rect x="3.5" y="5" width="17" height="15.5" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/>', 20),
 };
 
 const wave = '<span class="wave" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>';
@@ -776,7 +1083,8 @@ function head({ lang, title, description, path, alternates, og, bg, ld, fonts = 
 // popover, so it needs no JavaScript: the browser opens and closes it, closes it on Esc or a tap
 // outside, returns the focus to the button and tells screen readers whether it is open. Its icons
 // load lazily, so a closed list costs no downloads.
-function switcher(lang, path, app, current = 'page') {
+// onHome: this page is the Tutos App home, so the home item is marked as the current page.
+function switcher(lang, path, app, current = 'page', onHome = !app) {
   const t = ui[lang];
   const item = (href, img, name, line, here) =>
     `<li><a href="${href}"${here ? ` aria-current="${current}"` : ''}><img src="${img}" alt="" width="36" height="36" loading="lazy"><span class="apps-name"><b>${esc(name)}</b>${line ? `<span>${esc(line)}</span>` : ''}</span>${here ? icons.check : ''}</a></li>`;
@@ -784,7 +1092,7 @@ function switcher(lang, path, app, current = 'page') {
   return `<button class="apps-toggle" type="button" popovertarget="apps-menu" aria-controls="apps-menu" aria-label="Tutos App: ${t.switcher}"><img src="${logo}" alt="" width="${app ? 24 : 28}" height="${app ? 24 : 28}">${app ? '' : '<span>Tutos App</span>'}${icons.chevron}</button>
         <nav class="apps-menu" id="apps-menu" popover aria-label="${t.switcherMenu}">
           <ul>${apps.map((a) => item(rel(path, a.paths[lang]), rel(path, a.icon), a.name, a[lang].category, a === app)).join('')}</ul>
-          <ul class="apps-home">${item(rel(path, home.paths[lang]), logo, t.homeOf, '', !app)}</ul>
+          <ul class="apps-home">${item(rel(path, home.paths[lang]), logo, t.homeOf, '', onHome)}</ul>
         </nav>`;
 }
 
@@ -792,13 +1100,14 @@ function switcher(lang, path, app, current = 'page') {
 // action. An app page stands on its own: its brand and its own sections; the other apps and the
 // Tutos App home are one tap away in the switcher, behind the small Tutos App logo.
 // current: 'page' on the app's own page; 'true' on its legal pages, which belong to the app.
-function nav({ lang, path, theme, items, other, cta, app, current = 'page' }) {
+// onHome: false on pages of the studio that are not the home (the services page).
+function nav({ lang, path, theme, items, other, cta, app, current = 'page', onHome = true }) {
   const t = ui[lang];
   const brand = app
     ? `${switcher(lang, path, app, current)}
         <span class="nav-sep" aria-hidden="true"></span>
         <a class="brand" href="${rel(path, app.paths[lang])}"${current === 'page' ? ' aria-current="page"' : ''}><img src="${rel(path, app.icon)}" alt="" width="28" height="28"><span>${esc(app.name)}</span></a>`
-    : switcher(lang, path);
+    : switcher(lang, path, null, 'page', onHome);
   return `
   <body class="${theme}">
     <a class="skip" href="#main">${t.skip}</a>
@@ -835,7 +1144,8 @@ function footer({ lang, path, only }) {
     : `<nav aria-label="${t.allApps}"><h2>${t.ourApps}</h2><ul>${apps.map((a) => `<li><a href="${rel(path, a.paths[lang])}">${esc(a.name)}</a></li>`).join('')}</ul></nav>`;
   const legal = only
     ? `<ul>${legalLinks(only, lang, path)}</ul>`
-    : apps.map((a) => `<div class="legal-group"><b>${esc(a.name)}</b><ul>${legalLinks(a, lang, path)}</ul></div>`).join('');
+    : `<div class="legal-group"><b>Tutos App</b><ul><li><a href="${rel(path, companyPrivacy.paths[lang])}"${path === companyPrivacy.paths[lang] ? ' aria-current="page"' : ''}>${t.privacy}</a></li></ul></div>` +
+      apps.map((a) => `<div class="legal-group"><b>${esc(a.name)}</b><ul>${legalLinks(a, lang, path)}</ul></div>`).join('');
   return `
     <footer class="foot">
       <div class="wrap">
@@ -847,7 +1157,7 @@ function footer({ lang, path, only }) {
           </div>
           ${appLinks}
           <nav aria-label="${only ? `${t.legal}: ${esc(only.name)}` : t.legal}"><h2>${only ? `${t.legal} · ${esc(only.name)}` : t.legal}</h2>${legal}</nav>
-          <div><h2>${t.contact}</h2><ul><li><a href="mailto:${EMAIL}">${EMAIL}</a></li><li><p>${COMPANY.city}</p></li></ul></div>
+          <div><h2>${t.contact}</h2><ul><li><a href="mailto:${EMAIL}">${EMAIL}</a></li>${only ? '' : `<li><a href="${rel(path, services.paths[lang])}">${esc(services[lang].navLabel)}</a></li>`}<li><p>${COMPANY.city}</p></li></ul></div>
         </div>
         <div class="company">
           <p>© ${YEAR} ${COMPANY.name} · NIT ${COMPANY.nit} · ${COMPANY.city}. ${t.rights}</p>
@@ -1150,17 +1460,10 @@ function legalSource(app, lang, doc) {
   return { title: m[1], body: raw.slice(m[0].length) };
 }
 
-// A legal page: the document's own text, unchanged, in a readable column with a table of
-// contents built from its sections and the date it last changed. Only markup changes: each section
-// gets an id if it lacks one, a wide table that scrolls sideways becomes a labeled region that the
-// keyboard can reach, and phone numbers in links keep their digits on one line.
-function legalPage(app, lang, doc) {
-  const t = ui[lang];
-  const path = legalPath(app, lang, doc);
-  const otherLang = lang === 'es' ? 'en' : 'es';
-  const url = SITE_URL + path;
-  const { title, body: source } = legalSource(app, lang, doc);
-
+// Legal markup: each section gets an id if it lacks one (for the table of contents), a wide table
+// that scrolls sideways becomes a labeled region that the keyboard can reach, legal: links become
+// relative links and phone numbers in links keep their digits on one line.
+function legalMarkup(source, title, path) {
   const toc = [];
   const ids = new Set(['main', 'apps-menu', 'toc-h']);
   let section = plain(title);
@@ -1180,20 +1483,39 @@ function legalPage(app, lang, doc) {
       return target?.legal[d] && target.paths[l] ? `href="${rel(path, legalPath(target, l, d))}${frag}"` : all;
     })
     .replace(/(<a href="tel:[^"]+">)([^<]+)<\/a>/g, (all, open, number) => `${open}${number.replace(/ /g, '&nbsp;')}</a>`);
+  return { body, toc };
+}
 
-  const date = app.legal[doc];
-  const updated = new Intl.DateTimeFormat(lang === 'es' ? 'es-CO' : 'en-US', { dateStyle: 'long', timeZone: 'UTC' }).format(
-    new Date(`${date}T00:00:00Z`)
-  );
-  const items = legalDocs(app).map((d) => [rel(path, legalPath(app, lang, d)), t[d], d === doc]);
-  const contents =
-    toc.length > 1
-      ? `
+// The table of contents of a legal page, as a nav, when it has more than one section.
+function legalToc(t, toc) {
+  return toc.length > 1
+    ? `
         <nav class="toc" aria-labelledby="toc-h">
           <h2 id="toc-h">${t.toc}</h2>
           <ol>${toc.map(([id, inner]) => `<li><a href="#${id}">${inner}</a></li>`).join('')}</ol>
         </nav>`
-      : '';
+    : '';
+}
+
+const legalDate = (date, lang) =>
+  new Intl.DateTimeFormat(lang === 'es' ? 'es-CO' : 'en-US', { dateStyle: 'long', timeZone: 'UTC' }).format(new Date(`${date}T00:00:00Z`));
+
+// A legal page: the document's own text, unchanged, in a readable column with a table of
+// contents built from its sections and the date it last changed. Only markup changes: each section
+// gets an id if it lacks one, a wide table that scrolls sideways becomes a labeled region that the
+// keyboard can reach, and phone numbers in links keep their digits on one line.
+function legalPage(app, lang, doc) {
+  const t = ui[lang];
+  const path = legalPath(app, lang, doc);
+  const otherLang = lang === 'es' ? 'en' : 'es';
+  const url = SITE_URL + path;
+  const { title, body: source } = legalSource(app, lang, doc);
+
+  const { body, toc } = legalMarkup(source, title, path);
+  const date = app.legal[doc];
+  const updated = legalDate(date, lang);
+  const items = legalDocs(app).map((d) => [rel(path, legalPath(app, lang, d)), t[d], d === doc]);
+  const contents = legalToc(t, toc);
 
   return (
     head({
@@ -1242,6 +1564,55 @@ ${body.trim()}
   );
 }
 
+// The company's privacy policy, in the same reading layout as the apps' legal pages.
+function companyPrivacyPage(lang) {
+  const t = ui[lang];
+  const path = companyPrivacy.paths[lang];
+  const otherLang = lang === 'es' ? 'en' : 'es';
+  const raw = readFileSync(join(LEGAL_DIR, 'tutosapp', `${lang}-privacy.html`), 'utf8');
+  const m = raw.match(/^<h1>([\s\S]*?)<\/h1>\n/);
+  if (!m) throw new Error(`legal/tutosapp/${lang}-privacy.html must start with its <h1> title`);
+  const title = m[1];
+  const { body, toc } = legalMarkup(raw.slice(m[0].length), title, path);
+  const contents = legalToc(t, toc);
+  const date = companyPrivacy.date;
+  return (
+    head({
+      lang,
+      title: `${plain(title)} · Tutos App`,
+      description: t.companyPrivacyAbout,
+      path,
+      alternates: companyPrivacy.paths,
+      og: `home-${lang}`,
+      bg: home.bg,
+      ld: { '@type': 'WebPage', name: plain(title), url: SITE_URL + path, inLanguage: lang, dateModified: date, publisher: organization },
+    }) +
+    nav({
+      lang,
+      path,
+      theme: 't-home page-legal',
+      items: [[rel(path, services.paths[lang]), services[lang].navLabel]],
+      other: { lang: otherLang, path: companyPrivacy.paths[otherLang] },
+      cta: { href: `${rel(path, services.paths[lang])}#${services[lang].contactId}`, label: services[lang].navCta },
+      onHome: false,
+    }) +
+    `
+    <main id="main" class="legal">
+      <header class="wrap legal-head">
+        <p class="kicker"><span class="num">${t.legal}</span><span>Tutos App</span></p>
+        <h1>${title}</h1>
+        <p class="legal-updated">${t.updated}: <time datetime="${date}">${legalDate(date, lang)}</time></p>
+      </header>
+      <div class="wrap legal-grid${contents ? '' : ' single'}">${contents}
+        <article class="legal-body">
+${body.trim()}
+        </article>
+      </div>
+    </main>` +
+    footer({ lang, path })
+  );
+}
+
 // The marquee repeats the app list until each half of the track holds at least 8 tiles, so it
 // fills wide screens whether there are 3 apps or 12. The first copy is the accessible one; the
 // repeats are hidden from assistive technology and from keyboard focus. The icons stay muted so
@@ -1274,90 +1645,351 @@ const orbStyle = () => {
   return `--orb: conic-gradient(from 90deg, ${colors.join(', ')}); --n: ${apps.length}`;
 };
 
-// The home hero's card: one question per app, answered with what that app really shows.
-function askDemo(lang, path) {
-  const t = ui[lang];
-  const list = apps.filter((a) => a[lang].ask);
-  const orbit = apps
-    .map((a, i) => `<img src="${rel(path, a.icon)}" alt="" width="40" height="40" style="--i: ${i}">`)
-    .join('');
-  const answers = list
-    .map((a) => {
-      const x = a[lang].ask;
-      return `<div class="answer" style="--app: ${a.color}">
-              <p class="bubble"><span class="sr-only">${t.question}: </span>${esc(x.q)}</p>
-              <span class="thinking" aria-hidden="true"><i></i><i></i><i></i></span>
-              <div class="reply">
-                <p class="reply-head"><img src="${rel(path, a.icon)}" alt="" width="28" height="28"><b>${esc(a.name)}</b><span class="tag">${t.example}</span></p>
-                <p class="verdict"><span class="dot ${x.tone}" aria-hidden="true"></span>${esc(x.verdict)}</p>
-                <p class="reply-note">${esc(x.note)}</p>
-                <a class="reply-link" href="${rel(path, a.paths[lang])}">${t.see} ${esc(a.name)} ${icons.arrow}</a>
-              </div>
-            </div>`;
-    })
-    .join('\n            ');
-  return `<div class="ask-card switch">
+// The studio's process as a short list, saying who does each part: AI agents with a person
+// reviewing, or people. Shown in the services hero card and in the home's "we build your app" band.
+function studioSteps(lang) {
+  const s = services[lang];
+  const chips = (who) =>
+    (who === 'human' ? [['human', s.studio.human]] : [['ai', s.studio.ai], ['human', s.studio.human]])
+      .map(([k, label]) => `<span class="who-chip ${k}">${esc(label)}</span>`)
+      .join('');
+  return `<ol class="studio-steps">${s.process
+    .map(([name, , who], i) => `<li style="--d: ${i}"><span class="n" aria-hidden="true">${pad(i + 1)}</span><span class="s">${esc(name)}</span><span class="who">${chips(who)}</span></li>`)
+    .join('')}</ol>`;
+}
+
+// The services hero card: the process at a glance, with the orb and our apps' icons.
+function studioCard(lang, path) {
+  const s = services[lang];
+  const orbit = apps.map((a, i) => `<img src="${rel(path, a.icon)}" alt="" width="40" height="40" style="--i: ${i}">`).join('');
+  return `<div class="ask-card studio-card">
           <div class="ask-top">
             <div class="orb-wrap" aria-hidden="true" style="${orbStyle()}"><span class="orb"></span><span class="orbit">${orbit}</span></div>
             <div class="ask-title">
-              <p>${t.askTitle}</p>
-              <p class="mono">${t.askNote}</p>
+              <p>${esc(s.studio.title)}</p>
+              <p class="mono">${esc(s.studio.note)}</p>
             </div>
           </div>
-          ${tabs('ask', t.askLegend, list.map((a) => ({ label: a[lang].ask.chip })))}
-          <div class="panes answers">
-            ${answers}
-          </div>
+          ${studioSteps(lang)}
+          <p class="studio-proof">${esc(s.studio.proof)} ${apps
+            .map((a) => `<a href="${rel(path, a.paths[lang])}"><img src="${rel(path, a.icon)}" alt="" width="22" height="22">${esc(a.name)}</a>`)
+            .join('')}</p>
         </div>`;
 }
 
-function appCard(app, lang, path, i) {
-  const p = app[lang];
-  const t = ui[lang];
-  const shot = [{ src: app.screens(lang)[0], alt: `${t.screenshotOf} ${app.name}: ${p.tabs[0][2]}` }];
+// One entry under "Our work": the problem, what we built, the AI inside, the platforms, two real
+// screens and a link to its page. Our own apps use their theme; client projects a neutral one.
+function workCard(item, lang, path) {
+  const s = services[lang];
+  const [w, h] = item.screenSize;
+  const href = /^https?:/.test(item.href) ? item.href : rel(path, item.href);
+  const phones = item.screens
+    .map(
+      (sc, i) =>
+        `<div class="phone ${i ? 'back' : 'front'}"><div class="screen"><img src="${rel(path, sc.src)}" alt="${esc(sc.alt)}" width="${w}" height="${h}" loading="lazy" decoding="async"></div></div>`
+    )
+    .reverse()
+    .join('');
+  const fact = (k, body) => `<div><dt>${esc(s.facts_[k])}</dt><dd>${body}</dd></div>`;
+  const where = item.app ? availability(item.app, lang) : '';
   return `
-          <article class="app-card ${app.theme}" style="--i: ${i}" aria-labelledby="card-${app.id}">
-            <div class="card-copy">
-              <p class="app-mark"><img class="app-icon" src="${rel(path, app.icon)}" alt="" width="52" height="52" loading="lazy"><span>${esc(app.name)}</span>${statusChip(app, lang)}</p>
-              <p class="card-cat">${esc(p.category)}</p>
-              <h3 id="card-${app.id}">${esc(p.pitch)}</h3>
-              <p class="for">${esc(p.for)}</p>
-              <ul class="ticks">${p.highlights.map((x) => `<li>${icons.check}<span>${esc(x)}</span></li>`).join('')}</ul>
-              ${availability(app, lang)}
-              <a class="more" href="${rel(path, app.paths[lang])}">${t.see} ${esc(app.name)} ${icons.arrow}</a>
+          <article class="work-card ${item.theme}" id="work-${item.id}" aria-labelledby="work-${item.id}-h"${item.color ? ` style="--accent: ${item.color}"` : ''}>
+            <div class="work-copy">
+              <p class="app-mark"><img class="app-icon" src="${rel(path, item.icon)}" alt="" width="52" height="52" loading="lazy"><span>${esc(item.name)}</span><span class="kind ${item.kind}">${esc(s.kinds[item.kind])}${item.client ? ` · ${esc(item.client)}` : ''}</span>${item.app ? statusChip(item.app, lang) : ''}</p>
+              <p class="card-cat">${esc(item.category)}</p>
+              <h3 id="work-${item.id}-h">${esc(item.shows)}</h3>
+              <dl class="work-facts">
+                ${fact('problem', esc(item.problem))}
+                ${fact('built', esc(item.built))}
+                ${fact('ai', `<ul class="ai-chips">${item.ai.map((x) => `<li>${esc(x)}</li>`).join('')}</ul>`)}
+                ${fact('platforms', `<p>${esc(item.platforms)}</p>${where}`)}
+              </dl>
+              ${href ? `<a class="more" href="${href}">${esc(s.seeWork(item.name))} ${icons.arrow}</a>` : ''}
             </div>
-            <div class="card-visual">
-              ${decor[app.decor] || ''}
-              ${phone(app, path, shot)}
-              ${stickers(app, lang)}
+            <div class="work-visual">
+              ${item.app ? decor[item.app.decor] || '' : ''}
+              ${phones}
             </div>
           </article>`;
 }
 
-function principleVisual(g, v) {
-  if (!v) return '';
-  if (g === 'eye')
-    return `<div class="mini why" aria-hidden="true"><p class="mini-label">${esc(v.label)}</p><p class="mini-title">${esc(v.title)}</p>${v.rows
-      .map(
-        ([label, n, max]) =>
-          `<p class="row"><span>${esc(label)}</span><b>${n} ${v.of} ${max}</b><i style="--v: ${n / max}"></i></p>`
-      )
-      .join('')}</div>`;
-  if (g === 'shield')
-    return `<div class="mini flag" aria-hidden="true"><p class="mini-label">${esc(v.label)}</p><p class="quote">${esc(v.quote)}</p></div>`;
-  if (g === 'lock')
-    return `<div class="mini steps-mini" aria-hidden="true">${v.yes.map((x) => `<span class="yes">${icons.check}${esc(x)}</span>`).join('')}<span class="no">${esc(v.no)}</span></div>`;
-  if (g === 'pin')
-    return `<div class="mini place" aria-hidden="true"><p class="coords">${esc(v.coords)}</p><p class="mini-title">${esc(v.place)}</p><p>${v.langs.map((x) => `<span>${esc(x)}</span>`).join('')}</p></div>`;
-  return '';
+// "Tell us your idea": a chat-style form, one question at a time (assets/brief.js), that sends the
+// answers as JSON to CONTACT_ENDPOINT. The fields carry the endpoint's own names and values. It is
+// a plain form underneath, so without JavaScript it shows every question at once and the browser
+// turns it into an email to hola@tutosapp.co (a mailto: form sent as plain text). If sending
+// fails, the widget offers the same email, and WhatsApp, already filled in with the answers.
+function briefForm(lang, path) {
+  const s = services[lang];
+  const c = s.chat;
+  const id = (k) => `brief-${k}`;
+  const privacy = rel(path, companyPrivacy.paths[lang]);
+  const step = (q, i) => {
+    const qid = `${id(q.key)}-q`;
+    let control;
+    if (q.options) {
+      control = `<div class="choices">${q.options
+        .map(
+          ([value, label], n) =>
+            `<label class="choice"><input type="radio" name="${q.key}" value="${value}"${n === 0 ? ' required' : ''}><span>${esc(label)}</span></label>`
+        )
+        .join('')}</div>`;
+    } else if (q.consent) {
+      control = `<label class="consent"><input type="checkbox" name="${q.key}" id="${id(q.key)}" value="true" required><span>${esc(q.consent[0])} <a href="${privacy}">${esc(q.consent[1])}</a>.</span></label>`;
+    } else {
+      const attrs = `id="${id(q.key)}" name="${q.key}" aria-labelledby="${qid}"${q.optional ? '' : ' required'}${q.min > 1 ? ` minlength="${q.min}"` : ''} maxlength="${q.max}" autocomplete="${q.autocomplete || 'off'}" placeholder="${esc(q.placeholder)}"`;
+      control = q.input === 'textarea' ? `<textarea ${attrs} rows="4"></textarea>` : `<input type="text" ${attrs}>`;
+    }
+    return `
+              <fieldset class="q" data-key="${q.key}" data-label="${esc(q.label)}"${q.optional ? ' data-optional' : ''}${q.min ? ` data-min="${q.min}"` : ''}${q.max ? ` data-max="${q.max}"` : ''}>
+                <legend id="${qid}" class="bubble bot"><span class="sr-only">${i + 1}/${c.steps.length}. </span>${esc(q.q)}</legend>
+                <div class="q-body">${control}<p class="q-error" role="alert"></p></div>
+              </fieldset>`;
+  };
+  // Strings the script needs, in the page's language.
+  const strings = { next: c.next, back: c.back, skip: c.skip, send: c.send, sending: c.sending, errors: c.errors, fail: c.fail, mailSubject: c.mailSubject, email: EMAIL };
+  return `<div class="chat" id="brief">
+          <div class="chat-head">
+            <span class="orb-wrap" aria-hidden="true" style="${orbStyle()}"><span class="orb"></span></span>
+            <div><p class="chat-title">${esc(c.title)}</p><p class="chat-status"><span class="pulse" aria-hidden="true"></span>${esc(c.status)}</p></div>
+          </div>
+          <form class="brief" action="mailto:${EMAIL}?subject=${encodeURIComponent(c.mailSubject)}" method="post" enctype="text/plain" data-endpoint="${esc(CONTACT_ENDPOINT)}" data-whatsapp="${WHATSAPP}">
+            <p class="bubble bot">${esc(c.hello)}</p>${c.steps.map(step).join('')}
+            <div class="hp" aria-hidden="true"><label for="${id('sitio')}">Sitio web</label><input id="${id('sitio')}" name="sitio" type="text" tabindex="-1" autocomplete="off"></div>
+            <div class="chat-send"><button class="btn primary" type="submit">${icons.mail}${esc(c.noscriptSend)}</button><p class="form-note">${esc(c.noscript)}</p></div>
+          </form>
+          <div class="chat-done" hidden tabindex="-1">
+            <p class="bubble bot"><b class="thanks-title" data-template="${esc(c.thanks[0])}">${esc(c.thanks[0].replace(/,? \{nombre\}/, ''))}</b> ${esc(c.thanks[1])}</p>
+            <p class="bubble bot">${esc(c.thanks[2])}</p>
+            <a class="btn ghost" href="${whatsappUs(s.whatsappText)}">${icons.whatsapp}WhatsApp</a>
+          </div>
+          <div class="chat-fail" hidden tabindex="-1">
+            <p class="bubble bot"><span class="fail-why"></span> ${esc(c.fail.fallback)}</p>
+            <p class="chat-fallback"><a class="btn primary fail-mail" href="mailto:${EMAIL}">${icons.mail}${esc(c.fail.mail)}</a><a class="btn ghost fail-wa" href="${whatsappUs(s.whatsappText)}">${icons.whatsapp}WhatsApp</a></p>
+          </div>
+          <script type="application/json" id="brief-strings">${JSON.stringify(strings).replace(/</g, '\\u003c')}</script>
+        </div>`;
+}
+
+// Sections shared by the home and the services page, so both say the same thing.
+
+// Our work: a case-study card per app (and per client project, when there are some).
+function workSection(lang, path, n, id) {
+  const s = services[lang];
+  return `<section class="section wrap" id="${id}" aria-labelledby="work-h">
+        <div class="section-head reveal">
+          ${kicker(n, s.workEyebrow)}
+          <h2 id="work-h">${rich(s.workTitle)}</h2>
+          <p class="lead">${esc(s.workLead)}</p>
+        </div>
+        <div class="work-list">${workItems(lang).map((item) => workCard(item, lang, path)).join('')}
+        </div>
+      </section>`;
+}
+
+// Ways to work together, each with a prefilled email; more links below the cards.
+function offersSection(lang, path, n, { id, eyebrow, title, lead, more = '' }) {
+  const s = services[lang];
+  return `<section class="section wrap" id="${id}" aria-labelledby="offers-h">
+        <div class="section-head reveal">
+          ${kicker(n, eyebrow)}
+          <h2 id="offers-h">${rich(title)}</h2>
+          <p class="lead">${esc(lead)}</p>
+        </div>
+        <ul class="offers">${s.offers
+          .map(([name, forWho, list]) => {
+            const [subject, body] = s.offerMail(name);
+            return `
+          <li class="offer reveal"><h3>${esc(name)}</h3><p class="for">${esc(forWho)}</p><ul class="ticks">${list
+              .map((x) => `<li>${icons.check}<span>${esc(x)}</span></li>`)
+              .join('')}</ul><a class="inline-link" href="${mailto(subject, body)}">${esc(s.offerCta)}<span class="sr-only">: ${esc(name)}</span></a></li>`;
+          })
+          .join('')}
+        </ul>${more}
+      </section>`;
+}
+
+// How we work: the six stages, saying who does each.
+function processSection(lang, n, id) {
+  const s = services[lang];
+  return `<section class="section wrap" id="${id}" aria-labelledby="process-h">
+        <div class="section-head reveal">
+          ${kicker(n, s.processEyebrow)}
+          <h2 id="process-h">${rich(s.processTitle)}</h2>
+        </div>
+        <ol class="steps process">${s.process
+          .map(
+            ([name, d, who], i) => `
+          <li class="step reveal"><span class="step-num" aria-hidden="true">${pad(i + 1)}</span><h3>${esc(name)}</h3><p>${esc(d)}</p><p class="who-line ${who}">${esc(s.who[who])}</p></li>`
+          )
+          .join('')}
+        </ol>
+      </section>`;
+}
+
+// Contact: the chat, what happens next, the confidentiality promise and the direct channels.
+function contactSection(lang, path, n, id) {
+  const s = services[lang];
+  const wa = whatsappUs(s.whatsappText);
+  return `<section class="section wrap" id="${id}" aria-labelledby="contact-h">
+        <div class="hire-panel">
+          <div class="hire-copy">
+            ${kicker(n, s.contactEyebrow)}
+            <h2 id="contact-h">${rich(s.contactTitle)}</h2>
+            <p class="lead">${esc(s.contactLead)}</p>
+            <p class="direct-title">${esc(s.nextTitle)}</p>
+            <ol class="next-steps">${s.nextSteps.map((x, i) => `<li><span aria-hidden="true">${i + 1}</span>${esc(x)}</li>`).join('')}</ol>
+            <p class="confidential">${svg(glyphs.lock, 20)}<span>${esc(s.confidential)}</span></p>
+            <p class="direct-title">${esc(s.or)}</p>
+            <ul class="direct">
+              <li><a class="btn ghost" href="${wa}">${icons.whatsapp}WhatsApp</a></li>
+              <li><a class="btn ghost" href="${mailto(s.chat.mailSubject)}">${icons.mail}${EMAIL}</a></li>
+            </ul>
+          </div>
+          ${briefForm(lang, path)}
+        </div>
+      </section>`;
+}
+
+// The hero's eyebrow, headline, lead, two actions and the honest facts.
+function studioHeroCopy(lang, { eyebrow, headline, lead, primary, primaryHref, secondary, secondaryHref, secondaryIcon = '', facts }) {
+  return `<div class="hero-copy">
+            <p class="eyebrow"><span class="pulse" aria-hidden="true"></span>${esc(eyebrow)}</p>
+            <h1>${rich(headline)}</h1>
+            <p class="lead">${esc(lead)}</p>
+            <div class="actions">
+              <a class="btn primary" href="${primaryHref}">${esc(primary)} ${icons.arrow}</a>
+              <a class="btn ghost" href="${secondaryHref}">${secondaryIcon}${esc(secondary)}</a>
+            </div>
+            <ul class="facts">${facts.map(([big, small]) => `<li><b>${esc(big)}</b><span>${esc(small)}</span></li>`).join('')}</ul>
+          </div>`;
+}
+
+function servicesPage(lang) {
+  const t = ui[lang];
+  const s = services[lang];
+  const path = services.paths[lang];
+  const otherLang = lang === 'es' ? 'en' : 'es';
+  const url = SITE_URL + path;
+  const wa = whatsappUs(s.whatsappText);
+  const appById = Object.fromEntries(apps.map((a) => [a.id, a]));
+  return (
+    head({
+      lang,
+      title: s.title,
+      description: s.description,
+      path,
+      alternates: services.paths,
+      og: `services-${lang}`,
+      bg: services.bg,
+      ld: {
+        '@type': 'Service',
+        name: s.navLabel,
+        serviceType: lang === 'es' ? 'Desarrollo de apps móviles con inteligencia artificial' : 'AI mobile app development',
+        description: s.description,
+        url,
+        inLanguage: lang,
+        areaServed: ['CO', 'US', { '@type': 'Place', name: lang === 'es' ? 'Latinoamérica' : 'Latin America' }],
+        availableChannel: { '@type': 'ServiceChannel', serviceUrl: url, servicePhone: `+${WHATSAPP}`, availableLanguage: ['es', 'en'] },
+        provider: organization,
+      },
+    }) +
+    nav({
+      lang,
+      path,
+      theme: 't-home page-services',
+      items: s.nav,
+      other: { lang: otherLang, path: services.paths[otherLang] },
+      cta: { href: `#${s.contactId}`, label: s.navCta },
+      onHome: false,
+    }) +
+    `
+    <main id="main">
+      <section class="home-hero services-hero">
+        <div class="hero-bg" aria-hidden="true"></div>
+        <div class="wrap hero-grid">
+          ${studioHeroCopy(lang, {
+            eyebrow: s.eyebrow,
+            headline: s.headline,
+            lead: s.lead,
+            primary: s.primary,
+            primaryHref: `#${s.contactId}`,
+            secondary: s.whatsapp,
+            secondaryHref: wa,
+            secondaryIcon: icons.whatsapp,
+            facts: s.facts,
+          })}
+          ${studioCard(lang, path)}
+        </div>
+      </section>
+
+      ${workSection(lang, path, 1, s.workId)}
+
+      <section class="section wrap" id="${s.buildId}" aria-labelledby="build-h">
+        <div class="section-head reveal">
+          ${kicker(2, s.buildEyebrow)}
+          <h2 id="build-h">${rich(s.buildTitle)}</h2>
+        </div>
+        <ul class="bento build">${s.build
+          .map(([g, title, d, proof]) => {
+            const a = appById[proof];
+            const seen = a
+              ? `<a class="seen" href="${rel(path, a.paths[lang])}"><img src="${rel(path, a.icon)}" alt="" width="24" height="24" loading="lazy">${esc(s.seenIn)} ${esc(a.name)} ${icons.arrow}</a>`
+              : '';
+            return `
+          <li class="tile reveal"><span class="glyph">${svg(glyphs[g])}</span><h3>${esc(title)}</h3><p>${esc(d)}</p>${seen}</li>`;
+          })
+          .join('')}
+        </ul>
+      </section>
+
+      ${processSection(lang, 3, s.processId)}
+
+      ${offersSection(lang, path, 4, { id: s.offersId, eyebrow: s.offersEyebrow, title: s.offersTitle, lead: s.offersLead })}
+
+      <section class="section wrap faq-section" id="${s.faqId}" aria-labelledby="faq-h">
+        <div class="faq-head reveal">
+          ${kicker(5, s.faqEyebrow)}
+          <h2 id="faq-h">${t.faq}</h2>
+          <p><a href="mailto:${EMAIL}">${EMAIL}</a><br><a href="${wa}">WhatsApp +57 350 495 8312</a><br><a href="${rel(path, companyPrivacy.paths[lang])}">${t.privacy}</a></p>
+        </div>
+        <div class="faq">${s.faq
+          .map(
+            ([q, a]) => `
+          <details class="reveal"><summary>${esc(q)}<span class="plus" aria-hidden="true">${icons.plus}</span></summary><p>${esc(a)}</p></details>`
+          )
+          .join('')}
+        </div>
+      </section>
+
+      ${contactSection(lang, path, 6, s.contactId)}
+    </main>
+    ${briefScript(path)}` +
+    footer({ lang, path })
+  );
+}
+
+// The home hero's showcase: real screens of our apps, fanned out, as the proof next to the promise.
+function showcase(lang, path) {
+  const h = home[lang];
+  const shown = apps.slice(0, 3);
+  return `<div class="showcase n${shown.length}">
+          ${shown
+            .map((a, i) => {
+              const [w, hh] = a.screenSize;
+              const alt = `${ui[lang].screenshotOf} ${a.name}: ${a[lang].tabs[0][2]}`;
+              return `<figure class="show p${i} ${a.theme}"><div class="phone"><div class="screen"><img src="${rel(path, a.screens(lang)[0])}" alt="${esc(alt)}" width="${w}" height="${hh}"${i === 0 ? ' fetchpriority="high"' : ' loading="lazy"'} decoding="async"></div></div><figcaption class="show-tag"><img src="${rel(path, a.icon)}" alt="" width="24" height="24">${esc(a.name)}</figcaption></figure>`;
+            })
+            .join('\n          ')}
+          <span class="sticker review" aria-hidden="true"><span class="who-chip ai">${esc(services[lang].studio.ai)}</span>${esc(h.showcaseTag)}</span>
+        </div>`;
 }
 
 function homePage(lang) {
-  const t = ui[lang];
   const h = home[lang];
+  const s = services[lang];
   const path = home.paths[lang];
   const otherLang = lang === 'es' ? 'en' : 'es';
-  const contactId = lang === 'es' ? 'contacto' : 'contact';
+  const contact = `#${h.contactId}`;
   return (
     head({
       lang,
@@ -1373,68 +2005,60 @@ function homePage(lang) {
       lang,
       path,
       theme: 't-home',
-      items: h.nav,
+      // The services page sits between the home's own sections and its contact.
+      items: [...h.nav.slice(0, -1), [rel(path, services.paths[lang]), s.navLabel], ...h.nav.slice(-1)],
       other: { lang: otherLang, path: home.paths[otherLang] },
-      cta: { href: `mailto:${EMAIL}`, label: h.write },
+      cta: { href: contact, label: s.navCta },
     }) +
     `
     <main id="main">
       <section class="home-hero">
         <div class="hero-bg" aria-hidden="true"></div>
         <div class="wrap hero-grid">
-          <div class="hero-copy">
-            <p class="eyebrow"><span class="pulse" aria-hidden="true"></span>${esc(h.eyebrow)}</p>
-            <h1>${rich(h.headline)}</h1>
-            <p class="lead">${esc(h.lead)}</p>
-            <div class="actions">
-              <a class="btn primary" href="#apps">${esc(h.primary)} ${icons.arrow}</a>
-              <a class="btn ghost" href="mailto:${EMAIL}">${icons.mail}${esc(h.write)}</a>
-            </div>
-          </div>
-          ${askDemo(lang, path)}
+          ${studioHeroCopy(lang, {
+            eyebrow: h.eyebrow,
+            headline: h.headline,
+            lead: h.lead,
+            primary: s.primary,
+            primaryHref: contact,
+            secondary: h.secondary,
+            secondaryHref: `#${h.workId}`,
+            facts: h.facts(),
+          })}
+          ${showcase(lang, path)}
         </div>
       </section>
 
       ${marquee(lang, path)}
 
-      <section class="section wrap" id="apps" aria-labelledby="apps-h">
-        <div class="section-head reveal">
-          ${kicker(1, h.appsEyebrow)}
-          <h2 id="apps-h">${rich(h.appsTitle)}</h2>
-          <p class="lead">${esc(h.appsLead)}</p>
-        </div>
-        <div class="app-stack">${apps.map((a, i) => appCard(a, lang, path, i)).join('')}
-        </div>
-      </section>
+      ${workSection(lang, path, 1, h.workId)}
 
-      <section class="section wrap" id="${h.principlesId}" aria-labelledby="principles-h">
+      ${offersSection(lang, path, 2, {
+        id: h.offersId,
+        eyebrow: h.offersEyebrow,
+        title: h.offersTitle,
+        lead: h.offersLead,
+        more: `
+        <p class="section-more reveal"><a class="more" href="${rel(path, services.paths[lang])}">${esc(h.offersMore)} ${icons.arrow}</a></p>`,
+      })}
+
+      ${processSection(lang, 3, h.processId)}
+
+      <section class="section wrap" id="${h.whoId}" aria-labelledby="who-h">
         <div class="section-head reveal">
-          ${kicker(2, h.principlesEyebrow)}
-          <h2 id="principles-h">${rich(h.principlesTitle)}</h2>
+          ${kicker(4, h.whoEyebrow)}
+          <h2 id="who-h">${rich(h.whoTitle)}</h2>
         </div>
-        <ul class="bento principles">${h.principles
-          .map(
-            ([g, b, d]) => `
-          <li class="tile p-${g} reveal"><div class="tile-copy"><span class="glyph">${svg(glyphs[g])}</span><h3>${esc(b)}</h3><p>${esc(d)}</p></div>${principleVisual(g, h.visuals?.[g])}</li>`
-          )
+        <ul class="bento who">${h.who
+          .map(([g, title, d]) => `
+          <li class="tile reveal"><span class="glyph">${svg(glyphs[g])}</span><h3>${esc(title)}</h3><p>${esc(d)}</p></li>`)
           .join('')}
         </ul>
       </section>
 
-      <section class="section wrap contact" id="${contactId}" aria-labelledby="contact-h">
-        <div class="contact-panel reveal">
-          <div class="orb-wrap" aria-hidden="true" style="${orbStyle()}"><span class="orb"></span></div>
-          ${kicker(3, h.contactEyebrow)}
-          <h2 id="contact-h">${rich(h.nextTitle)}</h2>
-          <p class="lead">${esc(h.nextLead)}</p>
-          <div class="actions">
-            <a class="btn primary" href="mailto:${EMAIL}">${icons.mail}${esc(h.write)}</a>
-            <a class="btn ghost" href="${whatsapp(`${h.share} ${SITE_URL + path}`)}">${icons.whatsapp}${t.share}</a>
-          </div>
-          <p class="big-mail"><a href="mailto:${EMAIL}">${EMAIL}</a><span>${COMPANY.city}</span></p>
-        </div>
-      </section>
-    </main>` +
+      ${contactSection(lang, path, 5, h.contactId)}
+    </main>
+    ${briefScript(path)}` +
     footer({ lang, path })
   );
 }
@@ -1469,6 +2093,8 @@ function notFoundPage() {
 
 const files = {};
 for (const lang of langs) files[home.paths[lang] + 'index.html'] = homePage(lang);
+for (const lang of langs) files[services.paths[lang] + 'index.html'] = servicesPage(lang);
+for (const lang of langs) files[companyPrivacy.paths[lang] + 'index.html'] = companyPrivacyPage(lang);
 for (const app of apps) for (const lang of langs) files[app.paths[lang] + 'index.html'] = appPage(app, lang);
 for (const app of apps) {
   for (const doc of legalDocs(app)) for (const lang of langs) files[legalPath(app, lang, doc) + 'index.html'] = legalPage(app, lang, doc);
@@ -1477,7 +2103,7 @@ files['404.html'] = notFoundPage();
 // GitHub ignores CNAME when publishing with Actions (the domain lives in the repo settings),
 // but it keeps the domain on record and works if the site is ever published from a branch.
 files['CNAME'] = `${DOMAIN}\n`;
-const allPaths = [home.paths, ...apps.map((a) => a.paths), ...apps.flatMap((a) => legalDocs(a).map((doc) => legalAlternates(a, doc)))];
+const allPaths = [home.paths, services.paths, companyPrivacy.paths, ...apps.map((a) => a.paths), ...apps.flatMap((a) => legalDocs(a).map((doc) => legalAlternates(a, doc)))];
 files['sitemap.xml'] = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
 ${allPaths
@@ -1517,10 +2143,17 @@ function run() {
       if (app[lang]?.shotAlt?.length !== app.shots(lang).length) problems.push(`${app.id}: ${lang} shotAlt must describe every screenshot`);
       if (app[lang]?.tabs?.length !== app.screens(lang).length) problems.push(`${app.id}: ${lang} tabs must describe every hero screen`);
       if (app.screens(lang).length > MAX_PANES) problems.push(`${app.id}: at most ${MAX_PANES} hero screens`);
+      // Its case study on the services page ("Our work").
+      for (const k of ['shows', 'problem', 'built']) if (!app[lang]?.work?.[k]) problems.push(`${app.id}: missing ${lang} work.${k}`);
+      if (!app[lang]?.work?.ai?.length) problems.push(`${app.id}: missing ${lang} work.ai`);
     }
   }
   for (const lang of langs) {
-    if (apps.filter((a) => a[lang].ask).length > MAX_PANES) problems.push(`home: at most ${MAX_PANES} apps in the question card`);
+    for (const p of projects) {
+      for (const k of ['category', 'platforms', 'shows', 'problem', 'built']) if (!p[lang]?.[k]) problems.push(`project ${p.id}: missing ${lang} ${k}`);
+      if (!p[lang]?.ai?.length) problems.push(`project ${p.id}: missing ${lang} ai`);
+      if (p[lang]?.screenAlt?.length < Math.min(2, p.screens(lang).length)) problems.push(`project ${p.id}: ${lang} screenAlt must describe its screens`);
+    }
   }
 
   for (const [name, body] of Object.entries(files)) {
@@ -1579,6 +2212,6 @@ function run() {
 // Every legal page, for the tests: its path, language, app and document.
 const legalPages = apps.flatMap((app) => legalDocs(app).flatMap((doc) => langs.map((lang) => ({ path: legalPath(app, lang, doc), lang, app, doc }))));
 
-export { apps, home, legalPages, COMPANY, DOMAIN, SITE_URL };
+export { apps, home, services, companyPrivacy, workItems, legalPages, CONTACT_ENDPOINT, COMPANY, DOMAIN, SITE_URL, EMAIL, WHATSAPP };
 
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) run();

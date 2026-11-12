@@ -424,6 +424,14 @@ h2 em {
   }
 }
 
+@supports not selector(:popover-open) {
+  .apps-toggle,
+  .apps-menu,
+  .apps-toggle + .apps-menu + .nav-sep {
+    display: none;
+  }
+}
+
 .apps-menu ul {
   display: grid;
   gap: 2px;

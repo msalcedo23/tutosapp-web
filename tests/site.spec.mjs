@@ -14,6 +14,9 @@ const pages = [...readFileSync(new URL('../site/sitemap.xml', import.meta.url), 
 );
 const name = (path) => path.replace(/^\/|\/$/g, '').replace(/\//g, '-') || 'home';
 const STILL = '.reveal, .stage, .ask-card, .hero-bg { animation: none !important; }';
+// The images on screen. The closed app switcher's icons load lazily, once it opens, and
+// tests/app-switcher.spec.mjs checks them open.
+const SHOWN = 'img:not([popover]:not(:popover-open) img)';
 
 // Top-level rules in a stylesheet (rules, at-rules with a block, and statement at-rules), the
 // number Chromium reports in CSSStyleSheet.cssRules when it parses the whole file.
@@ -61,7 +64,7 @@ for (const path of pages) {
         scrollTo({ top: document.body.scrollHeight, behavior: 'instant' });
       });
       await page.waitForLoadState('networkidle');
-      await page.waitForFunction(() => [...document.images].every((i) => i.complete), null, { timeout: 10_000 });
+      await page.waitForFunction((sel) => [...document.querySelectorAll(sel)].every((i) => i.complete), SHOWN, { timeout: 10_000 });
 
       const axe = await new AxeBuilder({ page })
         .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa', 'best-practice'])
@@ -69,9 +72,9 @@ for (const path of pages) {
       const violations = axe.violations.map((v) => `${v.id} (${v.impact}): ${v.nodes.map((n) => n.target.join(' ')).join(', ')}`);
       expect(violations, 'axe-core violations').toEqual([]);
 
-      const layout = await page.evaluate(() => ({
+      const layout = await page.evaluate((sel) => ({
         overflow: document.documentElement.scrollWidth - innerWidth,
-        brokenImages: [...document.images].filter((i) => !i.complete || i.naturalWidth === 0).map((i) => i.getAttribute('src')),
+        brokenImages: [...document.querySelectorAll(sel)].filter((i) => !i.complete || i.naturalWidth === 0).map((i) => i.getAttribute('src')),
         h1: document.querySelectorAll('h1').length,
         lang: document.documentElement.lang,
         canonical: document.querySelector('link[rel=canonical]')?.href,
@@ -79,7 +82,7 @@ for (const path of pages) {
         hreflang: document.querySelectorAll('link[rel=alternate][hreflang]').length,
         title: document.title,
         description: document.querySelector('meta[name=description]')?.content || '',
-      }));
+      }), SHOWN);
       expect(layout.overflow, 'page scrolls sideways').toBeLessThanOrEqual(0);
       expect(layout.brokenImages, 'images that did not load').toEqual([]);
       expect(layout.h1).toBe(1);

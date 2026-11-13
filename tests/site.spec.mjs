@@ -194,3 +194,22 @@ test('the skip link shows only with keyboard focus', async ({ page }) => {
     expect(await skip.evaluate((a) => getComputedStyle(a).clipPath)).toBe('none');
   }
 });
+
+// Ojito is live on the App Store for iPhone; Android is still a closed testing group by email.
+const OJITO_APP_STORE = 'https://apps.apple.com/app/id6832288734';
+for (const path of ['/ojito/', '/ojito/en/']) {
+  test(`${path} links Ojito's App Store listing and keeps the Android testing group`, async ({ page }) => {
+    await page.goto(path);
+    await expect(page.locator(`.hero-copy a.store[href="${OJITO_APP_STORE}"]`)).toBeVisible();
+    await expect(page.locator('.nav-cta')).toHaveAttribute('href', OJITO_APP_STORE);
+    await expect(page.locator('.hero-copy a.btn.primary[href^="mailto:"]')).toBeVisible();
+    const ld = JSON.parse(await page.locator('script[type="application/ld+json"]').first().textContent());
+    expect(ld.installUrl).toBe(OJITO_APP_STORE);
+  });
+}
+for (const path of ['/', '/en/']) {
+  test(`${path} Ojito card links its App Store listing`, async ({ page }) => {
+    await page.goto(path);
+    await expect(page.locator(`a.store[href="${OJITO_APP_STORE}"]`).first()).toBeAttached();
+  });
+}

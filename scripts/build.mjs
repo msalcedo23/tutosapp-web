@@ -21,6 +21,7 @@ const YEAR = 2026;
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', 'site');
 
 const PLAY = (id) => `https://play.google.com/store/apps/details?id=${id}`;
+const APP_STORE = (id) => `https://apps.apple.com/app/id${id}`;
 const mailto = (subject, body) =>
   `mailto:${EMAIL}?subject=${encodeURIComponent(subject)}${body ? `&body=${encodeURIComponent(body)}` : ''}`;
 const whatsapp = (text) => `https://wa.me/?text=${encodeURIComponent(text)}`;
@@ -72,8 +73,9 @@ const apps = [
     fonts: ['instrument-serif-latin-italic'],
     icon: 'assets/img/ojito/icon.png',
     paths: { es: 'ojito/', en: 'ojito/en/' },
-    status: 'test',
-    stores: { play: { status: 'soon', url: PLAY('co.ojito.ojito') }, appStore: { status: 'soon' } },
+    status: 'live',
+    // iPhone: live on the App Store since 2026-11-12. Android: still closed testing, joined by email (cta).
+    stores: { play: { status: 'soon', url: PLAY('co.ojito.ojito') }, appStore: { status: 'live', url: APP_STORE('6832288734') } },
     category: 'FoodAndDrinkApplication',
     legal: { privacy: '2026-11-11', terms: '2026-11-11', support: '2026-11-11' },
     look: 'panels',
@@ -104,7 +106,7 @@ const apps = [
         ['Producto con maní', 'avoid', 'Ojito avisa "Cuidado: tiene maní", por lo que marcaste para ti.'],
       ],
       featureAlt: 'La pantalla Mi familia de Ojito: un bebé de 8 meses, sin nombres ni fotos de niños.',
-      navCta: 'Quiero probarla',
+      navCta: 'Descargar',
       shotAlt: ['Resultado Bueno para unas galletas, con la línea del bebé', 'Alerta de maní', 'Producto de cuidado personal', 'Otras opciones con mejor puntaje'],
       benefits: [
         ['family', 'Una respuesta para cada quien', 'Lo que te sirve a ti no siempre le sirve a tu bebé. Ojito te da tu resultado y, debajo, el de cada persona de tu casa según su edad.'],
@@ -123,18 +125,18 @@ const apps = [
         ['¿Ojito reemplaza al pediatra o al médico?', 'No. Ojito no es un dispositivo médico y no diagnostica, trata, cura ni previene ninguna enfermedad. Te ayuda a leer la etiqueta. Si no ves una alerta, no quiere decir que el producto no tenga ese alérgeno: revisa siempre el empaque.'],
         ['¿Necesito crear una cuenta?', 'No. Abres la app y escaneas. Los datos de tu familia se quedan en tu celular.'],
         ['¿Cuánto cuesta?', 'Escanear, ver el resultado, el porqué, las alertas de tu familia y otras opciones no tiene costo. Más adelante habrá una suscripción opcional, Ojito Familia, con el historial completo y la lista de compras.'],
-        ['¿Cuándo sale?', 'Ojito está en pruebas y muy pronto estará en Google Play y en App Store. Si quieres probarla antes en Android, escríbenos y te sumamos al grupo de prueba.'],
+        ['¿Dónde la descargo?', 'Ojito ya está en App Store para iPhone. En Android está en pruebas y muy pronto estará en Google Play: si quieres probarla antes, escríbenos y te sumamos al grupo de prueba.'],
       ],
       cta: {
-        label: 'Quiero probarla',
+        label: 'Probarla en Android',
         href: mailto(
           'Quiero probar Ojito',
-          'Hola, quiero entrar al grupo de prueba de Ojito.\n\nMi correo de Google Play (Gmail) es: \nMi teléfono es Android / iPhone: '
+          'Hola, quiero entrar al grupo de prueba de Ojito.\n\nMi correo de Google Play (Gmail) es: '
         ),
         note: 'Se abre tu correo con el mensaje listo: agrega tu Gmail de Google Play y te sumamos al grupo de prueba de Android.',
       },
       disclaimer: 'Ojito no es un dispositivo médico y no diagnostica, trata, cura ni previene ninguna enfermedad.',
-      closing: ['Haz el mercado *con calma*.', 'Súmate al grupo de prueba de Android, o escríbenos y te avisamos cuando Ojito llegue a tu tienda.'],
+      closing: ['Haz el mercado *con calma*.', 'Descárgala en App Store para iPhone, o súmate al grupo de prueba de Android.'],
       share: 'Mira Ojito: escaneas un producto y te dice si es bueno para ti y para tu bebé.',
       work: {
         shows: 'Visión por computador y reglas de nutrición',
@@ -161,7 +163,7 @@ const apps = [
         ['A product with peanuts', 'avoid', 'Ojito warns "Careful: contains peanuts", based on what you marked for yourself.'],
       ],
       featureAlt: 'Ojito’s My family screen: a baby of 8 months, with no names or photos of children.',
-      navCta: 'Try it',
+      navCta: 'Get the app',
       shotAlt: ['A Good result for some cookies, with the line for the baby', 'A peanut alert', 'A personal-care product', 'Other options with a better score'],
       benefits: [
         ['family', 'An answer for everyone', 'What works for you may not work for your baby. Ojito gives you your result and, below it, one for each person in your home by age.'],
@@ -180,15 +182,15 @@ const apps = [
         ['Does Ojito replace a pediatrician or doctor?', 'No. Ojito is not a medical device and does not diagnose, treat, cure or prevent any disease. It helps you read the label. No alert doesn’t mean the product is free of that allergen: always check the package.'],
         ['Do I need an account?', 'No. Open the app and scan. Your family’s details stay on your phone.'],
         ['How much does it cost?', 'Scanning, the result, the reasons, your family’s alerts and other options cost nothing. An optional subscription, Ojito Familia, will later add full history and a shopping list.'],
-        ['When does it launch?', 'Ojito is in testing and coming soon to Google Play and the App Store. To try it early on Android, email us and we’ll add you to the testing group.'],
+        ['Where can I get it?', 'Ojito is on the App Store for iPhone. On Android it’s in testing and coming soon to Google Play: to try it early, email us and we’ll add you to the testing group.'],
       ],
       cta: {
-        label: 'I want to try it',
-        href: mailto('I want to try Ojito', 'Hi, I would like to join the Ojito testing group.\n\nMy Google Play (Gmail) address is: \nMy phone is Android / iPhone: '),
+        label: 'Try it on Android',
+        href: mailto('I want to try Ojito', 'Hi, I would like to join the Ojito testing group.\n\nMy Google Play (Gmail) address is: '),
         note: 'This opens your email with the message ready: add your Google Play Gmail address and we’ll add you to the Android testing group.',
       },
       disclaimer: 'Ojito is not a medical device and does not diagnose, treat, cure or prevent any disease.',
-      closing: ['Shop *with peace of mind*.', 'Join the Android testing group, or email us to hear when Ojito reaches your store.'],
+      closing: ['Shop *with peace of mind*.', 'Get it on the App Store for iPhone, or join the Android testing group.'],
       share: 'Check out Ojito: scan a product and see if it is good for you and your baby.',
       work: {
         shows: 'Computer vision and nutrition rules',
@@ -1198,8 +1200,8 @@ const statusChip = (app, lang) => `<span class="status ${app.status}">${ui[lang]
 // The page's main action: the store when the app is live somewhere, otherwise the email call to action.
 function mainAction(app, lang) {
   const p = app[lang];
-  if (p.cta) return { href: p.cta.href, label: p.navCta };
   if (hasLiveStore(app)) return { href: Object.values(app.stores).find((s) => s.status === 'live').url, label: p.navCta };
+  if (p.cta) return { href: p.cta.href, label: p.navCta };
   return { href: p.notify, label: p.navCta };
 }
 
@@ -1309,7 +1311,7 @@ function appPage(app, lang) {
         applicationCategory: app.category,
         image: `${SITE_URL}${app.icon}`,
         publisher: organization,
-        ...(app.stores.play.status === 'live' ? { installUrl: app.stores.play.url } : {}),
+        ...(hasLiveStore(app) ? { installUrl: Object.values(app.stores).find((s) => s.status === 'live').url } : {}),
       },
     }) +
     nav({
